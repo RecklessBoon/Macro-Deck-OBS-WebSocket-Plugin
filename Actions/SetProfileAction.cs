@@ -21,6 +21,7 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         public override void Trigger(string clientId, ActionButton actionButton)
         {
+            if (!PluginInstance.Main.OBS.IsConnected) return;
             if (!String.IsNullOrWhiteSpace(this.Configuration))
             {
                 try

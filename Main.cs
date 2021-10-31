@@ -3,9 +3,13 @@ using OBSWebsocketDotNet.Types;
 using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Plugins;
 using SuchByte.OBSWebSocketPlugin.Actions;
+using SuchByte.OBSWebSocketPlugin.GUI;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace SuchByte.OBSWebSocketPlugin {
 
@@ -28,22 +32,57 @@ namespace SuchByte.OBSWebSocketPlugin {
 
         protected OBSWebsocket obs;
 
+        private ContentSelectorButton statusButton = new ContentSelectorButton();
+
+        private ToolTip statusToolTip = new ToolTip();
+
         public Main()
         {
             PluginInstance.Main = this;
+            MacroDeck.MacroDeck.OnMainWindowLoad += MacroDeck_OnMainWindowLoad;
+        }
+
+        private void StatusButton_Click(object sender, EventArgs e)
+        {
+            if (PluginCredentials.GetPluginCredentials(this) == null || PluginCredentials.GetPluginCredentials(this).Count == 0)
+            {
+                this.OpenConfigurator();
+            }
+            else
+            {
+                Cursor.Current = Cursors.WaitCursor;
+                this.Connect(false);
+                Cursor.Current = Cursors.Default;
+            }
+        }
+
+        private void MacroDeck_OnMainWindowLoad(object sender, EventArgs e)
+        {
+            MacroDeck.GUI.MainWindow mainWindow = sender as MacroDeck.GUI.MainWindow;
+
+            this.statusButton = new ContentSelectorButton
+            {
+                BackgroundImage = this.obs.IsConnected ? Properties.Resources.OBS_Online : Properties.Resources.OBS_Offline,
+                BackgroundImageLayout = ImageLayout.Stretch,
+
+            };
+            this.statusToolTip.SetToolTip(this.statusButton, "OBS " + (this.obs.IsConnected ? " Connected" : "Disconnected"));
+            statusButton.Click += StatusButton_Click;
+            mainWindow.contentButtonPanel.Controls.Add(statusButton);
         }
 
         public override Image Icon => Properties.Resources.OBS_WebSocket;
 
         public override void Enable()
         {
-            this.Actions = new System.Collections.Generic.List<PluginAction>()
+            this.Actions = new List<PluginAction>()
             {
                 new SetProfileAction(),
                 new SetRecordingStateAction(),
                 new SetSceneAction(),
                 new SetStreamingStateAction(),
                 new SetVirtualCamAction(),
+                new ToggleConnectionAction(),
             };
             ResetVariables();
             this.obs = new OBSWebsocket();
@@ -64,7 +103,14 @@ namespace SuchByte.OBSWebSocketPlugin {
 
             this.obs.StreamStatus += OnStreamData;
 
+            this.obs.SourceMuteStateChanged += Obs_SourceMuteStateChanged;
+
             this.Connect();
+        }
+
+        private void Obs_SourceMuteStateChanged(OBSWebsocket sender, string sourceName, bool muted)
+        {
+            
         }
 
         private void Obs_SceneListChanged(object sender, EventArgs e)
@@ -179,34 +225,67 @@ namespace SuchByte.OBSWebSocketPlugin {
         private void OnDisconnect(object sender, EventArgs e)
         {
             ResetVariables();
+           
+            if (this.statusButton != null)
+            {
+                this.statusButton.BackgroundImage = Properties.Resources.OBS_Offline;
+                this.statusToolTip.SetToolTip(this.statusButton, "OBS Disconnected");
+            }
         }
 
         private void OnConnect(object sender, EventArgs e)
         {
             UpdateAllVariables();
+            if (this.statusButton != null)
+            {
+                this.statusButton.BackgroundImage = Properties.Resources.OBS_Online;
+                this.statusToolTip.SetToolTip(this.statusButton, "OBS Connected");
+            }
         }
 
         public override void OpenConfigurator()
         {
-            // TODO
+            using (var pluginConfig = new PluginConfig(this))
+            {
+                pluginConfig.ShowDialog();
+            }
         }
 
-        internal void Connect()
+        internal void Connect(bool ignoreConnectionError = true)
         {
             if (!this.obs.IsConnected)
             {
                 try
                 {
-                    this.obs.Connect("ws://127.0.0.1:4444", ""); // TODO
+                    List<Dictionary<string, string>> credentialsList = PluginCredentials.GetPluginCredentials(this);
+                    Dictionary<string, string> credentials = null;
+                    if (credentialsList != null && credentialsList.Count > 0)
+                    {
+                        credentials = credentialsList[0];
+                    }
+                    if (credentials != null)
+                    {
+                        this.obs.Connect(credentials["host"], credentials["password"]);
+                    }
                 }
                 catch (AuthFailureException)
                 {
-                    using (var msgBox = new MessageBox())
+                    using (var msgBox = new MacroDeck.GUI.CustomControls.MessageBox())
                     {
                         msgBox.ShowDialog("OBS Authentication failed", "Please make sure, you set the correct password", System.Windows.Forms.MessageBoxButtons.OK);
                     }
                     return;
-                } catch { }
+                }
+                catch (ErrorResponseException)
+                {
+                    if (!ignoreConnectionError)
+                    {
+                        using (var msgBox = new MacroDeck.GUI.CustomControls.MessageBox())
+                        {
+                            msgBox.ShowDialog("OBS Connection failed", "Please make sure, you set the correct host and OBS is running with the OBS-WebSocket plugin installed", MessageBoxButtons.OK);
+                        }
+                    }
+                }
             } else
             {
                 this.obs.Disconnect();

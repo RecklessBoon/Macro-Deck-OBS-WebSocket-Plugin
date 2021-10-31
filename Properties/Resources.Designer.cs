@@ -63,6 +63,26 @@ namespace SuchByte.OBSWebSocketPlugin.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap OBS_Offline {
+            get {
+                object obj = ResourceManager.GetObject("OBS_Offline", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap OBS_Online {
+            get {
+                object obj = ResourceManager.GetObject("OBS_Online", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap OBS_WebSocket {
             get {
                 object obj = ResourceManager.GetObject("OBS_WebSocket", resourceCulture);
