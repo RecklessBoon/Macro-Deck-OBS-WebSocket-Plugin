@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>SuchByte.OBSWebSocketPlugin</RootNamespace>
+    <AssemblyName>OBS-WebSocket Plugin</AssemblyName>
+	<UseWindowsForms>true</UseWindowsForms>
+    <Authors>Macro Deck</Authors>
+    <Company>Macro Deck</Company>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Version>1.0.0-beta</Version>
+	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Macro Deck 2">
+      <HintPath>C:\Program Files\Macro Deck\Macro Deck 2.dll</HintPath>
+    </Reference>
+    <Reference Include="obs-websocket-dotnet">
+      <HintPath>..\obs-websocket-dotnet.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy /Y &quot;$(TargetDir)$(TargetName).dll&quot; &quot;C:\Users\Manuel\AppData\Roaming\Macro Deck\plugins\SuchByte.MacroDeckOBSWebSocket\$(TargetName).dll&quot;" />
+  </Target>
+
+</Project>

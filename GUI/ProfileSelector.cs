@@ -1,0 +1,89 @@
+﻿using Newtonsoft.Json.Linq;
+using OBSWebsocketDotNet.Types;
+using SuchByte.MacroDeck.GUI;
+using SuchByte.MacroDeck.GUI.CustomControls;
+using SuchByte.MacroDeck.Plugins;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Diagnostics;
+using System.Drawing;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace SuchByte.OBSWebSocketPlugin.GUI
+{
+    public partial class ProfileSelector : ActionConfigControl
+    {
+        PluginAction pluginAction;
+
+        public ProfileSelector(PluginAction pluginAction, ActionConfigurator actionConfigurator)
+        {
+            this.pluginAction = pluginAction;
+            InitializeComponent();
+
+            actionConfigurator.ActionSave += OnActionSave;
+
+            this.LoadProfiles();
+        }
+
+        private void OnActionSave(object sender, EventArgs e)
+        {
+            this.UpdateConfig();
+        }
+
+        private void LoadProfiles()
+        {
+            if (!PluginInstance.Main.OBS.IsConnected)
+            {
+                using (var msgBox = new MacroDeck.GUI.CustomControls.MessageBox())
+                {
+                    msgBox.ShowDialog("Not connected", "Macro Deck is not connected to OBS. Please make sure, OBS and the OBS-WebSocket plugin are working properly and you configured the plugin.", System.Windows.Forms.MessageBoxButtons.OK);
+                }
+                return;
+            }
+
+            this.profilesBox.Items.Clear();
+
+            foreach (string profile in PluginInstance.Main.OBS.ListProfiles().ToArray())
+            {
+                this.profilesBox.Items.Add(profile);
+            }
+            this.LoadConfig();
+        }
+
+        private void LoadConfig()
+        {
+            if (!String.IsNullOrWhiteSpace(this.pluginAction.Configuration))
+            {
+                try
+                {
+                    JObject configurationObject = JObject.Parse(this.pluginAction.Configuration);
+                    this.profilesBox.Text = configurationObject["profile"].ToString();
+                } catch { }
+            }
+        }
+
+        private void UpdateConfig()
+        {
+            if (String.IsNullOrWhiteSpace(this.profilesBox.Text))
+            {
+                return;
+            }
+            JObject configurationObject = JObject.FromObject(new
+            {
+                profile = this.profilesBox.Text,
+            });
+
+            this.pluginAction.Configuration = configurationObject.ToString();
+            this.pluginAction.DisplayName = this.pluginAction.Name + " -> " + this.profilesBox.Text;
+        }
+
+        private void BtnReloadProfiles_Click(object sender, EventArgs e)
+        {
+            this.LoadProfiles();
+        }
+    }
+}
