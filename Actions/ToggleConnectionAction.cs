@@ -8,9 +8,9 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 {
     public class ToggleConnectionAction : PluginAction
     {
-        public override string Name => "Toggle connection";
+        public override string Name => "OBS Toggle connection";
 
-        public override string DisplayName { get; set; } = "Toggle connection";
+        public override string DisplayName { get; set; } = "OBS Toggle connection";
 
         public override string Description => "Toggles the connection between OBS and Macro Deck";
 

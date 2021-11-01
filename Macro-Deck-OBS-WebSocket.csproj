@@ -8,7 +8,7 @@
     <Authors>Macro Deck</Authors>
     <Company>Macro Deck</Company>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>1.0.0-beta</Version>
+    <Version>1.1.0-beta</Version>
 	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 

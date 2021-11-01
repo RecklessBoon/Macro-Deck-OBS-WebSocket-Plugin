@@ -1,5 +1,6 @@
 ﻿using OBSWebsocketDotNet;
 using OBSWebsocketDotNet.Types;
+using SuchByte.MacroDeck.GUI;
 using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Plugins;
 using SuchByte.OBSWebSocketPlugin.Actions;
@@ -25,7 +26,7 @@ namespace SuchByte.OBSWebSocketPlugin {
         private string[] toggleVariableSuggestions = new string[] { "On", "Off" };
         private string[] sceneSuggestions = new string[] { "" };
 
-        public override string Description => "This plugin can control a SinusBot music bot.";
+        public override string Description => "Control Open Broadcaster Software with Macro Deck.";
         public override bool CanConfigure => true;
 
         public OBSWebsocket OBS { get { return this.obs; } }
@@ -35,6 +36,8 @@ namespace SuchByte.OBSWebSocketPlugin {
         private ContentSelectorButton statusButton = new ContentSelectorButton();
 
         private ToolTip statusToolTip = new ToolTip();
+
+        private MainWindow mainWindow;
 
         public Main()
         {
@@ -50,15 +53,16 @@ namespace SuchByte.OBSWebSocketPlugin {
             }
             else
             {
-                Cursor.Current = Cursors.WaitCursor;
-                this.Connect(false);
-                Cursor.Current = Cursors.Default;
+                Task.Run(() =>
+                {
+                    this.Connect(false);
+                });
             }
         }
 
         private void MacroDeck_OnMainWindowLoad(object sender, EventArgs e)
         {
-            MacroDeck.GUI.MainWindow mainWindow = sender as MacroDeck.GUI.MainWindow;
+            mainWindow = sender as MainWindow;
 
             this.statusButton = new ContentSelectorButton
             {
@@ -77,6 +81,7 @@ namespace SuchByte.OBSWebSocketPlugin {
         {
             this.Actions = new List<PluginAction>()
             {
+                new SetAudioMutedAction(),
                 new SetProfileAction(),
                 new SetRecordingStateAction(),
                 new SetSceneAction(),
@@ -105,12 +110,17 @@ namespace SuchByte.OBSWebSocketPlugin {
 
             this.obs.SourceMuteStateChanged += Obs_SourceMuteStateChanged;
 
-            this.Connect();
+            Task.Run(() =>
+            {
+                this.Connect();
+            });
+            
         }
+
 
         private void Obs_SourceMuteStateChanged(OBSWebsocket sender, string sourceName, bool muted)
         {
-            
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + sourceName, muted ? "Off" : "On", MacroDeck.Variables.VariableType.String, this, this.toggleVariableSuggestions, false);
         }
 
         private void Obs_SceneListChanged(object sender, EventArgs e)
@@ -138,6 +148,10 @@ namespace SuchByte.OBSWebSocketPlugin {
 
         private void UpdateAllVariables()
         {
+            foreach (var audioSource in this.obs.GetSourcesList().FindAll(s => s.Name.ToLower().Contains("audio")))
+            {
+                Obs_SourceMuteStateChanged(this.obs, audioSource.Name, this.obs.GetMute(audioSource.Name)); // Update mute state
+            }
             Obs_SceneListChanged(this, EventArgs.Empty); // Update the scene suggestions
             //MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "current transition", this.obs.GetCurrentTransition().Name, MacroDeck.Variables.VariableType.String, this, false); // TODO
             MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "current profile", this.obs.GetCurrentProfile(), MacroDeck.Variables.VariableType.String, this, false);
@@ -226,20 +240,26 @@ namespace SuchByte.OBSWebSocketPlugin {
         {
             ResetVariables();
            
-            if (this.statusButton != null)
+            if (this.mainWindow != null && !this.mainWindow.IsDisposed && this.statusButton != null)
             {
-                this.statusButton.BackgroundImage = Properties.Resources.OBS_Offline;
-                this.statusToolTip.SetToolTip(this.statusButton, "OBS Disconnected");
+                this.mainWindow.BeginInvoke(new Action(() =>
+                {
+                    this.statusButton.BackgroundImage = Properties.Resources.OBS_Offline;
+                    this.statusToolTip.SetToolTip(this.statusButton, "OBS Disconnected");
+                }));
             }
         }
 
         private void OnConnect(object sender, EventArgs e)
         {
             UpdateAllVariables();
-            if (this.statusButton != null)
+            if (this.mainWindow != null && !this.mainWindow.IsDisposed && this.statusButton != null)
             {
-                this.statusButton.BackgroundImage = Properties.Resources.OBS_Online;
-                this.statusToolTip.SetToolTip(this.statusButton, "OBS Connected");
+                this.mainWindow.BeginInvoke(new Action(() =>
+                {
+                    this.statusButton.BackgroundImage = Properties.Resources.OBS_Online;
+                    this.statusToolTip.SetToolTip(this.statusButton, "OBS Connected");
+                }));
             }
         }
 
