@@ -8,7 +8,7 @@
     <Authors>Macro Deck</Authors>
     <Company>Macro Deck</Company>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>1.1.0-beta</Version>
+    <Version>1.1.1-beta</Version>
 	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <Reference Include="Macro Deck 2">
-      <HintPath>C:\Program Files\Macro Deck\Macro Deck 2.dll</HintPath>
+      <HintPath>C:\Users\Manuel\Desktop\Macro Deck 2.dll</HintPath>
     </Reference>
     <Reference Include="obs-websocket-dotnet">
       <HintPath>..\obs-websocket-dotnet.dll</HintPath>
