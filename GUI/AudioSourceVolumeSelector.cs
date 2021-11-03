@@ -14,20 +14,19 @@ using System.Windows.Forms;
 
 namespace SuchByte.OBSWebSocketPlugin.GUI
 {
-    public partial class AudioSourceSelector : ActionConfigControl
+    public partial class AudioSourceVolumeSelector : ActionConfigControl
     {
-
         PluginAction pluginAction;
 
-        public AudioSourceSelector(PluginAction pluginAction, ActionConfigurator actionConfigurator)
+        public AudioSourceVolumeSelector(PluginAction pluginAction, ActionConfigurator actionConfigurator)
         {
             this.pluginAction = pluginAction;
             InitializeComponent();
 
             this.lblSource.Text = PluginLanguageManager.PluginStrings.Source;
-            this.radioMute.Text = PluginLanguageManager.PluginStrings.Mute;
-            this.radioUnmute.Text = PluginLanguageManager.PluginStrings.Unmute;
-            this.radioToggle.Text = PluginLanguageManager.PluginStrings.Toggle;
+            this.radioIncrease.Text = PluginLanguageManager.PluginStrings.Increase;
+            this.radioDecrease.Text = PluginLanguageManager.PluginStrings.Decrease;
+            this.radioSet.Text = PluginLanguageManager.PluginStrings.Set;
 
             actionConfigurator.ActionSave += OnActionSave;
 
@@ -55,7 +54,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
 
             foreach (var audioSource in PluginInstance.Main.OBS.GetSpecialSources().Values)
             {
-                
+
                 this.sourcesBox.Items.Add(audioSource);
             }
 
@@ -73,16 +72,19 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
 
                     switch (configurationObject["method"].ToString())
                     {
-                        case "mute":
-                            this.radioMute.Checked = true;
+                        case "increase":
+                            this.radioIncrease.Checked = true;
                             break;
-                        case "unmute":
-                            this.radioUnmute.Checked = true;
+                        case "decrease":
+                            this.radioDecrease.Checked = true;
                             break;
-                        case "toggle":
-                            this.radioToggle.Checked = true;
+                        case "set":
+                            this.radioSet.Checked = true;
                             break;
                     }
+
+                    Int32.TryParse(configurationObject["decibel"].ToString(), out int decibel);
+                    this.decibel.Value = decibel;
                 }
                 catch { }
             }
@@ -94,32 +96,49 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             {
                 return;
             }
-            string method = "toggle";
-            if (this.radioMute.Checked)
+            string method = "set";
+            if (this.radioIncrease.Checked)
             {
-                method = "mute";
+                method = "increase";
             }
-            else if (this.radioUnmute.Checked)
+            else if (this.radioDecrease.Checked)
             {
-                method = "unmute";
+                method = "decrease";
             }
-            else if (this.radioToggle.Checked)
+            else if (this.radioSet.Checked)
             {
-                method = "toggle";
+                method = "set";
             }
             JObject configurationObject = JObject.FromObject(new
             {
                 sourceName = this.sourcesBox.Text,
                 method = method,
+                decibel = this.decibel.Value,
             });
 
             this.pluginAction.Configuration = configurationObject.ToString();
-            this.pluginAction.DisplayName = this.pluginAction.Name + " -> " + this.sourcesBox.Text + " -> " + method;
+            this.pluginAction.DisplayName = this.pluginAction.Name + " -> " + this.sourcesBox.Text + " -> " + method + " -> " + this.lblToBy.Text + " -> " + this.decibel.Value + "dB";
         }
 
         private void BtnReloadSources_Click(object sender, EventArgs e)
         {
             this.LoadSources();
         }
+
+        private void Method_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.radioIncrease.Checked || this.radioDecrease.Checked)
+            {
+                this.lblToBy.Text = PluginLanguageManager.PluginStrings.GeneralBy;
+                this.decibel.Maximum = 96;
+                this.decibel.Minimum = 1;
+            } else if (this.radioSet.Checked)
+            {
+                this.lblToBy.Text = PluginLanguageManager.PluginStrings.Toggle;
+                this.decibel.Maximum = 0;
+                this.decibel.Minimum = -96;
+            }
+        }
+
     }
 }

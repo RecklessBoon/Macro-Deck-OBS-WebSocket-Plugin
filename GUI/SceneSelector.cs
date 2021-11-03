@@ -2,7 +2,9 @@
 using OBSWebsocketDotNet.Types;
 using SuchByte.MacroDeck.GUI;
 using SuchByte.MacroDeck.GUI.CustomControls;
+using SuchByte.MacroDeck.Language;
 using SuchByte.MacroDeck.Plugins;
+using SuchByte.OBSWebSocketPlugin.Language;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -22,14 +24,17 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             this.pluginAction = pluginAction;
             InitializeComponent();
 
+            this.lblScene.Text = PluginLanguageManager.PluginStrings.Scene;
+
             actionConfigurator.ActionSave += OnActionSave;
 
-            this.LoadScenes();
+            LoadScenes();
+            LoadConfig();
         }
 
         private void OnActionSave(object sender, EventArgs e)
         {
-            this.UpdateConfig();
+            UpdateConfig();
         }
 
         private void LoadScenes()
@@ -38,7 +43,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             {
                 using (var msgBox = new MacroDeck.GUI.CustomControls.MessageBox())
                 {
-                    msgBox.ShowDialog("Not connected", "Macro Deck is not connected to OBS. Please make sure, OBS and the OBS-WebSocket plugin are working properly and you configured the plugin.", System.Windows.Forms.MessageBoxButtons.OK);
+                    msgBox.ShowDialog(LanguageManager.Strings.Error, PluginLanguageManager.PluginStrings.ErrorNotConnected, System.Windows.Forms.MessageBoxButtons.OK);
                 }
                 return;
             }
@@ -49,7 +54,6 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             {
                 this.scenesBox.Items.Add(scene.Name);
             }
-            this.LoadConfig();
         }
 
         private void LoadConfig()
@@ -82,7 +86,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
 
         private void BtnReloadScenes_Click(object sender, EventArgs e)
         {
-            this.LoadScenes();
+            LoadScenes();
         }
     }
 }

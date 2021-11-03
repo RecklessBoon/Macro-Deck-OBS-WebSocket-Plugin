@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using OBSWebsocketDotNet.Types;
 using SuchByte.MacroDeck.GUI;
 using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Language;
@@ -14,29 +15,53 @@ using System.Windows.Forms;
 
 namespace SuchByte.OBSWebSocketPlugin.GUI
 {
-    public partial class AudioSourceSelector : ActionConfigControl
+    public partial class SceneSourceSelector : ActionConfigControl
     {
 
         PluginAction pluginAction;
 
-        public AudioSourceSelector(PluginAction pluginAction, ActionConfigurator actionConfigurator)
+        public SceneSourceSelector(PluginAction pluginAction, ActionConfigurator actionConfigurator)
         {
             this.pluginAction = pluginAction;
             InitializeComponent();
 
+            this.lblScene.Text = PluginLanguageManager.PluginStrings.Scene;
             this.lblSource.Text = PluginLanguageManager.PluginStrings.Source;
-            this.radioMute.Text = PluginLanguageManager.PluginStrings.Mute;
-            this.radioUnmute.Text = PluginLanguageManager.PluginStrings.Unmute;
+            this.radioHide.Text = PluginLanguageManager.PluginStrings.Hide;
+            this.radioShow.Text = PluginLanguageManager.PluginStrings.Show;
             this.radioToggle.Text = PluginLanguageManager.PluginStrings.Toggle;
 
             actionConfigurator.ActionSave += OnActionSave;
 
-            this.LoadSources();
+            LoadScenes();
+            LoadConfig();
         }
 
         private void OnActionSave(object sender, EventArgs e)
         {
-            this.UpdateConfig();
+            UpdateConfig();
+        }
+
+        private void LoadScenes()
+        {
+            if (!PluginInstance.Main.OBS.IsConnected)
+            {
+                using (var msgBox = new MacroDeck.GUI.CustomControls.MessageBox())
+                {
+                    msgBox.ShowDialog(LanguageManager.Strings.Error, PluginLanguageManager.PluginStrings.ErrorNotConnected, System.Windows.Forms.MessageBoxButtons.OK);
+                }
+                return;
+            }
+
+            this.scenesBox.Items.Clear();
+            this.scenesBox.Text = String.Empty;
+
+            foreach (OBSScene scene in PluginInstance.Main.OBS.ListScenes().ToArray())
+            {
+                this.scenesBox.Items.Add(scene.Name);
+            }
+            
+            LoadSources();
         }
 
         private void LoadSources()
@@ -51,15 +76,15 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             }
 
             this.sourcesBox.Items.Clear();
+            this.sourcesBox.Text = String.Empty;
 
 
-            foreach (var audioSource in PluginInstance.Main.OBS.GetSpecialSources().Values)
+            foreach (var sceneItem in PluginInstance.Main.OBS.GetSceneItemList(PluginInstance.Main.OBS.GetCurrentScene().Name))
             {
-                
-                this.sourcesBox.Items.Add(audioSource);
+
+                this.sourcesBox.Items.Add(sceneItem.SourceName);
             }
 
-            this.LoadConfig();
         }
 
         private void LoadConfig()
@@ -69,15 +94,16 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                 try
                 {
                     JObject configurationObject = JObject.Parse(this.pluginAction.Configuration);
+                    this.scenesBox.Text = configurationObject["sceneName"].ToString();
                     this.sourcesBox.Text = configurationObject["sourceName"].ToString();
 
                     switch (configurationObject["method"].ToString())
                     {
-                        case "mute":
-                            this.radioMute.Checked = true;
+                        case "hide":
+                            this.radioHide.Checked = true;
                             break;
-                        case "unmute":
-                            this.radioUnmute.Checked = true;
+                        case "show":
+                            this.radioShow.Checked = true;
                             break;
                         case "toggle":
                             this.radioToggle.Checked = true;
@@ -90,18 +116,18 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
 
         private void UpdateConfig()
         {
-            if (String.IsNullOrWhiteSpace(this.sourcesBox.Text))
+            if (String.IsNullOrWhiteSpace(this.scenesBox.Text) || String.IsNullOrWhiteSpace(this.sourcesBox.Text))
             {
                 return;
             }
             string method = "toggle";
-            if (this.radioMute.Checked)
+            if (this.radioHide.Checked)
             {
-                method = "mute";
+                method = "hide";
             }
-            else if (this.radioUnmute.Checked)
+            else if (this.radioShow.Checked)
             {
-                method = "unmute";
+                method = "show";
             }
             else if (this.radioToggle.Checked)
             {
@@ -109,17 +135,28 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             }
             JObject configurationObject = JObject.FromObject(new
             {
+                sceneName = this.scenesBox.Text,
                 sourceName = this.sourcesBox.Text,
                 method = method,
             });
 
             this.pluginAction.Configuration = configurationObject.ToString();
-            this.pluginAction.DisplayName = this.pluginAction.Name + " -> " + this.sourcesBox.Text + " -> " + method;
+            this.pluginAction.DisplayName = this.pluginAction.Name + " -> " + this.scenesBox.Text + "/" + this.sourcesBox.Text + " -> " + method;
+        }
+
+        private void BtnReloadScenes_Click(object sender, EventArgs e)
+        {
+            LoadScenes();
         }
 
         private void BtnReloadSources_Click(object sender, EventArgs e)
         {
-            this.LoadSources();
+            LoadSources();
+        }
+
+        private void ScenesBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            LoadSources();
         }
     }
 }

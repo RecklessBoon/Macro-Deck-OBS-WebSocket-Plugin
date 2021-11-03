@@ -11,13 +11,13 @@ using System.Text;
 
 namespace SuchByte.OBSWebSocketPlugin.Actions
 {
-    public class SetAudioMutedAction : PluginAction
+    public class SourceVisibilityAction : PluginAction
     {
-        public override string Name => PluginLanguageManager.PluginStrings.ActionSetAudioMuted;
+        public override string Name => PluginLanguageManager.PluginStrings.ActionSourceVisibility;
 
-        public override string DisplayName { get; set; } = PluginLanguageManager.PluginStrings.ActionSetAudioMuted;
+        public override string DisplayName { get; set; } = PluginLanguageManager.PluginStrings.ActionSourceVisibility;
 
-        public override string Description => PluginLanguageManager.PluginStrings.ActionSetAudioMutedDescription;
+        public override string Description => PluginLanguageManager.PluginStrings.ActionSourceVisibilityDescription;
         public override bool CanConfigure => true;
 
         public override void Trigger(string clientId, ActionButton actionButton)
@@ -28,17 +28,19 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
                 try
                 {
                     JObject configurationObject = JObject.Parse(this.Configuration);
+                    string sceneName = configurationObject["sceneName"].ToString();
                     string sourceName = configurationObject["sourceName"].ToString();
+
                     switch (configurationObject["method"].ToString())
                     {
-                        case "mute":
-                            PluginInstance.Main.OBS.SetMute(sourceName, true);
+                        case "hide":
+                            PluginInstance.Main.OBS.SetSourceRender(sourceName, false, sceneName);
                             break;
-                        case "unmute":
-                            PluginInstance.Main.OBS.SetMute(sourceName, false);
+                        case "show":
+                            PluginInstance.Main.OBS.SetSourceRender(sourceName, true, sceneName);
                             break;
                         case "toggle":
-                            PluginInstance.Main.OBS.SetMute(sourceName, !PluginInstance.Main.OBS.GetMute(sourceName));
+                            PluginInstance.Main.OBS.SetSourceRender(sourceName, !PluginInstance.Main.OBS.GetSceneItemProperties(sourceName, sceneName).Visible, sceneName);
                             break;
                     }
                 }
@@ -48,9 +50,10 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         public override ActionConfigControl GetActionConfigControl(ActionConfigurator actionConfigurator)
         {
-            return new AudioSourceSelector(this, actionConfigurator);
+            return new SceneSourceSelector(this, actionConfigurator);
         }
+
+
+
     }
-
-
 }

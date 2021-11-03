@@ -34,8 +34,8 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
         {
             this.password = new SuchByte.MacroDeck.GUI.CustomControls.RoundedTextBox();
             this.host = new SuchByte.MacroDeck.GUI.CustomControls.RoundedTextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
+            this.lblHost = new System.Windows.Forms.Label();
+            this.lblPassword = new System.Windows.Forms.Label();
             this.btnOk = new SuchByte.MacroDeck.GUI.CustomControls.ButtonPrimary();
             this.SuspendLayout();
             // 
@@ -77,25 +77,25 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             this.host.TabIndex = 3;
             this.host.TextAlignment = System.Windows.Forms.HorizontalAlignment.Left;
             // 
-            // label1
+            // lblHost
             // 
-            this.label1.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label1.Location = new System.Drawing.Point(4, 30);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(97, 29);
-            this.label1.TabIndex = 4;
-            this.label1.Text = "Host:";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblHost.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lblHost.Location = new System.Drawing.Point(4, 30);
+            this.lblHost.Name = "lblHost";
+            this.lblHost.Size = new System.Drawing.Size(97, 29);
+            this.lblHost.TabIndex = 4;
+            this.lblHost.Text = "Host:";
+            this.lblHost.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // label2
+            // lblPassword
             // 
-            this.label2.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label2.Location = new System.Drawing.Point(4, 80);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(97, 29);
-            this.label2.TabIndex = 5;
-            this.label2.Text = "Password:";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblPassword.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lblPassword.Location = new System.Drawing.Point(4, 80);
+            this.lblPassword.Name = "lblPassword";
+            this.lblPassword.Size = new System.Drawing.Size(97, 29);
+            this.lblPassword.TabIndex = 5;
+            this.lblPassword.Text = "Password:";
+            this.lblPassword.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // btnOk
             // 
@@ -115,7 +115,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             this.btnOk.TabIndex = 6;
             this.btnOk.Text = "Ok";
             this.btnOk.UseVisualStyleBackColor = false;
-            this.btnOk.Click += new System.EventHandler(this.btnOk_Click);
+            this.btnOk.Click += new System.EventHandler(this.BtnOk_Click);
             // 
             // PluginConfig
             // 
@@ -123,16 +123,16 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(414, 150);
             this.Controls.Add(this.btnOk);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.lblPassword);
+            this.Controls.Add(this.lblHost);
             this.Controls.Add(this.host);
             this.Controls.Add(this.password);
             this.Name = "PluginConfig";
             this.Text = "PluginConfiguration";
             this.Controls.SetChildIndex(this.password, 0);
             this.Controls.SetChildIndex(this.host, 0);
-            this.Controls.SetChildIndex(this.label1, 0);
-            this.Controls.SetChildIndex(this.label2, 0);
+            this.Controls.SetChildIndex(this.lblHost, 0);
+            this.Controls.SetChildIndex(this.lblPassword, 0);
             this.Controls.SetChildIndex(this.btnOk, 0);
             this.ResumeLayout(false);
 
@@ -142,8 +142,8 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
 
         private RoundedTextBox password;
         private RoundedTextBox host;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label lblHost;
+        private System.Windows.Forms.Label lblPassword;
         private ButtonPrimary btnOk;
     }
 }

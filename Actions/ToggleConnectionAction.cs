@@ -1,5 +1,6 @@
 ﻿using SuchByte.MacroDeck.ActionButton;
 using SuchByte.MacroDeck.Plugins;
+using SuchByte.OBSWebSocketPlugin.Language;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,11 +9,11 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 {
     public class ToggleConnectionAction : PluginAction
     {
-        public override string Name => "OBS Toggle connection";
+        public override string Name => PluginLanguageManager.PluginStrings.ActionToggleConnection;
 
-        public override string DisplayName { get; set; } = "OBS Toggle connection";
+        public override string DisplayName { get; set; } = PluginLanguageManager.PluginStrings.ActionToggleConnection;
 
-        public override string Description => "Toggles the connection between OBS and Macro Deck";
+        public override string Description => PluginLanguageManager.PluginStrings.ActionToggleConnectionDescription;
 
         public override void Trigger(string clientId, ActionButton actionButton)
         {

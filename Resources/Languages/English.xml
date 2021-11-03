@@ -1,0 +1,47 @@
+﻿<?xml version="1.0"?>
+<PluginStrings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<__Language__>English</__Language__>
+	<__LanguageCode__>en</__LanguageCode__>
+	<__Author__>Macro Deck</__Author__>
+
+	<ActionSourceVisibility>Set OBS source visibility</ActionSourceVisibility>
+	<ActionSourceVisibilityDescription>Hide/show/toggle scene source visibility</ActionSourceVisibilityDescription>
+	<ActionSetAudioMuted>Set OBS audio source mute</ActionSetAudioMuted>
+	<ActionSetAudioMutedDescription>Mute/unmute/toggle audio source</ActionSetAudioMutedDescription>
+	<ActionSetSourceVolume>Set OBS source volume</ActionSetSourceVolume>
+	<ActionSetSourceVolumeDescription>Set the volume of an audio source</ActionSetSourceVolumeDescription>
+	<ActionSetProfile>Set OBS profile</ActionSetProfile>
+	<ActionSetProfileDescription>Set the profile of OBS</ActionSetProfileDescription>
+	<ActionSetRecordingState>Set OBS recording state</ActionSetRecordingState>
+	<ActionSetRecordingStateDescription>Start/stop/toggle recording</ActionSetRecordingStateDescription>
+	<ActionSetStreamingState>Set OBS streaming state</ActionSetStreamingState>
+	<ActionSetStreamingStateDescription>Start/stop/toggle streaming</ActionSetStreamingStateDescription>
+	<ActionSetVirtualCamState>Set OBS virtual cam state</ActionSetVirtualCamState>
+	<ActionSetVirtualCamStateDescription>Start/stop/toggle virtual cam</ActionSetVirtualCamStateDescription>
+	<ActionSetScene>Set OBS scene</ActionSetScene>
+	<ActionSetSceneDescription>Sets a configured scene as the active scene</ActionSetSceneDescription>
+	<ActionToggleConnection>Toggle OBS connection</ActionToggleConnection>
+	<ActionToggleConnectionDescription>Toggles the connection between OBS and Macro Deck</ActionToggleConnectionDescription>
+	<Source>Source</Source>
+	<Mute>Mute</Mute>
+	<Unmute>Unmute</Unmute>
+	<Toggle>Toggle</Toggle>
+	<GeneralBy>by</GeneralBy>
+	<GeneralTo>to</GeneralTo>
+	<Increase>Increase</Increase>
+	<Decrease>Decrease</Decrease>
+	<Set>Set</Set>
+	<ErrorNotConnected>Macro Deck is not connected to OBS. Please make sure, OBS and the OBS-WebSocket plugin are working properly and you configured the plugin</ErrorNotConnected>
+	<Host>Host</Host>
+	<Password>Password</Password>
+	<AuthenticationFailed>OBS Authentication failed</AuthenticationFailed>
+	<InfoWrongPassword>Please make sure, you set the correct password</InfoWrongPassword>
+	<ConnectionFailed>OBS Connection failed</ConnectionFailed>
+	<InfoWrongHost>Please make sure, you set the correct host and OBS is running with the OBS-WebSocket plugin installed</InfoWrongHost>
+	<Profile>Profile</Profile>
+	<Scene>Scene</Scene>
+	<Start>Start</Start>
+	<Stop>Stop</Stop>
+	<Hide>Hide</Hide>
+	<Show>Show</Show>
+</PluginStrings>

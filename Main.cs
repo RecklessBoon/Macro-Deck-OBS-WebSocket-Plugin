@@ -5,6 +5,7 @@ using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Plugins;
 using SuchByte.OBSWebSocketPlugin.Actions;
 using SuchByte.OBSWebSocketPlugin.GUI;
+using SuchByte.OBSWebSocketPlugin.Language;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -79,8 +80,11 @@ namespace SuchByte.OBSWebSocketPlugin {
 
         public override void Enable()
         {
+            PluginLanguageManager.Initialize();
             this.Actions = new List<PluginAction>()
             {
+                new SourceVisibilityAction(),
+                new SetSourceVolumeAction(),
                 new SetAudioMutedAction(),
                 new SetProfileAction(),
                 new SetRecordingStateAction(),
@@ -106,9 +110,13 @@ namespace SuchByte.OBSWebSocketPlugin {
 
             this.obs.SceneListChanged += Obs_SceneListChanged;
 
+            this.obs.SourceVolumeChanged += Obs_SourceVolumeChanged;
+
             this.obs.StreamStatus += OnStreamData;
 
             this.obs.SourceMuteStateChanged += Obs_SourceMuteStateChanged;
+
+            this.obs.SceneItemVisibilityChanged += Obs_SceneItemVisibilityChanged;
 
             Task.Run(() =>
             {
@@ -117,10 +125,20 @@ namespace SuchByte.OBSWebSocketPlugin {
             
         }
 
+        private void Obs_SceneItemVisibilityChanged(OBSWebsocket sender, string sceneName, string itemName, bool isVisible)
+        {
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + sceneName + "/" + itemName, isVisible ? "On" : "Off", MacroDeck.Variables.VariableType.String, this, this.toggleVariableSuggestions, true);
+        }
+
+        private void Obs_SourceVolumeChanged(OBSWebsocket sender, string sourceName, float volume)
+        {
+            volume = PluginInstance.Main.OBS.GetVolume(sourceName, true).Volume; // get volume in dB
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + sourceName + " volume dB", (int)volume, MacroDeck.Variables.VariableType.Integer, this, true);
+        }
 
         private void Obs_SourceMuteStateChanged(OBSWebsocket sender, string sourceName, bool muted)
         {
-            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + sourceName, muted ? "Off" : "On", MacroDeck.Variables.VariableType.String, this, this.toggleVariableSuggestions, false);
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + sourceName, muted ? "Off" : "On", MacroDeck.Variables.VariableType.String, this, this.toggleVariableSuggestions, true);
         }
 
         private void Obs_SceneListChanged(object sender, EventArgs e)
@@ -146,11 +164,20 @@ namespace SuchByte.OBSWebSocketPlugin {
             MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "total frames", 0, MacroDeck.Variables.VariableType.Integer, this, false);
         }
 
+        private void UpdateAllSourceItems()
+        {
+            foreach (var sceneItem in this.obs.GetCurrentScene().Items)
+            {
+                Obs_SceneItemVisibilityChanged(this.obs, this.obs.GetCurrentScene().Name, sceneItem.SourceName, sceneItem.Render); // Update source state; Render = visisble
+            }
+        }
+
         private void UpdateAllVariables()
         {
-            foreach (var audioSource in this.obs.GetSourcesList().FindAll(s => s.Name.ToLower().Contains("audio")))
+            UpdateAllSourceItems();
+            foreach (var audioSource in this.obs.GetSpecialSources().Values)
             {
-                Obs_SourceMuteStateChanged(this.obs, audioSource.Name, this.obs.GetMute(audioSource.Name)); // Update mute state
+                Obs_SourceMuteStateChanged(this.obs, audioSource, this.obs.GetMute(audioSource)); // Update mute state
             }
             Obs_SceneListChanged(this, EventArgs.Empty); // Update the scene suggestions
             //MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "current transition", this.obs.GetCurrentTransition().Name, MacroDeck.Variables.VariableType.String, this, false); // TODO
@@ -234,6 +261,7 @@ namespace SuchByte.OBSWebSocketPlugin {
         private void OnSceneChange(OBSWebsocket sender, string newSceneName)
         {
             MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "current scene", newSceneName, MacroDeck.Variables.VariableType.String, this, this.sceneSuggestions, true);
+            UpdateAllSourceItems();
         }
 
         private void OnDisconnect(object sender, EventArgs e)

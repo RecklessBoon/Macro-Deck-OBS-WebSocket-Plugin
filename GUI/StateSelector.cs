@@ -2,6 +2,7 @@
 using SuchByte.MacroDeck.GUI;
 using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Plugins;
+using SuchByte.OBSWebSocketPlugin.Language;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,6 +22,10 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
         {
             this.pluginAction = pluginAction;
             InitializeComponent();
+
+            this.radioStart.Text = PluginLanguageManager.PluginStrings.Start;
+            this.radioStop.Text = PluginLanguageManager.PluginStrings.Stop;
+            this.radioToggle.Text = PluginLanguageManager.PluginStrings.Toggle;
 
             this.LoadConfig();
 

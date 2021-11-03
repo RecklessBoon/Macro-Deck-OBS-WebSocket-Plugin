@@ -4,6 +4,7 @@ using SuchByte.MacroDeck.GUI;
 using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Plugins;
 using SuchByte.OBSWebSocketPlugin.GUI;
+using SuchByte.OBSWebSocketPlugin.Language;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,11 +13,11 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 {
     public class SetProfileAction : PluginAction
     {
-        public override string Name => "OBS Set profile";
+        public override string Name => PluginLanguageManager.PluginStrings.ActionSetProfile;
 
-        public override string DisplayName { get; set; } = "OBS Set profile";
+        public override string DisplayName { get; set; } = PluginLanguageManager.PluginStrings.ActionSetProfile;
 
-        public override string Description => "Sets the profile";
+        public override string Description => PluginLanguageManager.PluginStrings.ActionSetProfileDescription;
         public override bool CanConfigure => true;
 
         public override void Trigger(string clientId, ActionButton actionButton)

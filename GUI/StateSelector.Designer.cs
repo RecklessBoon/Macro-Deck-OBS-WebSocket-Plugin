@@ -1,5 +1,6 @@
 ﻿
 using SuchByte.MacroDeck.GUI.CustomControls;
+using System.Windows.Forms;
 
 namespace SuchByte.OBSWebSocketPlugin.GUI
 {
@@ -31,66 +32,65 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
         /// </summary>
         private void InitializeComponent()
         {
-            this.radioStart = new SuchByte.MacroDeck.GUI.CustomControls.TabRadioButton();
-            this.radioStop = new SuchByte.MacroDeck.GUI.CustomControls.TabRadioButton();
-            this.radioToggle = new SuchByte.MacroDeck.GUI.CustomControls.TabRadioButton();
+            this.radioStart = new System.Windows.Forms.RadioButton();
+            this.radioStop = new System.Windows.Forms.RadioButton();
+            this.radioToggle = new System.Windows.Forms.RadioButton();
             this.SuspendLayout();
             // 
             // radioStart
             // 
-            this.radioStart.AutoSize = true;
             this.radioStart.Cursor = System.Windows.Forms.Cursors.Hand;
             this.radioStart.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.radioStart.Location = new System.Drawing.Point(237, 124);
+            this.radioStart.Location = new System.Drawing.Point(235, 84);
             this.radioStart.Name = "radioStart";
-            this.radioStart.Size = new System.Drawing.Size(57, 22);
+            this.radioStart.Size = new System.Drawing.Size(245, 22);
             this.radioStart.TabIndex = 0;
             this.radioStart.Text = "Start";
+            this.radioStart.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.radioStart.UseVisualStyleBackColor = true;
             // 
             // radioStop
             // 
-            this.radioStop.AutoSize = true;
             this.radioStop.Cursor = System.Windows.Forms.Cursors.Hand;
             this.radioStop.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.radioStop.Location = new System.Drawing.Point(322, 124);
+            this.radioStop.Location = new System.Drawing.Point(235, 125);
             this.radioStop.Name = "radioStop";
-            this.radioStop.Size = new System.Drawing.Size(55, 22);
+            this.radioStop.Size = new System.Drawing.Size(245, 22);
             this.radioStop.TabIndex = 1;
             this.radioStop.Text = "Stop";
+            this.radioStop.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.radioStop.UseVisualStyleBackColor = true;
             // 
             // radioToggle
             // 
-            this.radioToggle.AutoSize = true;
             this.radioToggle.Checked = true;
             this.radioToggle.Cursor = System.Windows.Forms.Cursors.Hand;
             this.radioToggle.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.radioToggle.Location = new System.Drawing.Point(407, 124);
+            this.radioToggle.Location = new System.Drawing.Point(235, 164);
             this.radioToggle.Name = "radioToggle";
-            this.radioToggle.Size = new System.Drawing.Size(70, 22);
+            this.radioToggle.Size = new System.Drawing.Size(245, 22);
             this.radioToggle.TabIndex = 2;
             this.radioToggle.TabStop = true;
             this.radioToggle.Text = "Toggle";
+            this.radioToggle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.radioToggle.UseVisualStyleBackColor = true;
             // 
-            // SetRecordingStateConfigurator
+            // StateSelector
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 23F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.radioToggle);
             this.Controls.Add(this.radioStop);
             this.Controls.Add(this.radioStart);
-            this.Name = "SetRecordingStateConfigurator";
+            this.Name = "StateSelector";
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
-        private TabRadioButton radioStart;
-        private TabRadioButton radioStop;
-        private TabRadioButton radioToggle;
+        private RadioButton radioStart;
+        private RadioButton radioStop;
+        private RadioButton radioToggle;
     }
 }

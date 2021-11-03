@@ -31,20 +31,20 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
         /// </summary>
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
+            this.lblProfile = new System.Windows.Forms.Label();
             this.profilesBox = new SuchByte.MacroDeck.GUI.CustomControls.RoundedComboBox();
             this.btnReloadProfiles = new SuchByte.MacroDeck.GUI.CustomControls.ButtonPrimary();
             this.SuspendLayout();
             // 
-            // label1
+            // lblProfile
             // 
-            this.label1.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label1.Location = new System.Drawing.Point(6, 120);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(83, 30);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Profile:";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblProfile.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lblProfile.Location = new System.Drawing.Point(144, 120);
+            this.lblProfile.Name = "lblProfile";
+            this.lblProfile.Size = new System.Drawing.Size(83, 30);
+            this.lblProfile.TabIndex = 0;
+            this.lblProfile.Text = "Profile:";
+            this.lblProfile.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // profilesBox
             // 
@@ -53,7 +53,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             this.profilesBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.profilesBox.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.profilesBox.Icon = null;
-            this.profilesBox.Location = new System.Drawing.Point(95, 120);
+            this.profilesBox.Location = new System.Drawing.Point(233, 120);
             this.profilesBox.Name = "profilesBox";
             this.profilesBox.Padding = new System.Windows.Forms.Padding(8, 2, 8, 2);
             this.profilesBox.SelectedIndex = -1;
@@ -71,7 +71,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             this.btnReloadProfiles.ForeColor = System.Drawing.Color.White;
             this.btnReloadProfiles.HoverColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(89)))), ((int)(((byte)(184)))));
             this.btnReloadProfiles.Icon = global::SuchByte.OBSWebSocketPlugin.Properties.Resources.reload;
-            this.btnReloadProfiles.Location = new System.Drawing.Point(402, 120);
+            this.btnReloadProfiles.Location = new System.Drawing.Point(540, 120);
             this.btnReloadProfiles.Name = "btnReloadProfiles";
             this.btnReloadProfiles.Progress = 0;
             this.btnReloadProfiles.ProgressColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(46)))), ((int)(((byte)(94)))));
@@ -80,21 +80,21 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             this.btnReloadProfiles.UseVisualStyleBackColor = true;
             this.btnReloadProfiles.Click += new System.EventHandler(this.BtnReloadProfiles_Click);
             // 
-            // SetProfileConfigurator
+            // ProfileSelector
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 23F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.btnReloadProfiles);
             this.Controls.Add(this.profilesBox);
-            this.Controls.Add(this.label1);
-            this.Name = "SetProfileConfigurator";
+            this.Controls.Add(this.lblProfile);
+            this.Name = "ProfileSelector";
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblProfile;
         private RoundedComboBox profilesBox;
         private ButtonPrimary btnReloadProfiles;
     }

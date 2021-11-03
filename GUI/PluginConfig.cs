@@ -1,6 +1,8 @@
 ﻿using OBSWebsocketDotNet;
 using SuchByte.MacroDeck.GUI.CustomControls;
+using SuchByte.MacroDeck.Language;
 using SuchByte.MacroDeck.Plugins;
+using SuchByte.OBSWebSocketPlugin.Language;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -19,6 +21,10 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
         {
             this._main = main;
             InitializeComponent();
+
+            this.lblHost.Text = PluginLanguageManager.PluginStrings.Host;
+            this.lblPassword.Text = PluginLanguageManager.PluginStrings.Password;
+            this.btnOk.Text = LanguageManager.Strings.Ok;
 
             List<Dictionary<string, string>> credentialsList = PluginCredentials.GetPluginCredentials(main);
             Dictionary<string, string> credentials = null;
@@ -46,7 +52,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             this.Close();
         }
 
-        private void btnOk_Click(object sender, EventArgs e)
+        private void BtnOk_Click(object sender, EventArgs e)
         {
             if (this._main.OBS.IsConnected)
             {
@@ -62,7 +68,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             {
                 using (var msgBox = new MacroDeck.GUI.CustomControls.MessageBox())
                 {
-                    msgBox.ShowDialog("OBS Authentication failed", "Please make sure, you set the correct password", MessageBoxButtons.OK);
+                    msgBox.ShowDialog(PluginLanguageManager.PluginStrings.AuthenticationFailed, PluginLanguageManager.PluginStrings.InfoWrongPassword, MessageBoxButtons.OK);
                 }
                 return;
             }
@@ -70,7 +76,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             {
                 using (var msgBox = new MacroDeck.GUI.CustomControls.MessageBox())
                 {
-                    msgBox.ShowDialog("OBS Connection failed", "Please make sure, you set the correct host and OBS is running with the OBS-WebSocket plugin installed", MessageBoxButtons.OK);
+                    msgBox.ShowDialog(PluginLanguageManager.PluginStrings.AuthenticationFailed, PluginLanguageManager.PluginStrings.InfoWrongPassword, MessageBoxButtons.OK);
                 }
                 return;
             }

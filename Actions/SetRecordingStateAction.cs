@@ -4,6 +4,7 @@ using SuchByte.MacroDeck.GUI;
 using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Plugins;
 using SuchByte.OBSWebSocketPlugin.GUI;
+using SuchByte.OBSWebSocketPlugin.Language;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,11 +13,11 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 {
     public class SetRecordingStateAction : PluginAction
     {
-        public override string Name => "OBS Set recording state";
+        public override string Name => PluginLanguageManager.PluginStrings.ActionSetRecordingState;
 
-        public override string DisplayName { get; set; } = "OBS Set recording state";
+        public override string DisplayName { get; set; } = PluginLanguageManager.PluginStrings.ActionSetRecordingState;
 
-        public override string Description => "Start/stop/toggle recording";
+        public override string Description => PluginLanguageManager.PluginStrings.ActionSetRecordingStateDescription;
 
         public override bool CanConfigure => true;
 

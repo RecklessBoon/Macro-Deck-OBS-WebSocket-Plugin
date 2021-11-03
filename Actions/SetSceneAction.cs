@@ -4,6 +4,7 @@ using SuchByte.MacroDeck.GUI;
 using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Plugins;
 using SuchByte.OBSWebSocketPlugin.GUI;
+using SuchByte.OBSWebSocketPlugin.Language;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,11 +13,11 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 {
     public class SetSceneAction : PluginAction
     {
-        public override string Name => "OBS Set scene";
+        public override string Name => PluginLanguageManager.PluginStrings.ActionSetScene;
 
-        public override string DisplayName { get; set; } = "OBS Set scene";
+        public override string DisplayName { get; set; } = PluginLanguageManager.PluginStrings.ActionSetScene;
 
-        public override string Description => "Sets a scene";
+        public override string Description => PluginLanguageManager.PluginStrings.ActionSetSceneDescription;
 
         public override bool CanConfigure => true;
 

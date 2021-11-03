@@ -31,7 +31,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
         {
             this.btnReloadScenes = new SuchByte.MacroDeck.GUI.CustomControls.ButtonPrimary();
             this.scenesBox = new SuchByte.MacroDeck.GUI.CustomControls.RoundedComboBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.lblScene = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // btnReloadScenes
@@ -44,7 +44,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             this.btnReloadScenes.ForeColor = System.Drawing.Color.White;
             this.btnReloadScenes.HoverColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(89)))), ((int)(((byte)(184)))));
             this.btnReloadScenes.Icon = global::SuchByte.OBSWebSocketPlugin.Properties.Resources.reload;
-            this.btnReloadScenes.Location = new System.Drawing.Point(402, 120);
+            this.btnReloadScenes.Location = new System.Drawing.Point(540, 120);
             this.btnReloadScenes.Name = "btnReloadScenes";
             this.btnReloadScenes.Progress = 0;
             this.btnReloadScenes.ProgressColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(46)))), ((int)(((byte)(94)))));
@@ -60,7 +60,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             this.scenesBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.scenesBox.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.scenesBox.Icon = null;
-            this.scenesBox.Location = new System.Drawing.Point(95, 120);
+            this.scenesBox.Location = new System.Drawing.Point(233, 120);
             this.scenesBox.Name = "scenesBox";
             this.scenesBox.Padding = new System.Windows.Forms.Padding(8, 2, 8, 2);
             this.scenesBox.SelectedIndex = -1;
@@ -68,15 +68,15 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             this.scenesBox.Size = new System.Drawing.Size(301, 30);
             this.scenesBox.TabIndex = 4;
             // 
-            // label1
+            // lblScene
             // 
-            this.label1.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label1.Location = new System.Drawing.Point(6, 120);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(83, 30);
-            this.label1.TabIndex = 3;
-            this.label1.Text = "Scene:";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblScene.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lblScene.Location = new System.Drawing.Point(144, 120);
+            this.lblScene.Name = "lblScene";
+            this.lblScene.Size = new System.Drawing.Size(83, 30);
+            this.lblScene.TabIndex = 3;
+            this.lblScene.Text = "Scene:";
+            this.lblScene.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // SceneSelector
             // 
@@ -84,7 +84,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.btnReloadScenes);
             this.Controls.Add(this.scenesBox);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.lblScene);
             this.Name = "SceneSelector";
             this.ResumeLayout(false);
 
@@ -94,6 +94,6 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
 
         private MacroDeck.GUI.CustomControls.ButtonPrimary btnReloadScenes;
         private MacroDeck.GUI.CustomControls.RoundedComboBox scenesBox;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblScene;
     }
 }
