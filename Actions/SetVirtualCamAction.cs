@@ -15,8 +15,6 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
     {
         public override string Name => PluginLanguageManager.PluginStrings.ActionSetVirtualCamState;
 
-        public override string DisplayName { get; set; } = PluginLanguageManager.PluginStrings.ActionSetVirtualCamState;
-
         public override string Description => PluginLanguageManager.PluginStrings.ActionSetVirtualCamStateDescription;
 
         public override bool CanConfigure => true;

@@ -18,8 +18,6 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         public override string Name => PluginLanguageManager.PluginStrings.ActionSetSourceVolume;
 
-        public override string DisplayName { get; set; } = PluginLanguageManager.PluginStrings.ActionSetSourceVolume;
-
         public override string Description => PluginLanguageManager.PluginStrings.ActionSetSourceVolumeDescription;
         public override bool CanConfigure => true;
 

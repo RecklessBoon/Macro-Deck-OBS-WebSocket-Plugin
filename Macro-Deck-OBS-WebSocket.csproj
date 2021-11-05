@@ -33,7 +33,7 @@
 
   <ItemGroup>
     <Reference Include="Macro Deck 2">
-      <HintPath>..\..\Macro Deck 2.0.16.2-dev.dll</HintPath>
+      <HintPath>C:\Program Files\Macro Deck\Macro Deck 2.dll</HintPath>
     </Reference>
     <Reference Include="obs-websocket-dotnet">
       <HintPath>..\obs-websocket-dotnet.dll</HintPath>

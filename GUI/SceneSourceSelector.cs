@@ -31,15 +31,39 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             this.radioShow.Text = PluginLanguageManager.PluginStrings.Show;
             this.radioToggle.Text = PluginLanguageManager.PluginStrings.Toggle;
 
-            actionConfigurator.ActionSave += OnActionSave;
-
             LoadScenes();
             LoadConfig();
         }
 
-        private void OnActionSave(object sender, EventArgs e)
+        public override bool OnActionSave()
         {
-            UpdateConfig();
+            if (String.IsNullOrWhiteSpace(this.scenesBox.Text) || String.IsNullOrWhiteSpace(this.sourcesBox.Text))
+            {
+                return false;
+            }
+            string method = "toggle";
+            if (this.radioHide.Checked)
+            {
+                method = "hide";
+            }
+            else if (this.radioShow.Checked)
+            {
+                method = "show";
+            }
+            else if (this.radioToggle.Checked)
+            {
+                method = "toggle";
+            }
+            JObject configurationObject = JObject.FromObject(new
+            {
+                sceneName = this.scenesBox.Text,
+                sourceName = this.sourcesBox.Text,
+                method = method,
+            });
+
+            this.pluginAction.Configuration = configurationObject.ToString();
+            this.pluginAction.ConfigurationSummary = method + " " + this.scenesBox.Text + "/" + this.sourcesBox.Text;
+            return true;
         }
 
         private void LoadScenes()
@@ -114,35 +138,6 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             }
         }
 
-        private void UpdateConfig()
-        {
-            if (String.IsNullOrWhiteSpace(this.scenesBox.Text) || String.IsNullOrWhiteSpace(this.sourcesBox.Text))
-            {
-                return;
-            }
-            string method = "toggle";
-            if (this.radioHide.Checked)
-            {
-                method = "hide";
-            }
-            else if (this.radioShow.Checked)
-            {
-                method = "show";
-            }
-            else if (this.radioToggle.Checked)
-            {
-                method = "toggle";
-            }
-            JObject configurationObject = JObject.FromObject(new
-            {
-                sceneName = this.scenesBox.Text,
-                sourceName = this.sourcesBox.Text,
-                method = method,
-            });
-
-            this.pluginAction.Configuration = configurationObject.ToString();
-            this.pluginAction.DisplayName = this.pluginAction.Name + " -> " + this.scenesBox.Text + "/" + this.sourcesBox.Text + " -> " + method;
-        }
 
         private void BtnReloadScenes_Click(object sender, EventArgs e)
         {

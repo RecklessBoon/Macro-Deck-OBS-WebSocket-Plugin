@@ -11,8 +11,6 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
     {
         public override string Name => PluginLanguageManager.PluginStrings.ActionToggleConnection;
 
-        public override string DisplayName { get; set; } = PluginLanguageManager.PluginStrings.ActionToggleConnection;
-
         public override string Description => PluginLanguageManager.PluginStrings.ActionToggleConnectionDescription;
 
         public override void Trigger(string clientId, ActionButton actionButton)

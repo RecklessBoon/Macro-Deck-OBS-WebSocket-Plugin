@@ -28,14 +28,38 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             this.radioDecrease.Text = PluginLanguageManager.PluginStrings.Decrease;
             this.radioSet.Text = PluginLanguageManager.PluginStrings.Set;
 
-            actionConfigurator.ActionSave += OnActionSave;
-
             this.LoadSources();
         }
 
-        private void OnActionSave(object sender, EventArgs e)
+        public override bool OnActionSave()
         {
-            this.UpdateConfig();
+            if (String.IsNullOrWhiteSpace(this.sourcesBox.Text))
+            {
+                return false;
+            }
+            string method = "set";
+            if (this.radioIncrease.Checked)
+            {
+                method = "increase";
+            }
+            else if (this.radioDecrease.Checked)
+            {
+                method = "decrease";
+            }
+            else if (this.radioSet.Checked)
+            {
+                method = "set";
+            }
+            JObject configurationObject = JObject.FromObject(new
+            {
+                sourceName = this.sourcesBox.Text,
+                method = method,
+                decibel = this.decibel.Value,
+            });
+
+            this.pluginAction.Configuration = configurationObject.ToString();
+            this.pluginAction.ConfigurationSummary = this.sourcesBox.Text + " -> " + method + " -> " + this.lblToBy.Text + " -> " + this.decibel.Value + "dB";
+            return true;
         }
 
         private void LoadSources()
@@ -88,36 +112,6 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                 }
                 catch { }
             }
-        }
-
-        private void UpdateConfig()
-        {
-            if (String.IsNullOrWhiteSpace(this.sourcesBox.Text))
-            {
-                return;
-            }
-            string method = "set";
-            if (this.radioIncrease.Checked)
-            {
-                method = "increase";
-            }
-            else if (this.radioDecrease.Checked)
-            {
-                method = "decrease";
-            }
-            else if (this.radioSet.Checked)
-            {
-                method = "set";
-            }
-            JObject configurationObject = JObject.FromObject(new
-            {
-                sourceName = this.sourcesBox.Text,
-                method = method,
-                decibel = this.decibel.Value,
-            });
-
-            this.pluginAction.Configuration = configurationObject.ToString();
-            this.pluginAction.DisplayName = this.pluginAction.Name + " -> " + this.sourcesBox.Text + " -> " + method + " -> " + this.lblToBy.Text + " -> " + this.decibel.Value + "dB";
         }
 
         private void BtnReloadSources_Click(object sender, EventArgs e)

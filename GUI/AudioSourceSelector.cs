@@ -29,14 +29,37 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             this.radioUnmute.Text = PluginLanguageManager.PluginStrings.Unmute;
             this.radioToggle.Text = PluginLanguageManager.PluginStrings.Toggle;
 
-            actionConfigurator.ActionSave += OnActionSave;
-
             this.LoadSources();
         }
 
-        private void OnActionSave(object sender, EventArgs e)
+        public override bool OnActionSave()
         {
-            this.UpdateConfig();
+            if (String.IsNullOrWhiteSpace(this.sourcesBox.Text))
+            {
+                return false;
+            }
+            string method = "toggle";
+            if (this.radioMute.Checked)
+            {
+                method = "mute";
+            }
+            else if (this.radioUnmute.Checked)
+            {
+                method = "unmute";
+            }
+            else if (this.radioToggle.Checked)
+            {
+                method = "toggle";
+            }
+            JObject configurationObject = JObject.FromObject(new
+            {
+                sourceName = this.sourcesBox.Text,
+                method = method,
+            });
+
+            this.pluginAction.Configuration = configurationObject.ToString();
+            this.pluginAction.ConfigurationSummary = method + " " + this.sourcesBox.Text;
+            return true;
         }
 
         private void LoadSources()
@@ -88,34 +111,6 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             }
         }
 
-        private void UpdateConfig()
-        {
-            if (String.IsNullOrWhiteSpace(this.sourcesBox.Text))
-            {
-                return;
-            }
-            string method = "toggle";
-            if (this.radioMute.Checked)
-            {
-                method = "mute";
-            }
-            else if (this.radioUnmute.Checked)
-            {
-                method = "unmute";
-            }
-            else if (this.radioToggle.Checked)
-            {
-                method = "toggle";
-            }
-            JObject configurationObject = JObject.FromObject(new
-            {
-                sourceName = this.sourcesBox.Text,
-                method = method,
-            });
-
-            this.pluginAction.Configuration = configurationObject.ToString();
-            this.pluginAction.DisplayName = this.pluginAction.Name + " -> " + this.sourcesBox.Text + " -> " + method;
-        }
 
         private void BtnReloadSources_Click(object sender, EventArgs e)
         {

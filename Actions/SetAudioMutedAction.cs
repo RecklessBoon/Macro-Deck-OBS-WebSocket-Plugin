@@ -15,9 +15,8 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
     {
         public override string Name => PluginLanguageManager.PluginStrings.ActionSetAudioMuted;
 
-        public override string DisplayName { get; set; } = PluginLanguageManager.PluginStrings.ActionSetAudioMuted;
-
         public override string Description => PluginLanguageManager.PluginStrings.ActionSetAudioMutedDescription;
+
         public override bool CanConfigure => true;
 
         public override void Trigger(string clientId, ActionButton actionButton)

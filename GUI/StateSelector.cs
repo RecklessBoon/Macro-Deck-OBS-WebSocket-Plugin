@@ -28,13 +28,31 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             this.radioToggle.Text = PluginLanguageManager.PluginStrings.Toggle;
 
             this.LoadConfig();
-
-            actionConfigurator.ActionSave += OnActionSave;
         }
-
-        private void OnActionSave(object sender, EventArgs e)
+        
+        public override bool OnActionSave()
         {
-            this.UpdateConfig();
+            string method = "toggle";
+            if (this.radioStart.Checked)
+            {
+                method = "start";
+            }
+            else if (this.radioStop.Checked)
+            {
+                method = "stop";
+            }
+            else if (this.radioToggle.Checked)
+            {
+                method = "toggle";
+            }
+            JObject configurationObject = JObject.FromObject(new
+            {
+                method = method,
+            });
+
+            this.pluginAction.Configuration = configurationObject.ToString();
+            this.pluginAction.ConfigurationSummary = method;
+            return true;
         }
 
         private void LoadConfig()
@@ -60,30 +78,6 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                 catch { }
             }
         }
-
-        private void UpdateConfig()
-        {
-            string method = "toggle";
-            if (this.radioStart.Checked)
-            {
-                method = "start";
-            } else if (this.radioStop.Checked)
-            {
-                method = "stop";
-            } else if (this.radioToggle.Checked)
-            {
-                method = "toggle";
-            }
-            JObject configurationObject = JObject.FromObject(new
-            {
-                method = method,
-            });
-
-            this.pluginAction.Configuration = configurationObject.ToString();
-            this.pluginAction.DisplayName = this.pluginAction.Name + " -> " + method;
-        }
-
-
 
     }
 }

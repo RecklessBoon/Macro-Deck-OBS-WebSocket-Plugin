@@ -28,14 +28,23 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
 
             this.lblProfile.Text = PluginLanguageManager.PluginStrings.Profile;
 
-            actionConfigurator.ActionSave += OnActionSave;
-
             this.LoadProfiles();
         }
 
-        private void OnActionSave(object sender, EventArgs e)
+        public override bool OnActionSave()
         {
-            this.UpdateConfig();
+            if (String.IsNullOrWhiteSpace(this.profilesBox.Text))
+            {
+                return false;
+            }
+            JObject configurationObject = JObject.FromObject(new
+            {
+                profile = this.profilesBox.Text,
+            });
+
+            this.pluginAction.Configuration = configurationObject.ToString();
+            this.pluginAction.ConfigurationSummary = this.profilesBox.Text;
+            return true;
         }
 
         private void LoadProfiles()
@@ -68,21 +77,6 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                     this.profilesBox.Text = configurationObject["profile"].ToString();
                 } catch { }
             }
-        }
-
-        private void UpdateConfig()
-        {
-            if (String.IsNullOrWhiteSpace(this.profilesBox.Text))
-            {
-                return;
-            }
-            JObject configurationObject = JObject.FromObject(new
-            {
-                profile = this.profilesBox.Text,
-            });
-
-            this.pluginAction.Configuration = configurationObject.ToString();
-            this.pluginAction.DisplayName = this.pluginAction.Name + " -> " + this.profilesBox.Text;
         }
 
         private void BtnReloadProfiles_Click(object sender, EventArgs e)

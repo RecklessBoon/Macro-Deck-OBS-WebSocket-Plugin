@@ -15,8 +15,6 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
     {
         public override string Name => PluginLanguageManager.PluginStrings.ActionSetStreamingState;
 
-        public override string DisplayName { get; set; } = PluginLanguageManager.PluginStrings.ActionSetStreamingState;
-
         public override string Description => PluginLanguageManager.PluginStrings.ActionSetStreamingStateDescription;
 
         public override bool CanConfigure => true;

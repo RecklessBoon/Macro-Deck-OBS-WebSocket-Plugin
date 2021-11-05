@@ -26,16 +26,26 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
 
             this.lblScene.Text = PluginLanguageManager.PluginStrings.Scene;
 
-            actionConfigurator.ActionSave += OnActionSave;
-
             LoadScenes();
             LoadConfig();
         }
 
-        private void OnActionSave(object sender, EventArgs e)
+        public override bool OnActionSave()
         {
-            UpdateConfig();
+            if (String.IsNullOrWhiteSpace(this.scenesBox.Text))
+            {
+                return false;
+            }
+            JObject configurationObject = JObject.FromObject(new
+            {
+                scene = this.scenesBox.Text,
+            });
+
+            this.pluginAction.Configuration = configurationObject.ToString();
+            this.pluginAction.ConfigurationSummary = this.scenesBox.Text;
+            return true;
         }
+
 
         private void LoadScenes()
         {
@@ -68,22 +78,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                 catch { }
             }
         }
-
-        private void UpdateConfig()
-        {
-            if (String.IsNullOrWhiteSpace(this.scenesBox.Text))
-            {
-                return;
-            }
-            JObject configurationObject = JObject.FromObject(new
-            {
-                scene = this.scenesBox.Text,
-            });
-
-            this.pluginAction.Configuration = configurationObject.ToString();
-            this.pluginAction.DisplayName = this.pluginAction.Name + " -> " + this.scenesBox.Text;
-        }
-
+        
         private void BtnReloadScenes_Click(object sender, EventArgs e)
         {
             LoadScenes();
