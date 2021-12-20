@@ -11,7 +11,7 @@ More informations [here](https://obsproject.com/forum/resources/obs-websocket-re
 This plugin automatically creates variables for the streaming/recording state, the current scene, streaming statistics and more. 
 You can easily add this variables to action buttons or use it as action button state binding.
 - ### Start/stop/toggle recording, streaming and virtual camera
-Easily start/stop/toggle recording, streaming or the virtual camera by a press of an action button
+Easily start/stop/toggle recording, streaming, replay buffer or the virtual camera by a press of an action button
 - ### Set scene
 Change the current scene by a press of an action button
 - ### Set profile
