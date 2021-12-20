@@ -22,9 +22,8 @@ namespace SuchByte.OBSWebSocketPlugin {
 
     public class Main : MacroDeckPlugin
     {
-        private string variablePrefix = "OBS ";
+        private string variablePrefix = "obs_";
 
-        private string[] toggleVariableSuggestions = new string[] { "On", "Off" };
         private string[] sceneSuggestions = new string[] { "" };
 
         public override string Description => "Control Open Broadcaster Software with Macro Deck.";
@@ -83,6 +82,8 @@ namespace SuchByte.OBSWebSocketPlugin {
             PluginLanguageManager.Initialize();
             this.Actions = new List<PluginAction>()
             {
+                new SetReplayBufferState(),
+                new SaveReplayBufferAction(),
                 new SourceVisibilityAction(),
                 new SetSourceVolumeAction(),
                 new SetAudioMutedAction(),
@@ -118,6 +119,8 @@ namespace SuchByte.OBSWebSocketPlugin {
 
             this.obs.SceneItemVisibilityChanged += Obs_SceneItemVisibilityChanged;
 
+            this.obs.ReplayBufferStateChanged += Obs_ReplayBufferStateChanged;
+
             Task.Run(() =>
             {
                 this.Connect();
@@ -127,18 +130,18 @@ namespace SuchByte.OBSWebSocketPlugin {
 
         private void Obs_SceneItemVisibilityChanged(OBSWebsocket sender, string sceneName, string itemName, bool isVisible)
         {
-            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + sceneName + "/" + itemName, isVisible ? "On" : "Off", MacroDeck.Variables.VariableType.String, this, this.toggleVariableSuggestions, true);
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + sceneName + "/" + itemName, isVisible ? "True" : "False", MacroDeck.Variables.VariableType.Bool, this, true);
         }
 
         private void Obs_SourceVolumeChanged(OBSWebsocket sender, string sourceName, float volume)
         {
             volume = PluginInstance.Main.OBS.GetVolume(sourceName, true).Volume; // get volume in dB
-            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + sourceName + " volume dB", (int)volume, MacroDeck.Variables.VariableType.Integer, this, true);
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + sourceName + " volume_db", (int)volume, MacroDeck.Variables.VariableType.Integer, this, true);
         }
 
         private void Obs_SourceMuteStateChanged(OBSWebsocket sender, string sourceName, bool muted)
         {
-            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + sourceName, muted ? "Off" : "On", MacroDeck.Variables.VariableType.String, this, this.toggleVariableSuggestions, true);
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + sourceName, muted ? "False" : "True", MacroDeck.Variables.VariableType.Bool, this, true);
         }
 
         private void Obs_SceneListChanged(object sender, EventArgs e)
@@ -153,15 +156,16 @@ namespace SuchByte.OBSWebSocketPlugin {
 
         private void ResetVariables()
         {
-            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "connected", "Off", MacroDeck.Variables.VariableType.String, this, this.toggleVariableSuggestions, false);
-            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "virtual camera", "Off", MacroDeck.Variables.VariableType.String, this, this.toggleVariableSuggestions, false);
-            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "recording", "Off", MacroDeck.Variables.VariableType.String, this, this.toggleVariableSuggestions, false);
-            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "streaming", "Off", MacroDeck.Variables.VariableType.String, this, this.toggleVariableSuggestions, false);
-            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "stream time", "0h:0m:0s", MacroDeck.Variables.VariableType.String, this, false);
-            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "Kbits", 0, MacroDeck.Variables.VariableType.String, this, false);
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "connected", "False", MacroDeck.Variables.VariableType.Bool, this, false);
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "recording", "False", MacroDeck.Variables.VariableType.Bool, this, false);
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "replay_buffer", "False", MacroDeck.Variables.VariableType.Bool, this, false);
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "virtual_camera", "False", MacroDeck.Variables.VariableType.Bool, this, false);
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "streaming", "False", MacroDeck.Variables.VariableType.Bool, this, false);
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "stream_time", "0h:0m:0s", MacroDeck.Variables.VariableType.String, this, false);
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "kbits", 0, MacroDeck.Variables.VariableType.String, this, false);
             MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "framerate", 0, MacroDeck.Variables.VariableType.Integer, this, false);
-            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "dropped frames", 0, MacroDeck.Variables.VariableType.Integer, this, false);
-            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "total frames", 0, MacroDeck.Variables.VariableType.Integer, this, false);
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "dropped_frames", 0, MacroDeck.Variables.VariableType.Integer, this, false);
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "total_frames", 0, MacroDeck.Variables.VariableType.Integer, this, false);
         }
 
         private void UpdateAllSourceItems()
@@ -181,22 +185,39 @@ namespace SuchByte.OBSWebSocketPlugin {
             }
             Obs_SceneListChanged(this, EventArgs.Empty); // Update the scene suggestions
             //MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "current transition", this.obs.GetCurrentTransition().Name, MacroDeck.Variables.VariableType.String, this, false); // TODO
-            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "current profile", this.obs.GetCurrentProfile(), MacroDeck.Variables.VariableType.String, this, false);
-            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "current scene", this.obs.GetCurrentScene().Name, MacroDeck.Variables.VariableType.String, this, this.sceneSuggestions, false);
-            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "connected", this.obs.IsConnected ? "On" : "Off", MacroDeck.Variables.VariableType.String, this, this.toggleVariableSuggestions, false);
-            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "virtual camera", this.obs.GetVirtualCamStatus().IsActive ? "On" : "Off", MacroDeck.Variables.VariableType.String, this, this.toggleVariableSuggestions, false);
-            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "recording", this.obs.GetRecordingStatus().IsRecording ? "On" : "Off", MacroDeck.Variables.VariableType.String, this, this.toggleVariableSuggestions, false);
-            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "streaming", this.obs.GetStreamingStatus().IsStreaming ? "On" : "Off", MacroDeck.Variables.VariableType.String, this, this.toggleVariableSuggestions, false);
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "current_profile", this.obs.GetCurrentProfile(), MacroDeck.Variables.VariableType.String, this, false);
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "current_scene", this.obs.GetCurrentScene().Name, MacroDeck.Variables.VariableType.String, this, this.sceneSuggestions, false);
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "connected", this.obs.IsConnected ? "True" : "False", MacroDeck.Variables.VariableType.Bool, this, false);
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "replay_buffer", this.obs.GetReplayBufferStatus() ? "True" : "False", MacroDeck.Variables.VariableType.Bool, this, false);
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "virtual_camera", this.obs.GetVirtualCamStatus().IsActive ? "True" : "False", MacroDeck.Variables.VariableType.Bool, this, false);
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "recording", this.obs.GetRecordingStatus().IsRecording ? "True" : "False", MacroDeck.Variables.VariableType.Bool, this, false);
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "streaming", this.obs.GetStreamingStatus().IsStreaming ? "True" : "False", MacroDeck.Variables.VariableType.Bool, this, false);
         }
 
         private void OnVirtualCameraStopped(object sender, EventArgs e)
         {
-            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "virtual camera", "Off", MacroDeck.Variables.VariableType.String, this, this.toggleVariableSuggestions);
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "virtual_camera", "False", MacroDeck.Variables.VariableType.Bool, this);
         }
 
         private void OnVirtualCameraStarted(object sender, EventArgs e)
         {
-            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "virtual camera", "On", MacroDeck.Variables.VariableType.String, this, this.toggleVariableSuggestions);
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "virtual_camera", "True", MacroDeck.Variables.VariableType.Bool, this);
+        }
+
+        private void Obs_ReplayBufferStateChanged(OBSWebsocket sender, OutputState newState)
+        {
+            switch (newState)
+            {
+                case OutputState.Started:
+                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "replay_buffer", "True", MacroDeck.Variables.VariableType.Bool, this);
+                    break;
+                case OutputState.Stopped:
+                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "replay_buffer", "False", MacroDeck.Variables.VariableType.Bool, this);
+                    break;
+                default:
+                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "replay_buffer", "False", MacroDeck.Variables.VariableType.Bool, this);
+                    break;
+            }
         }
 
 
@@ -205,13 +226,13 @@ namespace SuchByte.OBSWebSocketPlugin {
             switch (newState)
             {
                 case OutputState.Started:
-                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "recording", "On", MacroDeck.Variables.VariableType.String, this, this.toggleVariableSuggestions);
+                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "recording", "True", MacroDeck.Variables.VariableType.Bool, this);
                     break;
                 case OutputState.Stopped:
-                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "recording", "Off", MacroDeck.Variables.VariableType.String, this, this.toggleVariableSuggestions);
+                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "recording", "False", MacroDeck.Variables.VariableType.Bool, this);
                     break;
                 default:
-                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "recording", "Off", MacroDeck.Variables.VariableType.String, this, this.toggleVariableSuggestions);
+                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "recording", "False", MacroDeck.Variables.VariableType.Bool, this);
                     break;
             }
         }
@@ -221,14 +242,14 @@ namespace SuchByte.OBSWebSocketPlugin {
             switch (newState)
             {
                 case OutputState.Started:
-                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "streaming", "On", MacroDeck.Variables.VariableType.String, this, this.toggleVariableSuggestions);
+                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "streaming", "True", MacroDeck.Variables.VariableType.Bool, this);
                     break;
                 case OutputState.Stopped:
                     ResetVariables();
-                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "streaming", "Off", MacroDeck.Variables.VariableType.String, this, this.toggleVariableSuggestions);
+                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "streaming", "False", MacroDeck.Variables.VariableType.Bool, this);
                     break;
                 default:
-                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "streaming", "Off", MacroDeck.Variables.VariableType.String, this, this.toggleVariableSuggestions);
+                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "streaming", "False", MacroDeck.Variables.VariableType.Bool, this);
                     break;
             }
         }
@@ -237,30 +258,30 @@ namespace SuchByte.OBSWebSocketPlugin {
         private void OnStreamData(OBSWebsocket sender, StreamStatus status)
         {
             TimeSpan streamTime = TimeSpan.FromSeconds(status.TotalStreamTime);
-            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "stream time", string.Format("{0:D2}h:{1:D2}m:{2:D2}s",
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "stream_time", string.Format("{0:D2}h:{1:D2}m:{2:D2}s",
                                                                                         streamTime.Hours,
                                                                                         streamTime.Minutes,
                                                                                         streamTime.Seconds), 
                                                                                         MacroDeck.Variables.VariableType.String, this, false);
-            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "Kbits", status.KbitsPerSec.ToString(), MacroDeck.Variables.VariableType.Integer, this, false);
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "kbits", status.KbitsPerSec.ToString(), MacroDeck.Variables.VariableType.Integer, this, false);
             MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "framerate", (int)status.FPS, MacroDeck.Variables.VariableType.Integer, this, false);
-            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "dropped frames", status.DroppedFrames, MacroDeck.Variables.VariableType.Integer, this, false);
-            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "total frames", status.TotalFrames, MacroDeck.Variables.VariableType.Integer, this, false);
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "dropped_frames", status.DroppedFrames, MacroDeck.Variables.VariableType.Integer, this, false);
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "total_frames", status.TotalFrames, MacroDeck.Variables.VariableType.Integer, this, false);
         }
 
         private void OnTransitionChange(OBSWebsocket sender, string newTransitionName)
         {
-            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "current transition", newTransitionName, MacroDeck.Variables.VariableType.String, this, true);
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "current_transition", newTransitionName, MacroDeck.Variables.VariableType.String, this, true);
         }
 
         private void OnProfileChange(object sender, EventArgs e)
         {
-            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "current profile", this.obs.GetCurrentProfile(), MacroDeck.Variables.VariableType.String, this, true);
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "current_profile", this.obs.GetCurrentProfile(), MacroDeck.Variables.VariableType.String, this, true);
         }
 
         private void OnSceneChange(OBSWebsocket sender, string newSceneName)
         {
-            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "current scene", newSceneName, MacroDeck.Variables.VariableType.String, this, this.sceneSuggestions, true);
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "current_scene", newSceneName, MacroDeck.Variables.VariableType.String, this, this.sceneSuggestions, true);
             UpdateAllSourceItems();
         }
 
@@ -273,7 +294,7 @@ namespace SuchByte.OBSWebSocketPlugin {
                 this.mainWindow.BeginInvoke(new Action(() =>
                 {
                     this.statusButton.BackgroundImage = Properties.Resources.OBS_Offline;
-                    this.statusToolTip.SetToolTip(this.statusButton, "OBS Disconnected");
+                    this.statusToolTip.SetToolTip(this.statusButton, PluginLanguageManager.PluginStrings.OBSDisconnected);
                 }));
             }
         }
@@ -286,14 +307,14 @@ namespace SuchByte.OBSWebSocketPlugin {
                 this.mainWindow.BeginInvoke(new Action(() =>
                 {
                     this.statusButton.BackgroundImage = Properties.Resources.OBS_Online;
-                    this.statusToolTip.SetToolTip(this.statusButton, "OBS Connected");
+                    this.statusToolTip.SetToolTip(this.statusButton, PluginLanguageManager.PluginStrings.OBSConnected);
                 }));
             }
         }
 
         public override void OpenConfigurator()
         {
-            using (var pluginConfig = new PluginConfig(this))
+            using (var pluginConfig = new PluginConfig())
             {
                 pluginConfig.ShowDialog();
             }
@@ -320,7 +341,7 @@ namespace SuchByte.OBSWebSocketPlugin {
                 {
                     using (var msgBox = new MacroDeck.GUI.CustomControls.MessageBox())
                     {
-                        msgBox.ShowDialog("OBS Authentication failed", "Please make sure, you set the correct password", System.Windows.Forms.MessageBoxButtons.OK);
+                        msgBox.ShowDialog(PluginLanguageManager.PluginStrings.AuthenticationFailed, PluginLanguageManager.PluginStrings.InfoWrongPassword, System.Windows.Forms.MessageBoxButtons.OK);
                     }
                     return;
                 }
@@ -330,7 +351,7 @@ namespace SuchByte.OBSWebSocketPlugin {
                     {
                         using (var msgBox = new MacroDeck.GUI.CustomControls.MessageBox())
                         {
-                            msgBox.ShowDialog("OBS Connection failed", "Please make sure, you set the correct host and OBS is running with the OBS-WebSocket plugin installed", MessageBoxButtons.OK);
+                            msgBox.ShowDialog(PluginLanguageManager.PluginStrings.ConnectionFailed, PluginLanguageManager.PluginStrings.InfoWrongHost, MessageBoxButtons.OK);
                         }
                     }
                 }

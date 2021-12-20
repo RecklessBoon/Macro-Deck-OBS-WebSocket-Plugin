@@ -16,7 +16,10 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            this._main.OBS.Connected -= OBS_Connected;
+            if (PluginInstance.Main.OBS != null)
+            {
+                PluginInstance.Main.OBS.Connected -= OBS_Connected;
+            }
             if (disposing && (components != null))
             {
                 components.Dispose();

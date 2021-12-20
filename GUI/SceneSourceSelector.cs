@@ -102,8 +102,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             this.sourcesBox.Items.Clear();
             this.sourcesBox.Text = String.Empty;
 
-
-            foreach (var sceneItem in PluginInstance.Main.OBS.GetSceneItemList(PluginInstance.Main.OBS.GetCurrentScene().Name))
+            foreach (var sceneItem in PluginInstance.Main.OBS.GetSceneItemList(this.scenesBox.Text))
             {
 
                 this.sourcesBox.Items.Add(sceneItem.SourceName);

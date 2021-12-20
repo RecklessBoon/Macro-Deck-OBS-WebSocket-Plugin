@@ -15,18 +15,15 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
 {
     public partial class PluginConfig : DialogForm
     {
-
-        Main _main;
-        public PluginConfig(Main main)
+        public PluginConfig()
         {
-            this._main = main;
             InitializeComponent();
 
             this.lblHost.Text = PluginLanguageManager.PluginStrings.Host;
             this.lblPassword.Text = PluginLanguageManager.PluginStrings.Password;
             this.btnOk.Text = LanguageManager.Strings.Ok;
 
-            List<Dictionary<string, string>> credentialsList = PluginCredentials.GetPluginCredentials(main);
+            List<Dictionary<string, string>> credentialsList = PluginCredentials.GetPluginCredentials(PluginInstance.Main);
             Dictionary<string, string> credentials = null;
             if (credentialsList != null && credentialsList.Count > 0)
             {
@@ -45,24 +42,26 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
 
         private void OBS_Connected(object sender, EventArgs e)
         {
-            Dictionary<string, string> credentials = new Dictionary<string, string>();
-            credentials["host"] = this.host.Text;
-            credentials["password"] = this.password.Text;
-            PluginCredentials.SetCredentials(this._main, credentials);
+            Dictionary<string, string> credentials = new Dictionary<string, string>
+            {
+                ["host"] = this.host.Text,
+                ["password"] = this.password.Text
+            };
+            PluginCredentials.SetCredentials(PluginInstance.Main, credentials);
             this.Close();
         }
 
         private void BtnOk_Click(object sender, EventArgs e)
         {
-            if (this._main.OBS.IsConnected)
+            if (PluginInstance.Main.OBS.IsConnected)
             {
                 this.Close();
                 return;
             }
             try
             {
-                this._main.OBS.Connected += OBS_Connected;
-                this._main.OBS.Connect(this.host.Text, this.password.Text);
+                PluginInstance.Main.OBS.Connected += OBS_Connected;
+                PluginInstance.Main.OBS.Connect(this.host.Text, this.password.Text);
             }
             catch (AuthFailureException)
             {

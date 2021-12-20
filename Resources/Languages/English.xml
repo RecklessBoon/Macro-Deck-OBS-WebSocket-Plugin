@@ -44,4 +44,11 @@
 	<Stop>Stop</Stop>
 	<Hide>Hide</Hide>
 	<Show>Show</Show>
+	<OBSConnected>OBS connected</OBSConnected>
+	<OBSDisconnected>OBS disconnected</OBSDisconnected>
+	<ActionSaveReplayBuffer>Save replay buffer</ActionSaveReplayBuffer>
+	<ActionSaveReplayBufferDescription>Saves the replay buffer
+	The replay buffer needs to be started to save the replay buffer!</ActionSaveReplayBufferDescription>
+	<ActionSetReplayBufferState>Set OBS replay buffer state</ActionSetReplayBufferState>
+	<ActionSetReplayBufferStateDescription>Start/stop/toggle the replay buffer</ActionSetReplayBufferStateDescription>
 </PluginStrings>

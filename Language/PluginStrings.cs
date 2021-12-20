@@ -51,6 +51,12 @@ namespace SuchByte.OBSWebSocketPlugin.Language
         public string Stop = "Stop";
         public string Hide = "Hide";
         public string Show = "Show";
+        public string OBSConnected = "OBS connected";
+        public string OBSDisconnected = "OBS disconnected";
+        public string ActionSaveReplayBuffer = "Save replay buffer";
+        public string ActionSaveReplayBufferDescription = "Saves the replay buffer\r\nThe replay buffer needs to be started to save the replay buffer!";
+        public string ActionSetReplayBufferState = "Set OBS replay buffer state";
+        public string ActionSetReplayBufferStateDescription = "Start/stop/toggle the replay buffer";
 
     }
 }
