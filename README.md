@@ -7,10 +7,12 @@ To use this plugin, you need to install the OBS-WebSocket plugin to your Open Br
 More informations [here](https://obsproject.com/forum/resources/obs-websocket-remote-control-obs-studio-from-websockets.466/)
 
 # Features
+- ### Save replay buffer
+Save the replay buffer by a press of an action button
 - ### Variables
 This plugin automatically creates variables for the streaming/recording state, the current scene, streaming statistics and more. 
 You can easily add this variables to action buttons or use it as action button state binding.
-- ### Start/stop/toggle recording, streaming and virtual camera
+- ### Start/stop/toggle recording, streaming, replay buffer and virtual camera
 Easily start/stop/toggle recording, streaming, replay buffer or the virtual camera by a press of an action button
 - ### Set scene
 Change the current scene by a press of an action button
