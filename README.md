@@ -2,7 +2,8 @@
 Control Open Broadcaster Software with Macro Deck
 
 ## Important
-To use this plugin, you need to install the OBS-WebSocket plugin to your Open Broadcaster Software first
+To use this plugin, you need to install the OBS-WebSocket plugin to your Open Broadcaster Software first.
+
 This plugin only supports version 4.9 of the OBS-WebSocket plugin!
 
 More informations [here](https://obsproject.com/forum/resources/obs-websocket-remote-control-obs-studio-from-websockets.466/)
