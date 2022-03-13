@@ -8,7 +8,7 @@
     <Authors>Macro Deck</Authors>
     <Company>Macro Deck</Company>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>1.3.0</Version>
+    <Version>1.3.2</Version>
 	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	<NeutralLanguage>en</NeutralLanguage>
 	<PackageProjectUrl>https://github.com/SuchByte/Macro-Deck-OBS-WebSocket-Plugin</PackageProjectUrl>
@@ -38,7 +38,7 @@
       <HintPath>C:\Program Files\Macro Deck\Macro Deck 2.dll</HintPath>
     </Reference>
     <Reference Include="obs-websocket-dotnet">
-      <HintPath>..\obs-websocket-dotnet.dll</HintPath>
+      <HintPath>obs-websocket-dotnet.dll</HintPath>
     </Reference>
   </ItemGroup>
 
@@ -58,7 +58,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /Y &quot;$(TargetDir)$(TargetName).dll&quot; &quot;C:\Users\Manuel\AppData\Roaming\Macro Deck\plugins\SuchByte.MacroDeckOBSWebSocket\$(TargetName).dll&quot;" />
+    <Exec Command="copy /Y &quot;$(TargetDir)$(TargetName).dll&quot; &quot;C:\Users\Manuel\AppData\Roaming\Macro Deck\plugins\SuchByte.OBS-WebSocketPlugin\$(TargetName).dll&quot;" />
   </Target>
 
 </Project>
