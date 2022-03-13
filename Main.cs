@@ -64,6 +64,8 @@ namespace SuchByte.OBSWebSocketPlugin {
         {
             mainWindow = sender as MainWindow;
 
+            if (this.obs == null) return;
+
             this.statusButton = new ContentSelectorButton
             {
                 BackgroundImage = this.obs.IsConnected ? Properties.Resources.OBS_Online : Properties.Resources.OBS_Offline,
