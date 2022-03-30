@@ -6,6 +6,8 @@
 
 	<ActionSourceVisibility>Set OBS source visibility</ActionSourceVisibility>
 	<ActionSourceVisibilityDescription>Hide/show/toggle scene source visibility</ActionSourceVisibilityDescription>
+	<ActionFilterState>Set OBS filter state</ActionFilterState>
+	<ActionFilterStateDescription>Enable/disable/toggle filter state</ActionFilterStateDescription>
 	<ActionSetAudioMuted>Set OBS audio source mute</ActionSetAudioMuted>
 	<ActionSetAudioMutedDescription>Mute/unmute/toggle audio source</ActionSetAudioMutedDescription>
 	<ActionSetSourceVolume>Set OBS source volume</ActionSetSourceVolume>
@@ -44,6 +46,9 @@
 	<Stop>Stop</Stop>
 	<Hide>Hide</Hide>
 	<Show>Show</Show>
+	<Filter>Filter</Filter>
+	<Enable>Enable</Enable>
+	<Disable>Disable</Disable>
 	<OBSConnected>OBS connected</OBSConnected>
 	<OBSDisconnected>OBS disconnected</OBSDisconnected>
 	<ActionSaveReplayBuffer>Save replay buffer</ActionSaveReplayBuffer>

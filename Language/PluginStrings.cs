@@ -13,6 +13,8 @@ namespace SuchByte.OBSWebSocketPlugin.Language
 
         public string ActionSourceVisibility = "Set OBS source visibility";
         public string ActionSourceVisibilityDescription = "Hide/show/toggle scene source visibility";
+        public string ActionFilterState = "Set OBS filter state";
+        public string ActionFilterStateDescription = "Enable/disable/toggle filter state";
         public string ActionSetAudioMuted = "Set OBS audio source mute";
         public string ActionSetAudioMutedDescription = "Mute/unmute/toggle audio source";
         public string ActionSetSourceVolume = "Set OBS source volume";
@@ -51,6 +53,9 @@ namespace SuchByte.OBSWebSocketPlugin.Language
         public string Stop = "Stop";
         public string Hide = "Hide";
         public string Show = "Show";
+        public string Filter = "Filter";
+        public string Enable = "Enable";
+        public string Disable = "Disable";
         public string OBSConnected = "OBS connected";
         public string OBSDisconnected = "OBS disconnected";
         public string ActionSaveReplayBuffer = "Save replay buffer";
