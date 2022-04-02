@@ -4,7 +4,7 @@
   "author": "Macro Deck",
   "repository": "https://github.com/SuchByte/Macro-Deck-OBS-WebSocket-Plugin",
   "packageId": "SuchByte.OBS-WebSocketPlugin",
-  "version": "1.3.4",
+  "version": "1.3.5",
   "target-plugin-api-version": 32,
   "dll": "OBS-WebSocket Plugin.dll"
 }

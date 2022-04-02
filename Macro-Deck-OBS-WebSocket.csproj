@@ -8,7 +8,7 @@
     <Authors>Macro Deck</Authors>
     <Company>Macro Deck</Company>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>1.3.4</Version>
+    <Version>1.3.5</Version>
 	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	<NeutralLanguage>en</NeutralLanguage>
 	<PackageProjectUrl>https://github.com/SuchByte/Macro-Deck-OBS-WebSocket-Plugin</PackageProjectUrl>
@@ -21,6 +21,7 @@
     <None Remove="Resources\Languages\English.xml" />
     <None Remove="Resources\Languages\German.xml" />
     <None Remove="Resources\Languages\Italian.xml" />
+    <None Remove="websocket-sharp.dll" />
   </ItemGroup>
 
   <ItemGroup>
@@ -45,6 +46,9 @@
 
   <ItemGroup>
     <Resource Include="obs-websocket-dotnet.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="websocket-sharp.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
