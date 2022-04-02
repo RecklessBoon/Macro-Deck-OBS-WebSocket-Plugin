@@ -12,6 +12,8 @@
 	<ActionSetAudioMutedDescription>Mute/unmute/toggle audio source</ActionSetAudioMutedDescription>
 	<ActionSetSourceVolume>Set OBS source volume</ActionSetSourceVolume>
 	<ActionSetSourceVolumeDescription>Set the volume of an audio source</ActionSetSourceVolumeDescription>
+	<ActionSetTextValue>Set OBS text source value</ActionSetTextValue>
+	<ActionSetTextValueDescription>Set the value of a text (GDI+) source</ActionSetTextValueDescription>
 	<ActionSetProfile>Set OBS profile</ActionSetProfile>
 	<ActionSetProfileDescription>Set the profile of OBS</ActionSetProfileDescription>
 	<ActionSetRecordingState>Set OBS recording state</ActionSetRecordingState>

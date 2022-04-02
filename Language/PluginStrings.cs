@@ -19,6 +19,8 @@ namespace SuchByte.OBSWebSocketPlugin.Language
         public string ActionSetAudioMutedDescription = "Mute/unmute/toggle audio source";
         public string ActionSetSourceVolume = "Set OBS source volume";
         public string ActionSetSourceVolumeDescription = "Set the volume of an audio source";
+        public string ActionSetTextValue = "Set OBS text source value";
+        public string ActionSetTextValueDescription = "Set the value of a text (GDI+) source";
         public string ActionSetProfile = "Set OBS profile";
         public string ActionSetProfileDescription = "Set the profile of OBS";
         public string ActionSetRecordingState = "Set OBS recording state";

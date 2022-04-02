@@ -88,6 +88,7 @@ namespace SuchByte.OBSWebSocketPlugin {
                 new SaveReplayBufferAction(),
                 new SourceVisibilityAction(),
                 new SetFilterStateAction(),
+                new SetTextValueAction(),
                 new SetSourceVolumeAction(),
                 new SetAudioMutedAction(),
                 new SetProfileAction(),
