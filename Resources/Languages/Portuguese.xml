@@ -11,7 +11,7 @@
 	<ActionSetAudioMuted>Silenciar o som da fonte de áudio OBS</ActionSetAudioMuted>
 	<ActionSetAudioMutedDescription>Silenciar/ativar/alternar fonte de áudio</ActionSetAudioMutedDescription>
 	<ActionSetSourceVolume>Definir volume da fonte do OBS</ActionSetSourceVolume>
-	<ActionSetSourceVolumeDescription>Set the volume of an audio source</ActionSetSourceVolumeDescription>
+	<ActionSetSourceVolumeDescription>Definir o volume de uma fonte de áudio</ActionSetSourceVolumeDescription>
 	<ActionSetTextValue>Definir valor da fonte do texto OBS</ActionSetTextValue>
 	<ActionSetTextValueDescription>Definir o valor de uma fonte de texto (GDI+)</ActionSetTextValueDescription>
 	<ActionSetProfile>Definir perfil do OBS</ActionSetProfile>
