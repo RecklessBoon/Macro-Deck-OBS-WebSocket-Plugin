@@ -1,0 +1,61 @@
+﻿<?xml version="1.0"?>
+<PluginStrings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<__Language__>Portuguese</__Language__>
+	<__LanguageCode__>pt</__LanguageCode__>
+	<__Author__>alex-purple</__Author__>
+
+	<ActionSourceVisibility>Definir a visibilidade da fonte do OBS</ActionSourceVisibility>
+	<ActionSourceVisibilityDescription>Ocultar/mostrar/alternar a visibilidade da fonte da cena</ActionSourceVisibilityDescription>
+	<ActionFilterState>Definir o estado do filtro OBS</ActionFilterState>
+	<ActionFilterStateDescription>Ativar/desativar/alternar o estado do filtro</ActionFilterStateDescription>
+	<ActionSetAudioMuted>Silenciar o som da fonte de áudio OBS</ActionSetAudioMuted>
+	<ActionSetAudioMutedDescription>Silenciar/ativar/alternar fonte de áudio</ActionSetAudioMutedDescription>
+	<ActionSetSourceVolume>Definir volume da fonte do OBS</ActionSetSourceVolume>
+	<ActionSetSourceVolumeDescription>Set the volume of an audio source</ActionSetSourceVolumeDescription>
+	<ActionSetTextValue>Definir valor da fonte do texto OBS</ActionSetTextValue>
+	<ActionSetTextValueDescription>Definir o valor de uma fonte de texto (GDI+)</ActionSetTextValueDescription>
+	<ActionSetProfile>Definir perfil do OBS</ActionSetProfile>
+	<ActionSetProfileDescription>Defina o nome do perfil do OBS</ActionSetProfileDescription>
+	<ActionSetRecordingState>Definir o estado de gravação do OBS</ActionSetRecordingState>
+	<ActionSetRecordingStateDescription>Iniciar/parar/alternar a gravação</ActionSetRecordingStateDescription>
+	<ActionSetStreamingState>Definir estado da transmissão do OBS</ActionSetStreamingState>
+	<ActionSetStreamingStateDescription>Iniciar/parar/alternar a transmissão</ActionSetStreamingStateDescription>
+	<ActionSetVirtualCamState>Definir o estado da câmera virtual OBS</ActionSetVirtualCamState>
+	<ActionSetVirtualCamStateDescription>Iniciar/parar/alternar câmera virtual</ActionSetVirtualCamStateDescription>
+	<ActionSetScene>Definir cena OBS</ActionSetScene>
+	<ActionSetSceneDescription>Define uma cena configurada como a cena ativa</ActionSetSceneDescription>
+	<ActionToggleConnection>Alternar conexão OBS</ActionToggleConnection>
+	<ActionToggleConnectionDescription>Alterna a conexão entre o OBS e o Macro Deck</ActionToggleConnectionDescription>
+	<Source>Fonte</Source>
+	<Mute>Mudo</Mute>
+	<Unmute>Desativar mudo</Unmute>
+	<Toggle>Alternar</Toggle>
+	<GeneralBy>por</GeneralBy>
+	<GeneralTo>para</GeneralTo>
+	<Increase>Aumentar</Increase>
+	<Decrease>Diminuir</Decrease>
+	<Set>Definir</Set>
+	<ErrorNotConnected>O Macro Deck não está conectado ao OBS. Verifique se o OBS e o plug-in OBS-WebSocket estão funcionando corretamente e se você configurou o plug-in</ErrorNotConnected>
+	<Host>Servidor</Host>
+	<Password>Senha</Password>
+	<AuthenticationFailed>Falha na autenticação do OBS</AuthenticationFailed>
+	<InfoWrongPassword>Certifique-se de definir a senha correta</InfoWrongPassword>
+	<ConnectionFailed>Falha na conexão do OBS</ConnectionFailed>
+	<InfoWrongHost>Certifique-se de definir o host correto e o OBS está sendo executado com o plug-in OBS-WebSocket instalado</InfoWrongHost>
+	<Profile>Perfil</Profile>
+	<Scene>Cena</Scene>
+	<Start>Iniciar</Start>
+	<Stop>Parar</Stop>
+	<Hide>Ocultar</Hide>
+	<Show>Mostrar</Show>
+	<Filter>Filtrar</Filter>
+	<Enable>Ativar</Enable>
+	<Disable>Desativar</Disable>
+	<OBSConnected>OBS conectado</OBSConnected>
+	<OBSDisconnected>OBS desconectado</OBSDisconnected>
+	<ActionSaveReplayBuffer>Salvar buffer de repetição</ActionSaveReplayBuffer>
+	<ActionSaveReplayBufferDescription>Salva o buffer de repetição
+O buffer de repetição precisa ser iniciado para salvar o buffer de repetição!</ActionSaveReplayBufferDescription>
+	<ActionSetReplayBufferState>Definir o estado do buffer de repetição do OBS</ActionSetReplayBufferState>
+	<ActionSetReplayBufferStateDescription>Iniciar/parar/alternar o buffer de repetição</ActionSetReplayBufferStateDescription>
+</PluginStrings>
