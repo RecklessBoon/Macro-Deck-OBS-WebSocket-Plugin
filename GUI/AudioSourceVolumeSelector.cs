@@ -5,11 +5,8 @@ using SuchByte.MacroDeck.Language;
 using SuchByte.MacroDeck.Plugins;
 using SuchByte.OBSWebSocketPlugin.Language;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
+using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SuchByte.OBSWebSocketPlugin.GUI
@@ -64,7 +61,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
 
         private void LoadSources()
         {
-            if (!PluginInstance.Main.OBS.IsConnected)
+            if (!PluginInstance.Main.IsConnected)
             {
                 using (var msgBox = new MacroDeck.GUI.CustomControls.MessageBox())
                 {
@@ -75,14 +72,48 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
 
             this.sourcesBox.Items.Clear();
 
-
-            foreach (var audioSource in PluginInstance.Main.OBS.GetSpecialSources().Values)
+            if (PluginInstance.Main.OBS4 != null)
             {
+                foreach (var audioSource in PluginInstance.Main.OBS4.GetSpecialSources().Values)
+                {
 
-                this.sourcesBox.Items.Add(audioSource);
+                    this.sourcesBox.Items.Add(audioSource);
+                }
+                this.LoadConfig();
+            }
+            else
+            {
+                var self = this;
+                _ = Task.Run(async () =>
+                {
+                    var specialResponse = await PluginInstance.Main.OBS5.InputsRequests.GetSpecialInputsAsync();
+                    var properties = specialResponse.GetType().GetProperties();
+                    foreach (PropertyInfo input in properties)
+                    {
+                        var name = specialResponse.GetType().GetProperty(input.Name).GetValue(specialResponse);
+                        if (!String.IsNullOrEmpty(name?.ToString()))
+                        {
+                            sourcesBox.Invoke((MethodInvoker)delegate { sourcesBox.Items.Add(name); });
+                        }
+                    }
+
+                    var response = await PluginInstance.Main.OBS5.InputsRequests.GetInputListAsync();
+                    foreach (JObject input in response.Inputs)
+                    {
+                        var name = input["inputName"]?.ToString();
+                        var muteStatus = await PluginInstance.Main.OBS5.InputsRequests.GetInputMuteAsync(name);
+                        if (muteStatus != null)
+                        {
+                            if (!String.IsNullOrEmpty(name))
+                            {
+                                sourcesBox.Invoke((MethodInvoker)delegate { sourcesBox.Items.Add(name); });
+                            }
+                        }
+                    }
+                    self.Invoke((MethodInvoker)delegate { LoadConfig(); });
+                });
             }
 
-            this.LoadConfig();
         }
 
         private void LoadConfig()
@@ -126,7 +157,8 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                 this.lblToBy.Text = PluginLanguageManager.PluginStrings.GeneralBy;
                 this.decibel.Maximum = 96;
                 this.decibel.Minimum = 1;
-            } else if (this.radioSet.Checked)
+            }
+            else if (this.radioSet.Checked)
             {
                 this.lblToBy.Text = PluginLanguageManager.PluginStrings.Toggle;
                 this.decibel.Maximum = 0;

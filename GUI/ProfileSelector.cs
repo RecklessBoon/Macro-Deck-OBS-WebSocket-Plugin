@@ -1,17 +1,10 @@
 ﻿using Newtonsoft.Json.Linq;
-using OBSWebsocketDotNet.Types;
 using SuchByte.MacroDeck.GUI;
 using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Language;
 using SuchByte.MacroDeck.Plugins;
 using SuchByte.OBSWebSocketPlugin.Language;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -49,7 +42,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
 
         private void LoadProfiles()
         {
-            if (!PluginInstance.Main.OBS.IsConnected)
+            if (!PluginInstance.Main.IsConnected)
             {
                 using (var msgBox = new MacroDeck.GUI.CustomControls.MessageBox())
                 {
@@ -60,11 +53,27 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
 
             this.profilesBox.Items.Clear();
 
-            foreach (string profile in PluginInstance.Main.OBS.ListProfiles().ToArray())
+            if (PluginInstance.Main.OBS4 != null)
             {
-                this.profilesBox.Items.Add(profile);
+                foreach (string profile in PluginInstance.Main.OBS4.ListProfiles().ToArray())
+                {
+                    this.profilesBox.Items.Add(profile);
+                }
+                this.LoadConfig();
             }
-            this.LoadConfig();
+            else
+            {
+                var self = this;
+                _ = Task.Run(async () =>
+                {
+                    var response = await PluginInstance.Main.OBS5.ConfigRequests.GetProfileListAsync();
+                    foreach (var profile in response.Profiles)
+                    {
+                        profilesBox.Invoke((MethodInvoker)delegate { profilesBox.Items.Add(profile); });
+                    }
+                    self.Invoke((MethodInvoker)delegate { LoadConfig(); });
+                });
+            }
         }
 
         private void LoadConfig()
@@ -75,7 +84,8 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                 {
                     JObject configurationObject = JObject.Parse(this.pluginAction.Configuration);
                     this.profilesBox.Text = configurationObject["profile"].ToString();
-                } catch { }
+                }
+                catch { }
             }
         }
 

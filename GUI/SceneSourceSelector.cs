@@ -6,11 +6,7 @@ using SuchByte.MacroDeck.Language;
 using SuchByte.MacroDeck.Plugins;
 using SuchByte.OBSWebSocketPlugin.Language;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SuchByte.OBSWebSocketPlugin.GUI
@@ -32,7 +28,6 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             this.radioToggle.Text = PluginLanguageManager.PluginStrings.Toggle;
 
             LoadScenes();
-            LoadConfig();
         }
 
         public override bool OnActionSave()
@@ -68,7 +63,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
 
         private void LoadScenes()
         {
-            if (!PluginInstance.Main.OBS.IsConnected)
+            if (!PluginInstance.Main.IsConnected)
             {
                 using (var msgBox = new MacroDeck.GUI.CustomControls.MessageBox())
                 {
@@ -80,17 +75,38 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             this.scenesBox.Items.Clear();
             this.scenesBox.Text = String.Empty;
 
-            foreach (OBSScene scene in PluginInstance.Main.OBS.ListScenes().ToArray())
+            if (PluginInstance.Main.OBS4 != null)
             {
-                this.scenesBox.Items.Add(scene.Name);
+                foreach (OBSScene scene in PluginInstance.Main.OBS4.ListScenes().ToArray())
+                {
+                    this.scenesBox.Items.Add(scene.Name);
+                }
+
+                LoadSources();
             }
-            
-            LoadSources();
+            else
+            {
+                var self = this;
+                _ = Task.Run(async () =>
+                {
+                    var sceneListResponse = await PluginInstance.Main.OBS5.ScenesRequests.GetSceneListAsync();
+                    foreach (JObject scene in sceneListResponse.Scenes)
+                    {
+                        var name = scene["sceneName"]?.ToString();
+                        if (!name.Equals(String.Empty))
+                        {
+                            scenesBox.Invoke((MethodInvoker)delegate { scenesBox.Items.Add(name); });
+                        }
+                    }
+
+                    self.Invoke((MethodInvoker)delegate { LoadConfig(); LoadSources(); });
+                });
+            }
         }
 
         private void LoadSources()
         {
-            if (!PluginInstance.Main.OBS.IsConnected)
+            if (!PluginInstance.Main.IsConnected)
             {
                 using (var msgBox = new MacroDeck.GUI.CustomControls.MessageBox())
                 {
@@ -102,12 +118,36 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             this.sourcesBox.Items.Clear();
             this.sourcesBox.Text = String.Empty;
 
-            foreach (var sceneItem in PluginInstance.Main.OBS.GetSceneItemList(this.scenesBox.Text))
+            if (PluginInstance.Main.OBS4 != null)
             {
+                foreach (var sceneItem in PluginInstance.Main.OBS4.GetSceneItemList(this.scenesBox.Text))
+                {
 
-                this.sourcesBox.Items.Add(sceneItem.SourceName);
+                    this.sourcesBox.Items.Add(sceneItem.SourceName);
+                }
+
+                LoadConfig();
             }
-
+            else
+            {
+                var self = this;
+                _ = Task.Run(async () =>
+                {
+                    var response = await PluginInstance.Main.OBS5.SceneItemsRequests.GetSceneItemListAsync(scenesBox.Text);
+                    if (response != null)
+                    {
+                        foreach (JObject sceneItem in response.SceneItems)
+                        {
+                            var name = sceneItem["sourceName"]?.ToString();
+                            if (!String.IsNullOrEmpty(name))
+                            {
+                                sourcesBox.Invoke((MethodInvoker)delegate { sourcesBox.Items.Add(name); });
+                            }
+                        }
+                    }
+                    self.Invoke((MethodInvoker)delegate { LoadConfig(); });
+                });
+            }
         }
 
         private void LoadConfig()

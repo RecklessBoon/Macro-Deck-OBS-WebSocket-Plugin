@@ -15,7 +15,25 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         public override void Trigger(string clientId, ActionButton actionButton)
         {
-            PluginInstance.Main.Connect();
+            if (PluginInstance.Main.OBS4 != null) TriggerOBS4(clientId, actionButton);
+            else if (PluginInstance.Main.OBS5 != null) TriggerOBS5(clientId, actionButton);
+            else PluginInstance.Main.SetupAndStartAsync();
+        }
+
+        protected void TriggerOBS4(string clientId, ActionButton actionButton)
+        {
+            if (PluginInstance.Main.OBS4.IsConnected)
+            {
+                PluginInstance.Main.Disconnect();
+            }
+        }
+
+        protected void TriggerOBS5(string clientId, ActionButton actionButton)
+        {
+            if (PluginInstance.Main.OBS5.IsConnected)
+            {
+                PluginInstance.Main.Disconnect();
+            }
         }
     }
 }
