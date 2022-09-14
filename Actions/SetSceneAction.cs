@@ -21,13 +21,33 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         public override void Trigger(string clientId, ActionButton actionButton)
         {
-            if (!PluginInstance.Main.OBS.IsConnected) return;
+            if (PluginInstance.Main.OBS4 != null) TriggerOBS4(clientId, actionButton);
+            else if (PluginInstance.Main.OBS5 != null) TriggerOBS5(clientId, actionButton);
+        }
+
+        protected void TriggerOBS4(string clientId, ActionButton actionButton)
+        {
+            if (!PluginInstance.Main.OBS4.IsConnected) return;
             if (!String.IsNullOrWhiteSpace(this.Configuration))
             {
                 try
                 {
                     JObject configurationObject = JObject.Parse(this.Configuration);
-                    PluginInstance.Main.OBS.SetCurrentScene(configurationObject["scene"].ToString());
+                    PluginInstance.Main.OBS4.SetCurrentScene(configurationObject["scene"].ToString());
+                }
+                catch { }
+            }
+        }
+
+        protected void TriggerOBS5(string clientId, ActionButton actionButton)
+        {
+            if (!PluginInstance.Main.OBS5.IsConnected) return;
+            if (!String.IsNullOrWhiteSpace(this.Configuration))
+            {
+                try
+                {
+                    JObject configurationObject = JObject.Parse(this.Configuration);
+                    _ = PluginInstance.Main.OBS5.ScenesRequests.SetCurrentProgramSceneAsync(configurationObject["scene"].ToString());
                 }
                 catch { }
             }

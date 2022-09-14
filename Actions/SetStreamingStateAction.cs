@@ -21,7 +21,13 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         public override void Trigger(string clientId, ActionButton actionButton)
         {
-            if (!PluginInstance.Main.OBS.IsConnected) return;
+            if (PluginInstance.Main.OBS4 != null) TriggerOBS4(clientId, actionButton);
+            else if (PluginInstance.Main.OBS5 != null) TriggerOBS5(clientId, actionButton);
+        }
+
+        protected void TriggerOBS4(string clientId, ActionButton actionButton)
+        {
+            if (!PluginInstance.Main.OBS4.IsConnected) return;
             if (!String.IsNullOrWhiteSpace(this.Configuration))
             {
                 try
@@ -30,13 +36,38 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
                     switch (configurationObject["method"].ToString())
                     {
                         case "start":
-                            PluginInstance.Main.OBS.StartStreaming();
+                            PluginInstance.Main.OBS4.StartStreaming();
                             break;
                         case "stop":
-                            PluginInstance.Main.OBS.StopStreaming();
+                            PluginInstance.Main.OBS4.StopStreaming();
                             break;
                         case "toggle":
-                            PluginInstance.Main.OBS.ToggleStreaming();
+                            PluginInstance.Main.OBS4.ToggleStreaming();
+                            break;
+                    }
+                }
+                catch { }
+            }
+        }
+
+        protected void TriggerOBS5(string clientId, ActionButton actionButton)
+        {
+            if (!PluginInstance.Main.OBS5.IsConnected) return;
+            if (!String.IsNullOrWhiteSpace(this.Configuration))
+            {
+                try
+                {
+                    JObject configurationObject = JObject.Parse(this.Configuration);
+                    switch (configurationObject["method"].ToString())
+                    {
+                        case "start":
+                            _ = PluginInstance.Main.OBS5.StreamRequests.StartStreamAsync();
+                            break;
+                        case "stop":
+                            _ = PluginInstance.Main.OBS5.StreamRequests.StopStreamAsync();
+                            break;
+                        case "toggle":
+                            _ = PluginInstance.Main.OBS5.StreamRequests.ToggleStreamAsync();
                             break;
                     }
                 }

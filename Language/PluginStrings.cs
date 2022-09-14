@@ -64,7 +64,13 @@ namespace SuchByte.OBSWebSocketPlugin.Language
         public string ActionSaveReplayBufferDescription = "Saves the replay buffer\r\nThe replay buffer needs to be started to save the replay buffer!";
         public string ActionSetReplayBufferState = "Set OBS replay buffer state";
         public string ActionSetReplayBufferStateDescription = "Start/stop/toggle the replay buffer";
-
+        public string VersionTypeToolTipTitle = "Version Type Configuration";
+        public string VersionTypeToolTipBody = "Determines the connection type to use. Only necessary to set if you know which connection type and don't want the delay of the automated check feature.";
+        public string Version = "Version";
+        public string Timeout = "Timeout";
+        public string Auto = "Auto";
+        public string WebSocket5 = "WebSocket 5";
+        public string WebSocket4 = "WebSocket 4";
     }
 }
 // PluginLanguageManager.PluginStrings.
