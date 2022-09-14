@@ -69,7 +69,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /Y &quot;$(TargetDir)$(TargetName).dll&quot; &quot;C:\Users\Manuel\AppData\Roaming\Macro Deck\plugins\SuchByte.OBS-WebSocketPlugin\$(TargetName).dll&quot;" />
+    <Exec Command="copy /Y &quot;$(TargetDir)$(TargetName).dll&quot; &quot;C:\Users\Jonas Netter\AppData\Roaming\Macro Deck\plugins\SuchByte.OBS-WebSocketPlugin\$(TargetName).dll&quot;" />
   </Target>
 
 </Project>

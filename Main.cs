@@ -162,6 +162,11 @@ namespace SuchByte.OBSWebSocketPlugin {
         {
             MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "connected", "False", MacroDeck.Variables.VariableType.Bool, this, false);
             MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "recording", "False", MacroDeck.Variables.VariableType.Bool, this, false);
+            ResetStreamVariables();
+        }
+
+        private void ResetStreamVariables()
+        {
             MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "replay_buffer", "False", MacroDeck.Variables.VariableType.Bool, this, false);
             MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "virtual_camera", "False", MacroDeck.Variables.VariableType.Bool, this, false);
             MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "streaming", "False", MacroDeck.Variables.VariableType.Bool, this, false);
@@ -200,12 +205,12 @@ namespace SuchByte.OBSWebSocketPlugin {
 
         private void OnVirtualCameraStopped(object sender, EventArgs e)
         {
-            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "virtual_camera", "False", MacroDeck.Variables.VariableType.Bool, this);
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "virtual_camera", "False", MacroDeck.Variables.VariableType.Bool, this, true);
         }
 
         private void OnVirtualCameraStarted(object sender, EventArgs e)
         {
-            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "virtual_camera", "True", MacroDeck.Variables.VariableType.Bool, this);
+            MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "virtual_camera", "True", MacroDeck.Variables.VariableType.Bool, this, true);
         }
 
         private void Obs_ReplayBufferStateChanged(OBSWebsocket sender, OutputState newState)
@@ -213,13 +218,13 @@ namespace SuchByte.OBSWebSocketPlugin {
             switch (newState)
             {
                 case OutputState.Started:
-                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "replay_buffer", "True", MacroDeck.Variables.VariableType.Bool, this);
+                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "replay_buffer", "True", MacroDeck.Variables.VariableType.Bool, this, true);
                     break;
                 case OutputState.Stopped:
-                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "replay_buffer", "False", MacroDeck.Variables.VariableType.Bool, this);
+                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "replay_buffer", "False", MacroDeck.Variables.VariableType.Bool, this, true);
                     break;
                 default:
-                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "replay_buffer", "False", MacroDeck.Variables.VariableType.Bool, this);
+                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "replay_buffer", "False", MacroDeck.Variables.VariableType.Bool, this, true);
                     break;
             }
         }
@@ -230,13 +235,13 @@ namespace SuchByte.OBSWebSocketPlugin {
             switch (newState)
             {
                 case OutputState.Started:
-                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "recording", "True", MacroDeck.Variables.VariableType.Bool, this);
+                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "recording", "True", MacroDeck.Variables.VariableType.Bool, this, true);
                     break;
                 case OutputState.Stopped:
-                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "recording", "False", MacroDeck.Variables.VariableType.Bool, this);
+                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "recording", "False", MacroDeck.Variables.VariableType.Bool, this, true);
                     break;
                 default:
-                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "recording", "False", MacroDeck.Variables.VariableType.Bool, this);
+                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "recording", "False", MacroDeck.Variables.VariableType.Bool, this, true);
                     break;
             }
         }
@@ -246,14 +251,14 @@ namespace SuchByte.OBSWebSocketPlugin {
             switch (newState)
             {
                 case OutputState.Started:
-                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "streaming", "True", MacroDeck.Variables.VariableType.Bool, this);
+                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "streaming", "True", MacroDeck.Variables.VariableType.Bool, this, true);
                     break;
                 case OutputState.Stopped:
-                    ResetVariables();
-                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "streaming", "False", MacroDeck.Variables.VariableType.Bool, this);
+                    ResetStreamVariables();
+                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "streaming", "False", MacroDeck.Variables.VariableType.Bool, this, true);
                     break;
                 default:
-                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "streaming", "False", MacroDeck.Variables.VariableType.Bool, this);
+                    MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "streaming", "False", MacroDeck.Variables.VariableType.Bool, this, true);
                     break;
             }
         }
