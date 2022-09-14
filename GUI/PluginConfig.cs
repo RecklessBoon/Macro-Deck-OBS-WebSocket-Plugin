@@ -47,7 +47,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             }
             else
             {
-                this.host.Text = "ws://127.0.0.1:4444";
+                this.host.Text = "ws://127.0.0.1:4455";
             }
 
             var versionTypeFound = Enum.TryParse<OBSWebSocketVersionType>(PluginConfiguration.GetValue(PluginInstance.Main, "versionType"), out OBSWebSocketVersionType versionType);
