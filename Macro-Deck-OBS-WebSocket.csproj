@@ -8,7 +8,7 @@
     <Authors>Macro Deck</Authors>
     <Company>Macro Deck</Company>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>1.3.5</Version>
+    <Version>1.4.0</Version>
 	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	<NeutralLanguage>en</NeutralLanguage>
 	<PackageProjectUrl>https://github.com/SuchByte/Macro-Deck-OBS-WebSocket-Plugin</PackageProjectUrl>
