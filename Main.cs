@@ -340,6 +340,11 @@ namespace SuchByte.OBSWebSocketPlugin
         {
             MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "connected", "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
             MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "recording", "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
+            ResetStreamVariables();
+        }
+
+        private void ResetStreamVariables()
+        {
             MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "replay_buffer", "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
             MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "virtual_camera", "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
             MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "streaming", "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
@@ -529,7 +534,7 @@ namespace SuchByte.OBSWebSocketPlugin
                     MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "streaming", "True", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
                     break;
                 case OutputState.Stopped:
-                    ResetVariables();
+                    ResetStreamVariables();
                     MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "streaming", "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
                     break;
                 default:
