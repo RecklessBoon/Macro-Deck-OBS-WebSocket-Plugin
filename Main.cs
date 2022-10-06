@@ -279,7 +279,7 @@ namespace SuchByte.OBSWebSocketPlugin
                 string sceneItemName = args.SceneItemId.ToString();
                 foreach(JObject item in sceneItems.SceneItems)
                 {
-                    if (item["sceneItemId"].Equals(args.SceneItemId) && item["sourceName"] != null)
+                    if (item["sceneItemId"].ToString().Equals(args.SceneItemId.ToString()) && item["sourceName"] != null)
                     {
                         sceneItemName = item["sourceName"].ToString();
                         break;
