@@ -715,7 +715,7 @@ namespace SuchByte.OBSWebSocketPlugin
                     var creds = PluginCredentials.GetPluginCredentials(this).FirstOrDefault();
                     var password = creds?["password"]?.ToString();
 
-                    if (password == null)
+                    if (String.IsNullOrEmpty(password))
                     {
                         return obs5.ConnectAsync(address);
                     } else
