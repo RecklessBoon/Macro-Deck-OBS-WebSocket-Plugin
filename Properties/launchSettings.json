@@ -1,9 +1,9 @@
 {
   "profiles": {
-    "Macro-Deck": {
-      "commandName": "Executable",
-      "executablePath": "C:\\Program Files\\Macro Deck\\Macro Deck 2.exe",
-      "commandLineArgs": "--show"
-    }
+    "Macro Deck 2": {
+      "commandName": "Project",
+      "commandLineArgs": "--export-default-strings --portable --show --loglevel 1 --test-channel --debug-console --force-update",
+      "nativeDebugging": false
+    },
   }
 }
