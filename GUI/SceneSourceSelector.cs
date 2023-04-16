@@ -131,15 +131,16 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             else
             {
                 var self = this;
+                var sceneName = scenesBox.Text;
                 _ = Task.Run(async () =>
                 {
-                    var response = await PluginInstance.Main.OBS5.SceneItemsRequests.GetSceneItemListAsync(scenesBox.Text);
+                    var response = await PluginInstance.Main.OBS5.SceneItemsRequests.GetSceneItemListAsync(sceneName);
                     if (response != null)
                     {
                         foreach (JObject sceneItem in response.SceneItems)
                         {
                             var name = sceneItem["sourceName"]?.ToString();
-                            if (!String.IsNullOrEmpty(name))
+                            if (!string.IsNullOrEmpty(name))
                             {
                                 sourcesBox.Invoke((MethodInvoker)delegate { sourcesBox.Items.Add(name); });
                             }

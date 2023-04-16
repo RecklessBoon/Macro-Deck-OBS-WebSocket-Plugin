@@ -40,7 +40,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             {
                 credentials = credentialsList[0];
             }
-            if (credentials != null)
+            if (credentials != null && credentials.ContainsKey("host") && credentials.ContainsKey("password"))
             {
                 this.host.Text = credentials["host"];
                 this.password.Text = credentials["password"];
@@ -50,7 +50,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                 this.host.Text = "ws://127.0.0.1:4455";
             }
 
-            var versionTypeFound = Enum.TryParse<OBSWebSocketVersionType>(PluginConfiguration.GetValue(PluginInstance.Main, "versionType"), out OBSWebSocketVersionType versionType);
+            var versionTypeFound = Enum.TryParse(PluginConfiguration.GetValue(PluginInstance.Main, "versionType"), out OBSWebSocketVersionType versionType);
             SetVersionTypeSelected(versionTypeFound ? versionType : OBSWebSocketVersionType.OBS_WEBSOCKET_AUTO);
 
             var timeoutFound = int.TryParse(PluginConfiguration.GetValue(PluginInstance.Main, "timeout"), out int timeout);

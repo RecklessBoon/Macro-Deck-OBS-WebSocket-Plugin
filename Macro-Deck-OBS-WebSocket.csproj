@@ -32,7 +32,7 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="OBSWebSocket5" Version="0.0.2" />
+    <PackageReference Include="OBSWebSocket5" Version="0.0.3" />
     <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
   </ItemGroup>
 
@@ -70,10 +70,10 @@
   </ItemGroup>
 
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-        <Exec Command="if not exist &quot;$(SolutionDir)..\Macro Deck 2\Macro-Deck\bin\$(ConfigurationName)\netcoreapp3.1\win-x64\Data\plugins\$(PackageId)&quot; mkdir &quot;$(SolutionDir)..\Macro Deck 2\Macro-Deck\bin\$(ConfigurationName)\netcoreapp3.1\win-x64\Data\plugins\$(PackageId)&quot;" />
-        <Exec Command="copy /Y &quot;$(ProjectDir)ExtensionManifest.json&quot; &quot;$(SolutionDir)..\Macro Deck 2\Macro-Deck\bin\$(ConfigurationName)\netcoreapp3.1\win-x64\Data\plugins\$(PackageId)\ExtensionManifest.json&quot;" />
-        <Exec Command="copy /Y &quot;$(ProjectDir)ExtensionIcon.png&quot; &quot;$(SolutionDir)..\Macro Deck 2\Macro-Deck\bin\$(ConfigurationName)\netcoreapp3.1\win-x64\Data\plugins\$(PackageId)\ExtensionIcon.png&quot;" />
-        <Exec Command="copy /Y &quot;$(TargetDir)*.dll&quot; &quot;$(SolutionDir)..\Macro Deck 2\Macro-Deck\bin\$(ConfigurationName)\netcoreapp3.1\win-x64\Data\plugins\$(PackageId)\&quot;" />
+        <Exec Command="if not exist &quot;$(SolutionDir)..\Macro-Deck\bin\$(ConfigurationName)\netcoreapp3.1\win-x64\Data\plugins\$(PackageId)&quot; mkdir &quot;$(SolutionDir)..\Macro-Deck\bin\$(ConfigurationName)\netcoreapp3.1\win-x64\Data\plugins\$(PackageId)&quot;" />
+        <Exec Command="copy /Y &quot;$(ProjectDir)ExtensionManifest.json&quot; &quot;$(SolutionDir)..\Macro-Deck\bin\$(ConfigurationName)\netcoreapp3.1\win-x64\Data\plugins\$(PackageId)\ExtensionManifest.json&quot;" />
+        <Exec Command="copy /Y &quot;$(ProjectDir)ExtensionIcon.png&quot; &quot;$(SolutionDir)..\Macro-Deck\bin\$(ConfigurationName)\netcoreapp3.1\win-x64\Data\plugins\$(PackageId)\ExtensionIcon.png&quot;" />
+        <Exec Command="copy /Y &quot;$(TargetDir)*.dll&quot; &quot;$(SolutionDir)..\Macro-Deck\bin\$(ConfigurationName)\netcoreapp3.1\win-x64\Data\plugins\$(PackageId)\&quot;" />
     </Target>
 
 </Project>
