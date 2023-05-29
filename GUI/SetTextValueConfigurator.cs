@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json.Linq;
-using OBSWebsocketDotNet.Types;
 using SuchByte.MacroDeck.GUI;
 using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.GUI.Dialogs;
@@ -57,31 +56,20 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             this.scenesBox.Items.Clear();
             this.scenesBox.Text = String.Empty;
 
-            if (PluginInstance.Main.OBS4 != null)
+            var self = this;
+            _ = Task.Run(async () =>
             {
-                foreach (OBSScene scene in PluginInstance.Main.OBS4.ListScenes().ToArray())
+                var sceneListResponse = await PluginInstance.Main.Obs.ScenesRequests.GetSceneListAsync();
+                foreach (JObject scene in sceneListResponse.Scenes)
                 {
-                    this.scenesBox.Items.Add(scene.Name);
-                }
-                LoadSources();
-            }
-            else
-            {
-                var self = this;
-                _ = Task.Run(async () =>
-                {
-                    var sceneListResponse = await PluginInstance.Main.OBS5.ScenesRequests.GetSceneListAsync();
-                    foreach (JObject scene in sceneListResponse.Scenes)
+                    var name = scene["sceneName"]?.ToString();
+                    if (!String.IsNullOrEmpty(name))
                     {
-                        var name = scene["sceneName"]?.ToString();
-                        if (!String.IsNullOrEmpty(name))
-                        {
-                            scenesBox.Invoke((MethodInvoker)delegate { scenesBox.Items.Add(name); });
-                        }
+                        scenesBox.Invoke((MethodInvoker)delegate { scenesBox.Items.Add(name); });
                     }
-                    self.Invoke((MethodInvoker)delegate { LoadConfig(); LoadSources(); });
-                });
-            }
+                }
+                self.Invoke((MethodInvoker)delegate { LoadConfig(); LoadSources(); });
+            });
         }
 
         private void LoadSources()
@@ -103,36 +91,25 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                 return;
             }
 
-            if (PluginInstance.Main.OBS4 != null)
+            var self = this;
+            var sceneName = scenesBox.Text;
+            _ = Task.Run(async () =>
             {
-                foreach (var sceneItem in PluginInstance.Main.OBS4.GetSceneItemList(this.scenesBox.Text))
+                var response = await PluginInstance.Main.Obs.SceneItemsRequests.GetSceneItemListAsync(sceneName);
+                if (response != null)
                 {
-                    this.sourcesBox.Items.Add(sceneItem.SourceName);
-                }
-                LoadConfig();
-            }
-            else
-            {
-                var self = this;
-                var sceneName = scenesBox.Text;
-                _ = Task.Run(async () =>
-                {
-                    var response = await PluginInstance.Main.OBS5.SceneItemsRequests.GetSceneItemListAsync(sceneName);
-                    if (response != null)
+                    foreach (JObject sceneItem in response.SceneItems)
                     {
-                        foreach (JObject sceneItem in response.SceneItems)
+                        var name = sceneItem["sourceName"]?.ToString();
+                        var type = sceneItem["inputKind"]?.ToString();
+                        if (!String.IsNullOrEmpty(name) && ("text_gdiplus_v2").Equals(type))
                         {
-                            var name = sceneItem["sourceName"]?.ToString();
-                            var type = sceneItem["inputKind"]?.ToString();
-                            if (!String.IsNullOrEmpty(name) && ("text_gdiplus_v2").Equals(type))
-                            {
-                                sourcesBox.Invoke((MethodInvoker)delegate { sourcesBox.Items.Add(name); });
-                            }
+                            sourcesBox.Invoke((MethodInvoker)delegate { sourcesBox.Items.Add(name); });
                         }
                     }
-                    self.Invoke((MethodInvoker)delegate { LoadConfig(); });
-                });
-            }
+                }
+                self.Invoke((MethodInvoker)delegate { LoadConfig(); });
+            });
 
         }
 

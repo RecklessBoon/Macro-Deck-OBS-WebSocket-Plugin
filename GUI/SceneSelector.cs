@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json.Linq;
-using OBSWebsocketDotNet.Types;
 using SuchByte.MacroDeck.GUI;
 using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Language;
@@ -55,31 +54,20 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
 
             this.scenesBox.Items.Clear();
 
-            if (PluginInstance.Main.OBS4 != null)
+            var self = this;
+            _ = Task.Run(async () =>
             {
-                foreach (OBSScene scene in PluginInstance.Main.OBS4.ListScenes().ToArray())
+                var sceneListResponse = await PluginInstance.Main.Obs.ScenesRequests.GetSceneListAsync();
+                foreach (JObject scene in sceneListResponse.Scenes)
                 {
-                    this.scenesBox.Items.Add(scene.Name);
-                }
-                LoadConfig();
-            }
-            else
-            {
-                var self = this;
-                _ = Task.Run(async () =>
-                {
-                    var sceneListResponse = await PluginInstance.Main.OBS5.ScenesRequests.GetSceneListAsync();
-                    foreach (JObject scene in sceneListResponse.Scenes)
+                    var name = scene["sceneName"]?.ToString();
+                    if (!String.IsNullOrEmpty(name))
                     {
-                        var name = scene["sceneName"]?.ToString();
-                        if (!String.IsNullOrEmpty(name))
-                        {
-                            scenesBox.Invoke((MethodInvoker)delegate { scenesBox.Items.Add(name); });
-                        }
+                        scenesBox.Invoke((MethodInvoker)delegate { scenesBox.Items.Add(name); });
                     }
-                    self.Invoke((MethodInvoker)delegate { LoadConfig(); });
-                });
-            }
+                }
+                self.Invoke((MethodInvoker)delegate { LoadConfig(); });
+            });
 
         }
 

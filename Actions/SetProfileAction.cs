@@ -21,33 +21,13 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         public override void Trigger(string clientId, ActionButton actionButton)
         {
-            if (PluginInstance.Main.OBS4 != null) TriggerOBS4(clientId, actionButton);
-            else if (PluginInstance.Main.OBS5 != null) TriggerOBS5(clientId, actionButton);
-        }
-
-        protected void TriggerOBS4(string clientId, ActionButton actionButton)
-        {
-            if (!PluginInstance.Main.OBS4.IsConnected) return;
+            if (!PluginInstance.Main.Obs.IsConnected) return;
             if (!String.IsNullOrWhiteSpace(this.Configuration))
             {
                 try
                 {
                     JObject configurationObject = JObject.Parse(this.Configuration);
-                    PluginInstance.Main.OBS4.SetCurrentProfile(configurationObject["profile"].ToString());
-                }
-                catch { }
-            }
-        }
-
-        protected void TriggerOBS5(string clientId, ActionButton actionButton)
-        {
-            if (!PluginInstance.Main.OBS5.IsConnected) return;
-            if (!String.IsNullOrWhiteSpace(this.Configuration))
-            {
-                try
-                {
-                    JObject configurationObject = JObject.Parse(this.Configuration);
-                    _ = PluginInstance.Main.OBS5.ConfigRequests.SetCurrentProfileAsync(configurationObject["profile"].ToString());
+                    _ = PluginInstance.Main.Obs.ConfigRequests.SetCurrentProfileAsync(configurationObject["profile"].ToString());
                 }
                 catch { }
             }

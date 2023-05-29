@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json.Linq;
-using OBSWebsocketDotNet.Types;
 using SuchByte.MacroDeck.GUI;
 using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Language;
@@ -77,31 +76,25 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             this.scenesBox.Items.Clear();
             this.scenesBox.Text = String.Empty;
 
-            if (PluginInstance.Main.OBS4 != null)
-            {
-                foreach (OBSScene scene in PluginInstance.Main.OBS4.ListScenes().ToArray())
-                {
-                    this.scenesBox.Items.Add(scene.Name);
-                }
-                LoadSources();
-            }
-            else
-            {
-                var self = this;
-                _ = Task.Run(async () =>
-                {
-                    var response = await PluginInstance.Main.OBS5.ScenesRequests.GetSceneListAsync();
-                    foreach (JObject scene in response.Scenes)
-                    {
-                        var name = scene["sceneName"]?.ToString();
-                        if (!name.Equals(String.Empty))
-                        {
-                            scenesBox.Invoke((MethodInvoker)delegate { scenesBox.Items.Add(name); });
-                        }
-                    }
-                    self.Invoke((MethodInvoker)delegate { LoadConfig(); LoadSources(); });
-                });
-            }
+           var self = this;
+           _ = Task.Run(async () =>
+           {
+               var response = await PluginInstance.Main.Obs.ScenesRequests.GetSceneListAsync();
+               foreach (JObject scene in response.Scenes)
+               {
+                   var name = scene["sceneName"]?.ToString();
+                   if (!name.Equals(String.Empty))
+                   {
+                       scenesBox.Invoke((MethodInvoker)delegate { scenesBox.Items.Add(name); });
+                   }
+               }
+
+               self.Invoke((MethodInvoker)delegate
+               {
+                   LoadConfig();
+                   LoadSources();
+               });
+           });
 
         }
 
@@ -118,36 +111,25 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
 
             this.sourcesBox.Items.Clear();
             this.sourcesBox.Text = String.Empty;
-
-            if (PluginInstance.Main.OBS4 != null)
+            
+            var self = this;
+            var sceneName = scenesBox.Text;
+            _ = Task.Run(async () =>
             {
-                foreach (var sceneItem in PluginInstance.Main.OBS4.GetSceneItemList(this.scenesBox.Text))
+                var response = await PluginInstance.Main.Obs.SceneItemsRequests.GetSceneItemListAsync(sceneName);
+                if (response != null)
                 {
-                    this.sourcesBox.Items.Add(sceneItem.SourceName);
-                }
-                LoadFilters();
-            }
-            else
-            {
-                var self = this;
-                var sceneName = scenesBox.Text;
-                _ = Task.Run(async () =>
-                {
-                    var response = await PluginInstance.Main.OBS5.SceneItemsRequests.GetSceneItemListAsync(sceneName);
-                    if (response != null)
+                    foreach (JObject item in response.SceneItems)
                     {
-                        foreach (JObject item in response.SceneItems)
+                        var name = item["sourceName"]?.ToString();
+                        if (!String.IsNullOrEmpty(name))
                         {
-                            var name = item["sourceName"]?.ToString();
-                            if (!String.IsNullOrEmpty(name))
-                            {
-                                sourcesBox.Invoke((MethodInvoker)delegate { sourcesBox.Items.Add(name); });
-                            }
+                            sourcesBox.Invoke((MethodInvoker)delegate { sourcesBox.Items.Add(name); });
                         }
                     }
-                    self.Invoke((MethodInvoker)delegate { LoadConfig(); LoadFilters(); });
-                });
-            }
+                }
+                self.Invoke((MethodInvoker)delegate { LoadConfig(); LoadFilters(); });
+            });
         }
 
         private void LoadFilters()
@@ -168,36 +150,25 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             {
                 return;
             }
-
-            if (PluginInstance.Main.OBS4 != null)
+            
+            var self = this;
+            var sourceName = sourcesBox.Text;
+            _ = Task.Run(async () =>
             {
-                foreach (var filterItem in PluginInstance.Main.OBS4.GetSourceFilters(String.IsNullOrWhiteSpace(this.sourcesBox.Text) ? this.scenesBox.Text : this.sourcesBox.Text))
+                var response = await PluginInstance.Main.Obs.FiltersRequests.GetSourceFilterListAsync(sourceName);
+                if (response != null)
                 {
-                    this.filtersBox.Items.Add(filterItem.Name);
-                }
-                LoadConfig();
-            }
-            else
-            {
-                var self = this;
-                var sourceName = sourcesBox.Text;
-                _ = Task.Run(async () =>
-                {
-                    var response = await PluginInstance.Main.OBS5.FiltersRequests.GetSourceFilterListAsync(sourceName);
-                    if (response != null)
+                    foreach (JObject filter in response.Filters)
                     {
-                        foreach (JObject filter in response.Filters)
+                        var name = filter["filterName"]?.ToString();
+                        if (!String.IsNullOrWhiteSpace(name))
                         {
-                            var name = filter["filterName"]?.ToString();
-                            if (!String.IsNullOrWhiteSpace(name))
-                            {
-                                filtersBox.Invoke((MethodInvoker)delegate { filtersBox.Items.Add(name); });
-                            }
+                            filtersBox.Invoke((MethodInvoker)delegate { filtersBox.Items.Add(name); });
                         }
                     }
-                    self.Invoke((MethodInvoker)delegate { LoadConfig(); });
-                });
-            }
+                }
+                self.Invoke((MethodInvoker)delegate { LoadConfig(); });
+            });
 
         }
 

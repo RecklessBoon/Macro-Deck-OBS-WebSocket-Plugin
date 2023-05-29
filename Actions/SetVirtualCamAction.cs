@@ -21,13 +21,7 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         public override void Trigger(string clientId, ActionButton actionButton)
         {
-            if (PluginInstance.Main.OBS4 != null) TriggerOBS4(clientId, actionButton);
-            else if (PluginInstance.Main.OBS5 != null) TriggerOBS5(clientId, actionButton);
-        }
-
-        protected void TriggerOBS4(string clientId, ActionButton actionButton)
-        {
-            if (!PluginInstance.Main.OBS4.IsConnected) return;
+            if (!PluginInstance.Main.Obs.IsConnected) return;
             if (!String.IsNullOrWhiteSpace(this.Configuration))
             {
                 try
@@ -36,38 +30,13 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
                     switch (configurationObject["method"].ToString())
                     {
                         case "start":
-                            PluginInstance.Main.OBS4.StartVirtualCam();
+                            _ = PluginInstance.Main.Obs.OutputsRequests.StartVirtualCamAsync();
                             break;
                         case "stop":
-                            PluginInstance.Main.OBS4.StopVirtualCam();
+                            _ = PluginInstance.Main.Obs.OutputsRequests.StopVirtualCamAsync();
                             break;
                         case "toggle":
-                            PluginInstance.Main.OBS4.ToggleVirtualCam();
-                            break;
-                    }
-                }
-                catch { }
-            }
-        }
-
-        protected void TriggerOBS5(string clientId, ActionButton actionButton)
-        {
-            if (!PluginInstance.Main.OBS5.IsConnected) return;
-            if (!String.IsNullOrWhiteSpace(this.Configuration))
-            {
-                try
-                {
-                    JObject configurationObject = JObject.Parse(this.Configuration);
-                    switch (configurationObject["method"].ToString())
-                    {
-                        case "start":
-                            _ = PluginInstance.Main.OBS5.OutputsRequests.StartVirtualCamAsync();
-                            break;
-                        case "stop":
-                            _ = PluginInstance.Main.OBS5.OutputsRequests.StopVirtualCamAsync();
-                            break;
-                        case "toggle":
-                            _ = PluginInstance.Main.OBS5.OutputsRequests.ToggleVirtualCamAsync();
+                            _ = PluginInstance.Main.Obs.OutputsRequests.ToggleVirtualCamAsync();
                             break;
                     }
                 }

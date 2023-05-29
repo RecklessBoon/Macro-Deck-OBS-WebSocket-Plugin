@@ -71,48 +71,37 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             }
 
             this.sourcesBox.Items.Clear();
-
-            if (PluginInstance.Main.OBS4 != null)
+            
+            var self = this;
+            _ = Task.Run(async () =>
             {
-                foreach (var audioSource in PluginInstance.Main.OBS4.GetSpecialSources().Values)
+                var specialResponse = await PluginInstance.Main.Obs.InputsRequests.GetSpecialInputsAsync();
+                var properties = specialResponse.GetType().GetProperties();
+                foreach (PropertyInfo input in properties)
                 {
-
-                    this.sourcesBox.Items.Add(audioSource);
-                }
-                this.LoadConfig();
-            }
-            else
-            {
-                var self = this;
-                _ = Task.Run(async () =>
-                {
-                    var specialResponse = await PluginInstance.Main.OBS5.InputsRequests.GetSpecialInputsAsync();
-                    var properties = specialResponse.GetType().GetProperties();
-                    foreach (PropertyInfo input in properties)
+                    var name = specialResponse.GetType().GetProperty(input.Name).GetValue(specialResponse);
+                    if (!String.IsNullOrEmpty(name?.ToString()))
                     {
-                        var name = specialResponse.GetType().GetProperty(input.Name).GetValue(specialResponse);
-                        if (!String.IsNullOrEmpty(name?.ToString()))
+                        sourcesBox.Invoke((MethodInvoker)delegate { sourcesBox.Items.Add(name); });
+                    }
+                }
+
+                var response = await PluginInstance.Main.Obs.InputsRequests.GetInputListAsync();
+                foreach (JObject input in response.Inputs)
+                {
+                    var name = input["inputName"]?.ToString();
+                    var muteStatus = await PluginInstance.Main.Obs.InputsRequests.GetInputMuteAsync(name);
+                    if (muteStatus != null)
+                    {
+                        if (!String.IsNullOrEmpty(name))
                         {
                             sourcesBox.Invoke((MethodInvoker)delegate { sourcesBox.Items.Add(name); });
                         }
                     }
+                }
 
-                    var response = await PluginInstance.Main.OBS5.InputsRequests.GetInputListAsync();
-                    foreach (JObject input in response.Inputs)
-                    {
-                        var name = input["inputName"]?.ToString();
-                        var muteStatus = await PluginInstance.Main.OBS5.InputsRequests.GetInputMuteAsync(name);
-                        if (muteStatus != null)
-                        {
-                            if (!String.IsNullOrEmpty(name))
-                            {
-                                sourcesBox.Invoke((MethodInvoker)delegate { sourcesBox.Items.Add(name); });
-                            }
-                        }
-                    }
-                    self.Invoke((MethodInvoker)delegate { LoadConfig(); });
-                });
-            }
+                self.Invoke((MethodInvoker)delegate { LoadConfig(); });
+            });
 
         }
 

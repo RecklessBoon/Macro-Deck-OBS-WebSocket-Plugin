@@ -53,27 +53,17 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
 
             this.profilesBox.Items.Clear();
 
-            if (PluginInstance.Main.OBS4 != null)
+            
+            var self = this;
+            _ = Task.Run(async () =>
             {
-                foreach (string profile in PluginInstance.Main.OBS4.ListProfiles().ToArray())
+                var response = await PluginInstance.Main.Obs.ConfigRequests.GetProfileListAsync();
+                foreach (var profile in response.Profiles)
                 {
-                    this.profilesBox.Items.Add(profile);
+                    profilesBox.Invoke((MethodInvoker)delegate { profilesBox.Items.Add(profile); });
                 }
-                this.LoadConfig();
-            }
-            else
-            {
-                var self = this;
-                _ = Task.Run(async () =>
-                {
-                    var response = await PluginInstance.Main.OBS5.ConfigRequests.GetProfileListAsync();
-                    foreach (var profile in response.Profiles)
-                    {
-                        profilesBox.Invoke((MethodInvoker)delegate { profilesBox.Items.Add(profile); });
-                    }
-                    self.Invoke((MethodInvoker)delegate { LoadConfig(); });
-                });
-            }
+                self.Invoke((MethodInvoker)delegate { LoadConfig(); });
+            });
         }
 
         private void LoadConfig()
