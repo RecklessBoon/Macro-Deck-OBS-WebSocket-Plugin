@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using OBSWebSocket5;
 using SuchByte.MacroDeck.Logging;
@@ -6,8 +7,11 @@ using SuchByte.OBSWebSocketPlugin.Models;
 
 namespace SuchByte.OBSWebSocketPlugin.Controllers
 {
-    public class Connection : IDisposable
+    public partial class Connection : IDisposable
     {
+        [GeneratedRegex("/^[0-9a-zA-Z]/")]
+        private static partial Regex ReplaceNonAlphaNumeric();
+
         public ConnectionConfig Config { get; }
         public string Name
         {
@@ -16,6 +20,8 @@ namespace SuchByte.OBSWebSocketPlugin.Controllers
                 return Config.name;
             }
         }
+        public string VariableNS => ReplaceNonAlphaNumeric().Replace(Name, "_");
+
         public Uri Host { 
             get
             {
@@ -72,6 +78,7 @@ namespace SuchByte.OBSWebSocketPlugin.Controllers
         {
             OBS?.Dispose();
             IsDisposed = true;
+            GC.SuppressFinalize(this);
         }
     }
 }

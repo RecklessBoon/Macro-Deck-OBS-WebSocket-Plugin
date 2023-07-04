@@ -40,7 +40,7 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         }
 
-        private void Toggle(Connection conn)
+        private static void Toggle(Connection conn)
         {
             if (conn == null) return;
 

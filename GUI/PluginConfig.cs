@@ -6,8 +6,12 @@ using SuchByte.OBSWebSocketPlugin.Models;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Windows.Media.Capture.Core;
 
 namespace SuchByte.OBSWebSocketPlugin.GUI
 {
@@ -23,7 +27,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             if (credentials != null && credentials.Count > 0)
             {
                 var first = true;
-                foreach(Dictionary<string, string> page in credentials)
+                foreach (Dictionary<string, string> page in credentials)
                 {
                     if (page.ContainsKey("host") && page.ContainsKey("password"))
                     {
@@ -122,16 +126,25 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             TableLayoutHelper.RemoveArbitraryRow(repeatingLayout, row);
         }
 
-        private void buttonPrimary1_Click(object sender, EventArgs e)
+        private void ButtonPrimary1_Click(object sender, EventArgs e)
         {
             this.Close();
         }
 
-        private void repeatingLayout_CellPaint(object sender, TableLayoutCellPaintEventArgs e)
+        private void RepeatingLayout_CellPaint(object sender, TableLayoutCellPaintEventArgs e)
         {
             var bottomLeft = new Point(e.CellBounds.Left, e.CellBounds.Bottom);
             var bottomRight = new Point(e.CellBounds.Right, e.CellBounds.Bottom);
             e.Graphics.DrawLine(Pens.White, bottomLeft, bottomRight);
+        }
+
+        private void BtnClearVariables_Click(object sender, EventArgs e)
+        {
+            var current = MacroDeck.Variables.VariableManager.GetVariables(PluginInstance.Main);
+            foreach (var variable in current)
+            {
+                MacroDeck.Variables.VariableManager.DeleteVariable(variable.Name);
+            }
         }
     }
 }
