@@ -1,0 +1,77 @@
+﻿using System;
+using System.Threading.Tasks;
+using OBSWebSocket5;
+using SuchByte.MacroDeck.Logging;
+using SuchByte.OBSWebSocketPlugin.Models;
+
+namespace SuchByte.OBSWebSocketPlugin.Controllers
+{
+    public class Connection : IDisposable
+    {
+        public ConnectionConfig Config { get; }
+        public string Name
+        {
+            get
+            {
+                return Config.name;
+            }
+        }
+        public Uri Host { 
+            get
+            {
+                return new Uri(Config.host);
+            }
+        }
+
+        public OBSWebSocket OBS { get; private set; }
+
+        public bool IsConnected => OBS != null && OBS.IsConnected && !OBS.IsDisposed;
+
+        public bool IsDisposed { get; private set; } = false;
+
+        public Connection(ConnectionConfig config)
+        {
+            Config = config;   
+            OBS = new OBSWebSocket();
+        }
+
+        public static Connection FromPrev(Connection prev)
+        {
+            return new Connection(prev.Config);
+        }
+        
+        public Task ConnectAsync()
+        {
+            if (IsConnected) return Task.CompletedTask;
+
+            try
+            {
+                if (Config.host == null) return Task.CompletedTask;
+
+                var host = new Uri(Config.host);
+
+                if (Config.password == null)
+                {
+                    return OBS.ConnectAsync(host);
+                }
+                else
+                {
+                    var password = new OBSWebSocketAuthPassword(Config.password);
+                    return OBS.ConnectAsync(host, password);
+                }
+            }
+            catch (Exception e)
+            {
+                MacroDeckLogger.Error(PluginInstance.Main, $"Error occurred while connecting to OBS instance. Error message: \n{e.Message}");
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public void Dispose()
+        {
+            OBS?.Dispose();
+            IsDisposed = true;
+        }
+    }
+}

@@ -5,6 +5,7 @@ using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Plugins;
 using SuchByte.OBSWebSocketPlugin.GUI;
 using SuchByte.OBSWebSocketPlugin.Language;
+using SuchByte.OBSWebSocketPlugin.Models.Action;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -24,29 +25,29 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         public override void Trigger(string clientId, ActionButton actionButton)
         {
-            if (!PluginInstance.Main.Obs.IsConnected) return;
             if (!String.IsNullOrWhiteSpace(this.Configuration))
             {
                 try
                 {
-                    JObject configurationObject = JObject.Parse(this.Configuration);
-                    string sourceName = configurationObject["sourceName"].ToString();
+                    var config = JObject.Parse(this.Configuration).ToObject<SetSourceVolumeConfig>();
+
+                    var conn = PluginInstance.Main.Connections.GetValueOrDefault(config?.ConnectionName ?? "");
+                    if (conn == null) return;
+
+                    string sourceName = config.SourceName;
                     _ = Task.Run(async () =>
                     {
-                        int decibel = (await PluginInstance.Main.Obs.InputsRequests.GetInputVolumeAsync(sourceName)).InputVolumeDb; // fallback if parse failed
-                        switch (configurationObject["method"].ToString())
+                        int currentDecibel = (await conn.OBS.InputsRequests.GetInputVolumeAsync(sourceName)).InputVolumeDb; // fallback if parse failed
+                        switch (config.Method)
                         {
-                            case "set":
-                                Int32.TryParse(configurationObject["decibel"].ToString(), out decibel);
-                                await PluginInstance.Main.Obs.InputsRequests.SetInputVolumeAsync(sourceName, inputVolumeDb: decibel);
+                            case Enum.IncrementalMethodType.Set:
+                                await conn.OBS.InputsRequests.SetInputVolumeAsync(sourceName, inputVolumeDb: config.Decibel);
                                 break;
-                            case "increase":
-                                Int32.TryParse(configurationObject["decibel"].ToString(), out int increaseByDecibel);
-                                await PluginInstance.Main.Obs.InputsRequests.SetInputVolumeAsync(sourceName, inputVolumeDb: decibel + increaseByDecibel);
+                            case Enum.IncrementalMethodType.Increase:
+                                await conn.OBS.InputsRequests.SetInputVolumeAsync(sourceName, inputVolumeDb: currentDecibel + config.Decibel);
                                 break;
-                            case "decrease":
-                                Int32.TryParse(configurationObject["decibel"].ToString(), out int decreaseByDecibel);
-                                await PluginInstance.Main.Obs.InputsRequests.SetInputVolumeAsync(sourceName, inputVolumeDb: decibel - decreaseByDecibel);
+                            case Enum.IncrementalMethodType.Decrease:
+                                await conn.OBS.InputsRequests.SetInputVolumeAsync(sourceName, inputVolumeDb: currentDecibel - config.Decibel);
                                 break;
                         }
                     });
@@ -57,7 +58,7 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         public override ActionConfigControl GetActionConfigControl(ActionConfigurator actionConfigurator)
         {
-            return new AudioSourceVolumeSelector(this, actionConfigurator);
+            return new SetSourceVolumeConfigView(this, actionConfigurator);
         }
 
 

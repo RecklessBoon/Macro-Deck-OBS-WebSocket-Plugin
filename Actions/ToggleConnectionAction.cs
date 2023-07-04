@@ -1,6 +1,12 @@
-﻿using SuchByte.MacroDeck.ActionButton;
+﻿using Newtonsoft.Json.Linq;
+using SuchByte.MacroDeck.ActionButton;
+using SuchByte.MacroDeck.GUI;
+using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Plugins;
+using SuchByte.OBSWebSocketPlugin.Controllers;
+using SuchByte.OBSWebSocketPlugin.GUI;
 using SuchByte.OBSWebSocketPlugin.Language;
+using SuchByte.OBSWebSocketPlugin.Models.Action;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,16 +19,45 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         public override string Description => PluginLanguageManager.PluginStrings.ActionToggleConnectionDescription;
 
+        public override bool CanConfigure => true;
+
         public override void Trigger(string clientId, ActionButton actionButton)
         {
-            if (PluginInstance.Main.IsConnected)
+            var config = JObject.Parse(this.Configuration).ToObject<ToggleConnectionConfig>();
+
+            if (config.SelectionType == Enum.SelectionType.All)
             {
-                PluginInstance.Main.Disconnect();
+                foreach(var pair in PluginInstance.Main.Connections)
+                {
+                    Toggle(pair.Value);
+                }
+            } else
+            {
+                var conn = PluginInstance.Main.Connections.GetValueOrDefault(config?.ConnectionName ?? "");
+                Toggle(conn);
+            }
+
+
+        }
+
+        private void Toggle(Connection conn)
+        {
+            if (conn == null) return;
+
+            if (conn.IsConnected)
+            {
+                conn.Dispose();
             }
             else
             {
-                _ = PluginInstance.Main.SetupAndStartAsync();
+                var newConn = Connection.FromPrev(conn);
+                PluginInstance.Main.StoreConnectConnectionAsync(newConn);
             }
+        }
+
+        public override ActionConfigControl GetActionConfigControl(ActionConfigurator actionConfigurator)
+        {
+            return new ToggleConnectionConfigView(this, actionConfigurator);
         }
     }
 }

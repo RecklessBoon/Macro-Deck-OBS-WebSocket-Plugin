@@ -43,6 +43,7 @@ namespace SuchByte.OBSWebSocketPlugin.Language
         public string Decrease = "Decrease";
         public string Set = "Set";
         public string ErrorNotConnected = "Macro Deck is not connected to OBS. Please make sure, OBS and the OBS-WebSocket plugin are working properly and you configured the plugin";
+        public string Name = "Name";
         public string Host = "Host";
         public string Password = "Password";
         public string AuthenticationFailed = "OBS Authentication failed";

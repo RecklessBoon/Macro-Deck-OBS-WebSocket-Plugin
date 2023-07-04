@@ -3,8 +3,10 @@ using SuchByte.MacroDeck.ActionButton;
 using SuchByte.MacroDeck.GUI;
 using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Plugins;
+using SuchByte.OBSWebSocketPlugin.Controllers;
 using SuchByte.OBSWebSocketPlugin.GUI;
 using SuchByte.OBSWebSocketPlugin.Language;
+using SuchByte.OBSWebSocketPlugin.Models.Action;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -22,31 +24,33 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         public override void Trigger(string clientId, ActionButton actionButton)
         {
-            if (!PluginInstance.Main.Obs.IsConnected) return;
             if (!String.IsNullOrWhiteSpace(this.Configuration))
             {
                 try
                 {
-                    JObject configurationObject = JObject.Parse(this.Configuration);
-                    string sceneName = configurationObject["sceneName"].ToString();
-                    string sourceName = configurationObject["sourceName"].ToString();
-                    string filterName = configurationObject["filterName"].ToString();
+                    var config = JObject.Parse(this.Configuration).ToObject<SetFilterStateConfig>();
 
+                    Connection conn = PluginInstance.Main.Connections.GetValueOrDefault(config?.ConnectionName ?? "");
+                    if (conn == null) return;
+
+                    string sceneName = config.SceneName;
+                    string sourceName = config.SourceName;
+                    string filterName = config.FilterName;
                     string targetName = String.IsNullOrWhiteSpace(sourceName) ? sceneName : sourceName;
 
-                    switch (configurationObject["method"].ToString())
+                    switch (config.Method)
                     {
-                        case "hide":
-                            _ = PluginInstance.Main.Obs.FiltersRequests.SetSourceFilterEnabledAsync(targetName, filterName, false);
+                        case Enum.VisibilityMethodType.Hide:
+                            _ = conn.OBS.FiltersRequests.SetSourceFilterEnabledAsync(targetName, filterName, false);
                             break;
-                        case "show":
-                            _ = PluginInstance.Main.Obs.FiltersRequests.SetSourceFilterEnabledAsync(targetName, filterName, true);
+                        case Enum.VisibilityMethodType.Show:
+                            _ = conn.OBS.FiltersRequests.SetSourceFilterEnabledAsync(targetName, filterName, true);
                             break;
-                        case "toggle":
+                        case Enum.VisibilityMethodType.Toggle:
                             _ = Task.Run(async () =>
                             {
-                                var filter = await PluginInstance.Main.Obs.FiltersRequests.GetSourceFilterAsync(sourceName, filterName);
-                                await PluginInstance.Main.Obs.FiltersRequests.SetSourceFilterEnabledAsync(sourceName, filterName, !filter.FilterEnabled);
+                                var filter = await conn.OBS.FiltersRequests.GetSourceFilterAsync(sourceName, filterName);
+                                await conn.OBS.FiltersRequests.SetSourceFilterEnabledAsync(sourceName, filterName, !filter.FilterEnabled);
                             });
                             break;
                     }
@@ -57,7 +61,7 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         public override ActionConfigControl GetActionConfigControl(ActionConfigurator actionConfigurator)
         {
-            return new FilterSelector(this, actionConfigurator);
+            return new SetFilterStateConfigView(this, actionConfigurator);
         }
     }
 }

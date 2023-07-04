@@ -5,6 +5,7 @@ using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Plugins;
 using SuchByte.OBSWebSocketPlugin.GUI;
 using SuchByte.OBSWebSocketPlugin.Language;
+using SuchByte.OBSWebSocketPlugin.Models.Action;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,22 +22,25 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         public override void Trigger(string clientId, ActionButton actionButton)
         {
-            if (!PluginInstance.Main.Obs.IsConnected) return;
             if (!String.IsNullOrWhiteSpace(this.Configuration))
             {
                 try
                 {
-                    JObject configurationObject = JObject.Parse(this.Configuration);
-                    switch (configurationObject["method"].ToString())
+                    var config = JObject.Parse(this.Configuration).ToObject<GenericStateConfig>();
+
+                    var conn = PluginInstance.Main.Connections.GetValueOrDefault(config?.ConnectionName ?? "");
+                    if (conn == null) return;
+
+                    switch (config.Method)
                     {
-                        case "start":
-                            _ = PluginInstance.Main.Obs.OutputsRequests.StartVirtualCamAsync();
+                        case Enum.StateMethodType.Start:
+                            _ = conn.OBS.OutputsRequests.StartVirtualCamAsync();
                             break;
-                        case "stop":
-                            _ = PluginInstance.Main.Obs.OutputsRequests.StopVirtualCamAsync();
+                        case Enum.StateMethodType.Stop:
+                            _ = conn.OBS.OutputsRequests.StopVirtualCamAsync();
                             break;
-                        case "toggle":
-                            _ = PluginInstance.Main.Obs.OutputsRequests.ToggleVirtualCamAsync();
+                        case Enum.StateMethodType.Toggle:
+                            _ = conn.OBS.OutputsRequests.ToggleVirtualCamAsync();
                             break;
                     }
                 }
@@ -46,7 +50,7 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         public override ActionConfigControl GetActionConfigControl(ActionConfigurator actionConfigurator)
         {
-            return new StateSelector(this, actionConfigurator);
+            return new GenericStateConfigView(this, actionConfigurator);
         }
     }
 }

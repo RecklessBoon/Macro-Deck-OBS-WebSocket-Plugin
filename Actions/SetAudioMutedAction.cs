@@ -3,8 +3,11 @@ using SuchByte.MacroDeck.ActionButton;
 using SuchByte.MacroDeck.GUI;
 using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Plugins;
+using SuchByte.OBSWebSocketPlugin.Controllers;
+using SuchByte.OBSWebSocketPlugin.Enum;
 using SuchByte.OBSWebSocketPlugin.GUI;
 using SuchByte.OBSWebSocketPlugin.Language;
+using SuchByte.OBSWebSocketPlugin.Models.Action;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -22,27 +25,26 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         public override void Trigger(string clientId, ActionButton actionButton)
         {
-            if(!PluginInstance.Main.Obs.IsConnected) return;
             if (!String.IsNullOrWhiteSpace(this.Configuration))
             {
                 try
                 {
-                    
-                    JObject configurationObject = JObject.Parse(this.Configuration);
-                    string sourceName = configurationObject["sourceName"].ToString();
-                    switch (configurationObject["method"].ToString())
+                    var config = JObject.Parse(this.Configuration).ToObject<SetAudioMutedConfig>();
+                    string sourceName = config.SourceName;
+                    Connection conn = PluginInstance.Main.Connections.GetValueOrDefault(config?.ConnectionName ?? "");
+                    switch (config.Method)
                     {
-                        case "mute":
-                            _ = PluginInstance.Main.Obs.InputsRequests.SetInputMuteAsync(sourceName, true);
+                        case AudioMethodType.Mute:
+                            _ = conn.OBS.InputsRequests.SetInputMuteAsync(sourceName, true);
                             break;
-                        case "unmute":
-                            _ = PluginInstance.Main.Obs.InputsRequests.SetInputMuteAsync(sourceName, false);
+                        case AudioMethodType.Unmute:
+                            _ = conn.OBS.InputsRequests.SetInputMuteAsync(sourceName, false);
                             break;
-                        case "toggle":
+                        case AudioMethodType.Toggle:
                             _ = Task.Run(async () =>
                             {
-                                var mutedState = await PluginInstance.Main.Obs.InputsRequests.GetInputMuteAsync(sourceName);
-                                await PluginInstance.Main.Obs.InputsRequests.SetInputMuteAsync(sourceName, !mutedState.InputMuted);
+                                var mutedState = await conn.OBS.InputsRequests.GetInputMuteAsync(sourceName);
+                                await conn.OBS.InputsRequests.SetInputMuteAsync(sourceName, !mutedState.InputMuted);
                             });
                             break;
                     }
@@ -53,7 +55,7 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         public override ActionConfigControl GetActionConfigControl(ActionConfigurator actionConfigurator)
         {
-            return new AudioSourceSelector(this, actionConfigurator);
+            return new SetAudioMutedConfigView(this, actionConfigurator);
         }
     }
 

@@ -5,6 +5,7 @@ using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Plugins;
 using SuchByte.OBSWebSocketPlugin.GUI;
 using SuchByte.OBSWebSocketPlugin.Language;
+using SuchByte.OBSWebSocketPlugin.Models.Action;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,32 +22,35 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         public override void Trigger(string clientId, ActionButton actionButton)
         {
-            if (!PluginInstance.Main.Obs.IsConnected) return;
             if (!String.IsNullOrWhiteSpace(this.Configuration))
             {
                 try
                 {
-                    JObject configurationObject = JObject.Parse(this.Configuration);
-                    string sceneName = configurationObject["sceneName"].ToString();
-                    string sourceName = configurationObject["sourceName"].ToString();
+                    var config = JObject.Parse(this.Configuration).ToObject<SourceVisibilityConfig>();
+
+                    var conn = PluginInstance.Main.Connections.GetValueOrDefault(config?.ConnectionName ?? "");
+                    if (conn == null) return;
+
+                    string sceneName = config.SceneName;
+                    string sourceName = config.SourceName;
 
                     _ = Task.Run(async () =>
                     {
-                        var sceneItemId = (await PluginInstance.Main.Obs.SceneItemsRequests.GetSceneItemIdAsync(sceneName, sourceName))?.SceneItemId ?? -1;
+                        var sceneItemId = (await conn.OBS.SceneItemsRequests.GetSceneItemIdAsync(sceneName, sourceName))?.SceneItemId ?? -1;
                         if (sceneItemId == -1) return;
-                        var sceneItemEnabled = (await PluginInstance.Main.Obs.SceneItemsRequests.GetSceneItemEnabledAsync(sceneName, sceneItemId))?.SceneItemEnabled;
+                        var sceneItemEnabled = (await conn.OBS.SceneItemsRequests.GetSceneItemEnabledAsync(sceneName, sceneItemId))?.SceneItemEnabled;
                         if (sceneItemEnabled == null) return;
 
-                        switch (configurationObject["method"].ToString())
+                        switch (config.Method)
                         {
-                            case "hide":
-                                await PluginInstance.Main.Obs.SceneItemsRequests.SetSceneItemEnabledAsync(sceneName, sceneItemId, false);
+                            case Enum.VisibilityMethodType.Hide:
+                                await conn.OBS.SceneItemsRequests.SetSceneItemEnabledAsync(sceneName, sceneItemId, false);
                                 break;
-                            case "show":
-                                await PluginInstance.Main.Obs.SceneItemsRequests.SetSceneItemEnabledAsync(sceneName, sceneItemId, true);
+                            case Enum.VisibilityMethodType.Show:
+                                await conn.OBS.SceneItemsRequests.SetSceneItemEnabledAsync(sceneName, sceneItemId, true);
                                 break;
-                            case "toggle":
-                                await PluginInstance.Main.Obs.SceneItemsRequests.SetSceneItemEnabledAsync(sceneName, sceneItemId, !(bool)sceneItemEnabled);
+                            case Enum.VisibilityMethodType.Toggle:
+                                await conn.OBS.SceneItemsRequests.SetSceneItemEnabledAsync(sceneName, sceneItemId, !(bool)sceneItemEnabled);
                                 break;
                         }
                     });
@@ -57,7 +61,7 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         public override ActionConfigControl GetActionConfigControl(ActionConfigurator actionConfigurator)
         {
-            return new SceneSourceSelector(this, actionConfigurator);
+            return new SourceVisibilityConfigView(this, actionConfigurator);
         }
 
 

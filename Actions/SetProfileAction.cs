@@ -3,8 +3,10 @@ using SuchByte.MacroDeck.ActionButton;
 using SuchByte.MacroDeck.GUI;
 using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Plugins;
+using SuchByte.OBSWebSocketPlugin.Controllers;
 using SuchByte.OBSWebSocketPlugin.GUI;
 using SuchByte.OBSWebSocketPlugin.Language;
+using SuchByte.OBSWebSocketPlugin.Models.Action;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,13 +23,15 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         public override void Trigger(string clientId, ActionButton actionButton)
         {
-            if (!PluginInstance.Main.Obs.IsConnected) return;
             if (!String.IsNullOrWhiteSpace(this.Configuration))
             {
                 try
                 {
-                    JObject configurationObject = JObject.Parse(this.Configuration);
-                    _ = PluginInstance.Main.Obs.ConfigRequests.SetCurrentProfileAsync(configurationObject["profile"].ToString());
+                    var config = JObject.Parse(this.Configuration).ToObject<SetProfileConfig>();
+                    var conn = PluginInstance.Main.Connections.GetValueOrDefault(config?.ConnectionName ?? "");
+                    if (conn == null) return;
+
+                    _ = conn.OBS.ConfigRequests.SetCurrentProfileAsync(config.Profile);
                 }
                 catch { }
             }
@@ -35,7 +39,7 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         public override ActionConfigControl GetActionConfigControl(ActionConfigurator actionConfigurator)
         {
-            return new ProfileSelector(this, actionConfigurator);
+            return new SetProfileConfigView(this, actionConfigurator);
         }
     }
 }

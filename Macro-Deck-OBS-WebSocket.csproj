@@ -13,7 +13,7 @@
 	<PackageProjectUrl>https://github.com/SuchByte/Macro-Deck-OBS-WebSocket-Plugin</PackageProjectUrl>
 	<RepositoryUrl>https://github.com/SuchByte/Macro-Deck-OBS-WebSocket-Plugin</RepositoryUrl>
 	<Copyright>SuchByte</Copyright>
-	<TargetFramework>netcoreapp3.1</TargetFramework>
+	<TargetFramework>net7.0-windows10.0.22000.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -36,9 +36,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Macro Deck 2">
-      <HintPath>C:\Program Files\Macro Deck\Macro Deck 2.dll</HintPath>
-    </Reference>
+      <Reference Include="Macro Deck 2">
+          <HintPath>C:\Program Files\Macro Deck\Macro Deck 2.dll</HintPath>
+      </Reference>
   </ItemGroup>
 
   <ItemGroup>
@@ -56,11 +56,11 @@
     </EmbeddedResource>
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if not exist &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\$(PackageId)&quot; mkdir &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\$(PackageId)&quot;" />
-    <Exec Command="copy /Y &quot;$(ProjectDir)ExtensionManifest.json&quot; &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\$(PackageId)\ExtensionManifest.json&quot;" />
-    <Exec Command="copy /Y &quot;$(ProjectDir)ExtensionIcon.png&quot; &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\$(PackageId)\ExtensionIcon.png&quot;" />
-    <Exec Command="copy /Y &quot;$(TargetDir)*.dll&quot; &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\$(PackageId)\&quot;" />
-  </Target>
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+        <Exec Command="if not exist &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\$(PackageId)&quot; mkdir &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\$(PackageId)&quot;" />
+        <Exec Command="copy /Y &quot;$(ProjectDir)ExtensionManifest.json&quot; &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\$(PackageId)\ExtensionManifest.json&quot;" />
+        <Exec Command="copy /Y &quot;$(ProjectDir)ExtensionIcon.png&quot; &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\$(PackageId)\ExtensionIcon.png&quot;" />
+        <Exec Command="copy /Y &quot;$(TargetDir)*.dll&quot; &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\$(PackageId)\&quot;" />
+    </Target>
 
 </Project>
