@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
 
-namespace SuchByte.OBSWebSocketPlugin.GUI
+namespace SuchByte.OBSWebSocketPlugin.GUI.Utilities
 {
     public static class TableLayoutHelper
     {

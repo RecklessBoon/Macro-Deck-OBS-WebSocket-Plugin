@@ -2,6 +2,7 @@
 using SuchByte.MacroDeck.Language;
 using SuchByte.MacroDeck.Logging;
 using SuchByte.MacroDeck.Plugins;
+using SuchByte.OBSWebSocketPlugin.GUI.Utilities;
 using SuchByte.OBSWebSocketPlugin.Models;
 using System;
 using System.Collections.Generic;

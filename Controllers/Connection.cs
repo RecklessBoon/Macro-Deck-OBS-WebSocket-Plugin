@@ -35,6 +35,8 @@ namespace SuchByte.OBSWebSocketPlugin.Controllers
 
         public bool IsDisposed { get; private set; } = false;
 
+        public event EventHandler<EventArgs> Disposed;
+
         public Connection(ConnectionConfig config)
         {
             Config = config;   
@@ -74,10 +76,51 @@ namespace SuchByte.OBSWebSocketPlugin.Controllers
             return Task.CompletedTask;
         }
 
+        public void SetVariable(string name, string value)
+        {
+            SetVariable(name, value, Array.Empty<string>());
+        }
+
+        public void SetVariable(string name, string value, string[] suggestions)
+        {
+            MacroDeck.Variables.VariableManager.SetValue(Main.VariablePrefix + VariableNS + "/" + name, value, MacroDeck.Variables.VariableType.String, PluginInstance.Main, suggestions);
+        }
+
+        public void SetVariable(string name, int value)
+        {
+            SetVariable(name, value, Array.Empty<string>());
+        }
+
+        public void SetVariable(string name, int value, string[] suggestions)
+        {
+            MacroDeck.Variables.VariableManager.SetValue(Main.VariablePrefix + VariableNS + "/" + name, value, MacroDeck.Variables.VariableType.Integer, PluginInstance.Main, suggestions);
+        }
+
+        public void SetVariable(string name, float value)
+        {
+            SetVariable(name, value, Array.Empty<string>());
+        }
+
+        public void SetVariable(string name, float value, string[] suggestions)
+        {
+            MacroDeck.Variables.VariableManager.SetValue(Main.VariablePrefix + VariableNS + "/" + name, value, MacroDeck.Variables.VariableType.Float, PluginInstance.Main, suggestions);
+        }
+
+        public void SetVariable(string name, bool value)
+        {
+            SetVariable(name, value, Array.Empty<string>());
+        }
+
+        public void SetVariable(string name, bool value, string[] suggestions)
+        {
+            MacroDeck.Variables.VariableManager.SetValue(Main.VariablePrefix + VariableNS + "/" + name, value, MacroDeck.Variables.VariableType.Bool, PluginInstance.Main, suggestions);
+        }
+
         public void Dispose()
         {
             OBS?.Dispose();
             IsDisposed = true;
+            Disposed?.Invoke(this, EventArgs.Empty);
             GC.SuppressFinalize(this);
         }
     }
