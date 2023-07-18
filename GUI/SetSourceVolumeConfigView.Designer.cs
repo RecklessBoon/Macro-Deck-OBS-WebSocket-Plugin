@@ -41,7 +41,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             decibel = new NumericUpDown();
             lblDecibel = new Label();
             connectionSelector1 = new ConnectionSelector();
-            label1 = new Label();
+            lblConnection = new Label();
             ((System.ComponentModel.ISupportInitialize)decibel).BeginInit();
             SuspendLayout();
             // 
@@ -167,22 +167,23 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             connectionSelector1.Name = "connectionSelector1";
             connectionSelector1.Size = new System.Drawing.Size(337, 26);
             connectionSelector1.TabIndex = 18;
+            connectionSelector1.Value = null;
             // 
-            // label1
+            // lblConnection
             // 
-            label1.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            label1.Location = new System.Drawing.Point(159, 84);
-            label1.Name = "label1";
-            label1.Size = new System.Drawing.Size(113, 26);
-            label1.TabIndex = 19;
-            label1.Text = "Connection:";
-            label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            lblConnection.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            lblConnection.Location = new System.Drawing.Point(159, 84);
+            lblConnection.Name = "lblConnection";
+            lblConnection.Size = new System.Drawing.Size(113, 26);
+            lblConnection.TabIndex = 19;
+            lblConnection.Text = "Connection:";
+            lblConnection.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // SetSourceVolumeConfigView
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(10F, 23F);
             AutoScaleMode = AutoScaleMode.Font;
-            Controls.Add(label1);
+            Controls.Add(lblConnection);
             Controls.Add(connectionSelector1);
             Controls.Add(lblDecibel);
             Controls.Add(decibel);
@@ -210,6 +211,6 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
         private NumericUpDown decibel;
         private Label lblDecibel;
         private ConnectionSelector connectionSelector1;
-        private Label label1;
+        private Label lblConnection;
     }
 }

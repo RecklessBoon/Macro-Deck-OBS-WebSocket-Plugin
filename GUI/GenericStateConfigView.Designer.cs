@@ -36,7 +36,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             radioStop = new RadioButton();
             radioToggle = new RadioButton();
             connectionSelector1 = new ConnectionSelector();
-            label1 = new Label();
+            lblConnection = new Label();
             SuspendLayout();
             // 
             // radioStart
@@ -85,22 +85,23 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             connectionSelector1.Name = "connectionSelector1";
             connectionSelector1.Size = new System.Drawing.Size(338, 26);
             connectionSelector1.TabIndex = 3;
+            connectionSelector1.Value = null;
             // 
-            // label1
+            // lblConnection
             // 
-            label1.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            label1.Location = new System.Drawing.Point(136, 112);
-            label1.Name = "label1";
-            label1.Size = new System.Drawing.Size(128, 26);
-            label1.TabIndex = 4;
-            label1.Text = "Connection:";
-            label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            lblConnection.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            lblConnection.Location = new System.Drawing.Point(136, 112);
+            lblConnection.Name = "lblConnection";
+            lblConnection.Size = new System.Drawing.Size(128, 26);
+            lblConnection.TabIndex = 4;
+            lblConnection.Text = "Connection:";
+            lblConnection.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // GenericStateConfigView
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(10F, 23F);
             AutoScaleMode = AutoScaleMode.Font;
-            Controls.Add(label1);
+            Controls.Add(lblConnection);
             Controls.Add(connectionSelector1);
             Controls.Add(radioToggle);
             Controls.Add(radioStop);
@@ -115,6 +116,6 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
         private RadioButton radioStop;
         private RadioButton radioToggle;
         private ConnectionSelector connectionSelector1;
-        private Label label1;
+        private Label lblConnection;
     }
 }

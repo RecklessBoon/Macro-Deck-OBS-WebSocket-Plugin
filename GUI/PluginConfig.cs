@@ -3,6 +3,7 @@ using SuchByte.MacroDeck.Language;
 using SuchByte.MacroDeck.Logging;
 using SuchByte.MacroDeck.Plugins;
 using SuchByte.OBSWebSocketPlugin.GUI.Utilities;
+using SuchByte.OBSWebSocketPlugin.Language;
 using SuchByte.OBSWebSocketPlugin.Models;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
         {
             InitializeComponent();
 
+            btnClearVariables.Text = PluginLanguageManager.PluginStrings.ClearVariables;
             btnOk.Text = LanguageManager.Strings.Ok;
 
             List<Dictionary<string, string>> credentials = PluginCredentials.GetPluginCredentials(PluginInstance.Main);

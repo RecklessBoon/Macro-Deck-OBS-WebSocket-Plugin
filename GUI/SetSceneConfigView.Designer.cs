@@ -33,7 +33,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             scenesBox = new MacroDeck.GUI.CustomControls.RoundedComboBox();
             lblScene = new System.Windows.Forms.Label();
             connectionSelector1 = new ConnectionSelector();
-            label1 = new System.Windows.Forms.Label();
+            lblConnection = new System.Windows.Forms.Label();
             SuspendLayout();
             // 
             // btnReloadScenes
@@ -88,22 +88,23 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             connectionSelector1.Name = "connectionSelector1";
             connectionSelector1.Size = new System.Drawing.Size(337, 26);
             connectionSelector1.TabIndex = 6;
+            connectionSelector1.Value = null;
             // 
-            // label1
+            // lblConnection
             // 
-            label1.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            label1.Location = new System.Drawing.Point(161, 81);
-            label1.Name = "label1";
-            label1.Size = new System.Drawing.Size(131, 26);
-            label1.TabIndex = 7;
-            label1.Text = "Connection:";
-            label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            lblConnection.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            lblConnection.Location = new System.Drawing.Point(161, 81);
+            lblConnection.Name = "lblConnection";
+            lblConnection.Size = new System.Drawing.Size(131, 26);
+            lblConnection.TabIndex = 7;
+            lblConnection.Text = "Connection:";
+            lblConnection.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // SetSceneConfigView
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(10F, 23F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            Controls.Add(label1);
+            Controls.Add(lblConnection);
             Controls.Add(connectionSelector1);
             Controls.Add(btnReloadScenes);
             Controls.Add(scenesBox);
@@ -118,6 +119,6 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
         private MacroDeck.GUI.CustomControls.RoundedComboBox scenesBox;
         private System.Windows.Forms.Label lblScene;
         private ConnectionSelector connectionSelector1;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblConnection;
     }
 }

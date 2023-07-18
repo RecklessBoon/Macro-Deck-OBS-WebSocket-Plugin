@@ -37,7 +37,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             btnReloadSources = new MacroDeck.GUI.CustomControls.ButtonPrimary();
             sourcesBox = new MacroDeck.GUI.CustomControls.RoundedComboBox();
             lblSource = new Label();
-            label1 = new Label();
+            lblConnection = new Label();
             connectionSelector1 = new ConnectionSelector();
             SuspendLayout();
             // 
@@ -123,15 +123,15 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             lblSource.Text = "Source:";
             lblSource.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // label1
+            // lblConnection
             // 
-            label1.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            label1.Location = new System.Drawing.Point(129, 56);
-            label1.Name = "label1";
-            label1.Size = new System.Drawing.Size(113, 30);
-            label1.TabIndex = 9;
-            label1.Text = "Connection:";
-            label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            lblConnection.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            lblConnection.Location = new System.Drawing.Point(129, 56);
+            lblConnection.Name = "lblConnection";
+            lblConnection.Size = new System.Drawing.Size(113, 30);
+            lblConnection.TabIndex = 9;
+            lblConnection.Text = "Connection:";
+            lblConnection.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // connectionSelector1
             // 
@@ -141,20 +141,21 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             connectionSelector1.Name = "connectionSelector1";
             connectionSelector1.Size = new System.Drawing.Size(337, 26);
             connectionSelector1.TabIndex = 11;
+            connectionSelector1.Value = null;
             // 
-            // AudioSourceSelector
+            // SetAudioMutedConfigView
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(10F, 23F);
             AutoScaleMode = AutoScaleMode.Font;
             Controls.Add(connectionSelector1);
-            Controls.Add(label1);
+            Controls.Add(lblConnection);
             Controls.Add(btnReloadSources);
             Controls.Add(sourcesBox);
             Controls.Add(lblSource);
             Controls.Add(radioToggle);
             Controls.Add(radioUnmute);
             Controls.Add(radioMute);
-            Name = "AudioSourceSelector";
+            Name = "SetAudioMutedConfigView";
             ResumeLayout(false);
         }
 
@@ -166,7 +167,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
         private MacroDeck.GUI.CustomControls.ButtonPrimary btnReloadSources;
         private MacroDeck.GUI.CustomControls.RoundedComboBox sourcesBox;
         private Label lblSource;
-        private Label label1;
+        private Label lblConnection;
         private ConnectionSelector connectionSelector1;
     }
 }

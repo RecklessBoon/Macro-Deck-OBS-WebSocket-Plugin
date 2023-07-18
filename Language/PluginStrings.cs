@@ -72,6 +72,12 @@ namespace SuchByte.OBSWebSocketPlugin.Language
         public string Auto = "Auto";
         public string WebSocket5 = "WebSocket 5";
         public string WebSocket4 = "WebSocket 4";
+        public string ClearVariables = "Clear Variables";
+        public string AllConnections = "All Connections";
+        public string Connection = "Connection";
+        public string Connect = "Connect";
+        public string Disconnect = "Disconnect";
+        public string Value = "Value";
     }
 }
 // PluginLanguageManager.PluginStrings.

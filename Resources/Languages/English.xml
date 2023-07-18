@@ -58,4 +58,10 @@
 	The replay buffer needs to be started to save the replay buffer!</ActionSaveReplayBufferDescription>
 	<ActionSetReplayBufferState>Set OBS replay buffer state</ActionSetReplayBufferState>
 	<ActionSetReplayBufferStateDescription>Start/stop/toggle the replay buffer</ActionSetReplayBufferStateDescription>
+    <AllConnections>All Connections</AllConnections>
+    <Connection>Connection</Connection>
+  <Connect>Connect</Connect>
+    <Disconnect>Disconnect</Disconnect>
+    <ClearVariables>Clear Variables</ClearVariables>
+    <Value>Value</Value>
 </PluginStrings>

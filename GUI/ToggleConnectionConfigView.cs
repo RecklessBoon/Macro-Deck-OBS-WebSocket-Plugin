@@ -23,6 +23,9 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             this.pluginAction = pluginAction;
             InitializeComponent();
 
+            this.rbAllConnections.Text = PluginLanguageManager.PluginStrings.AllConnections;
+            this.rbSingleConnection.Text = PluginLanguageManager.PluginStrings.Connection + ":";
+
             // TODO: Add Connection label strings
             //this.lblSource.Text = PluginLanguageManager.PluginStrings.Source;
             //this.radioMute.Text = PluginLanguageManager.PluginStrings.Mute;

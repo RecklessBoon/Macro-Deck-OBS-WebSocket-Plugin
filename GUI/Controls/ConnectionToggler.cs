@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using SuchByte.OBSWebSocketPlugin.Controllers;
 using SuchByte.OBSWebSocketPlugin.GUI.Utilities;
+using SuchByte.OBSWebSocketPlugin.Language;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -46,16 +47,19 @@ namespace SuchByte.OBSWebSocketPlugin.GUI.Controls
         public ConnectionToggler(Connection connection)
         {
             InitializeComponent();
+
+            buttonPrimary1.Text = PluginLanguageManager.PluginStrings.Connect;
+
             Connection = connection;
         }
 
         public void OnConnected(object sender, EventArgs e)
         {
-            buttonPrimary1.Text = "Disconnect";
+            buttonPrimary1.Text = PluginLanguageManager.PluginStrings.Disconnect;
             EventHandler<EventArgs> handler = default;
             handler = (object sender, EventArgs args) =>
             {
-                buttonPrimary1.Text = "Connect";
+                buttonPrimary1.Text = PluginLanguageManager.PluginStrings.Connect;
                 Connection.Disposed -= handler;
             };
             Connection.Disposed += handler;

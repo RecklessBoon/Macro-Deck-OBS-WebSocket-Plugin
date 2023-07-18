@@ -35,7 +35,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             profilesBox = new RoundedComboBox();
             btnReloadProfiles = new ButtonPrimary();
             connectionSelector1 = new ConnectionSelector();
-            label1 = new System.Windows.Forms.Label();
+            lblConnection = new System.Windows.Forms.Label();
             SuspendLayout();
             // 
             // lblProfile
@@ -90,22 +90,23 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             connectionSelector1.Name = "connectionSelector1";
             connectionSelector1.Size = new System.Drawing.Size(337, 26);
             connectionSelector1.TabIndex = 3;
+            connectionSelector1.Value = null;
             // 
-            // label1
+            // lblConnection
             // 
-            label1.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            label1.Location = new System.Drawing.Point(162, 74);
-            label1.Name = "label1";
-            label1.Size = new System.Drawing.Size(99, 30);
-            label1.TabIndex = 4;
-            label1.Text = "Connection:";
-            label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            lblConnection.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            lblConnection.Location = new System.Drawing.Point(162, 74);
+            lblConnection.Name = "lblConnection";
+            lblConnection.Size = new System.Drawing.Size(99, 30);
+            lblConnection.TabIndex = 4;
+            lblConnection.Text = "Connection:";
+            lblConnection.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // SetProfileConfigView
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(10F, 23F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            Controls.Add(label1);
+            Controls.Add(lblConnection);
             Controls.Add(connectionSelector1);
             Controls.Add(btnReloadProfiles);
             Controls.Add(profilesBox);
@@ -120,6 +121,6 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
         private RoundedComboBox profilesBox;
         private ButtonPrimary btnReloadProfiles;
         private ConnectionSelector connectionSelector1;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblConnection;
     }
 }

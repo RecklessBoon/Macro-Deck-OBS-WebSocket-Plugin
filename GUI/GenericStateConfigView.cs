@@ -26,6 +26,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             this.pluginAction = pluginAction;
             InitializeComponent();
 
+            this.lblConnection.Text = PluginLanguageManager.PluginStrings.Connection;
             this.radioStart.Text = PluginLanguageManager.PluginStrings.Start;
             this.radioStop.Text = PluginLanguageManager.PluginStrings.Stop;
             this.radioToggle.Text = PluginLanguageManager.PluginStrings.Toggle;
@@ -67,7 +68,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                 try
                 {
                     config = JObject.Parse(this.pluginAction.Configuration).ToObject<GenericStateConfig>();
-                    
+
                 }
                 catch { }
             }

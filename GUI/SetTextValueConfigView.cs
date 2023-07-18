@@ -27,6 +27,11 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             this.pluginAction = pluginAction;
             InitializeComponent();
 
+            lblConnection.Text = PluginLanguageManager.PluginStrings.Connection;
+            lblScene.Text = PluginLanguageManager.PluginStrings.Scene;
+            lblSource.Text = PluginLanguageManager.PluginStrings.Source;
+            lblVariable.Text = PluginLanguageManager.PluginStrings.Value;
+
             LoadConfig();
             ResetValues();
             LoadScenes();
@@ -81,9 +86,10 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                         scenesBox.Invoke((MethodInvoker)delegate { scenesBox.Items.Add(name); });
                     }
                 }
-                self.Invoke((MethodInvoker)delegate {
+                self.Invoke((MethodInvoker)delegate
+                {
                     scenesBox.Text = config?.SceneName;
-                    LoadSources(); 
+                    LoadSources();
                 });
             });
         }
@@ -125,7 +131,8 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                         }
                     }
                 }
-                self.Invoke((MethodInvoker)delegate {
+                self.Invoke((MethodInvoker)delegate
+                {
                     sourcesBox.Text = config?.SourceName;
                 });
             });

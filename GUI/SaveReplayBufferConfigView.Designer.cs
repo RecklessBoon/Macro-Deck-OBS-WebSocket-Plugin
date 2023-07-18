@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            label1 = new System.Windows.Forms.Label();
+            lblConnection = new System.Windows.Forms.Label();
             connectionSelector1 = new ConnectionSelector();
             tableLayoutPanel1.SuspendLayout();
             SuspendLayout();
@@ -39,7 +39,7 @@
             tableLayoutPanel1.ColumnCount = 2;
             tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            tableLayoutPanel1.Controls.Add(label1, 0, 0);
+            tableLayoutPanel1.Controls.Add(lblConnection, 0, 0);
             tableLayoutPanel1.Controls.Add(connectionSelector1, 1, 0);
             tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             tableLayoutPanel1.Location = new System.Drawing.Point(5, 5);
@@ -49,34 +49,36 @@
             tableLayoutPanel1.Size = new System.Drawing.Size(569, 334);
             tableLayoutPanel1.TabIndex = 0;
             // 
-            // label1
+            // lblConnection
             // 
-            label1.AutoSize = true;
-            label1.Dock = System.Windows.Forms.DockStyle.Top;
-            label1.Location = new System.Drawing.Point(3, 3);
-            label1.Margin = new System.Windows.Forms.Padding(3);
-            label1.Name = "label1";
-            label1.Size = new System.Drawing.Size(110, 23);
-            label1.TabIndex = 1;
-            label1.Text = "Connection:";
+            lblConnection.AutoSize = true;
+            lblConnection.Dock = System.Windows.Forms.DockStyle.Top;
+            lblConnection.Location = new System.Drawing.Point(3, 3);
+            lblConnection.Margin = new System.Windows.Forms.Padding(3);
+            lblConnection.Name = "lblConnection";
+            lblConnection.Size = new System.Drawing.Size(110, 23);
+            lblConnection.TabIndex = 1;
+            lblConnection.Text = "Connection:";
             // 
             // connectionSelector1
             // 
             connectionSelector1.BackColor = System.Drawing.Color.FromArgb(45, 45, 45);
             connectionSelector1.Dock = System.Windows.Forms.DockStyle.Top;
-            connectionSelector1.Location = new System.Drawing.Point(119, 3);
+            connectionSelector1.Location = new System.Drawing.Point(116, 0);
+            connectionSelector1.Margin = new System.Windows.Forms.Padding(0);
             connectionSelector1.Name = "connectionSelector1";
-            connectionSelector1.Size = new System.Drawing.Size(447, 26);
+            connectionSelector1.Size = new System.Drawing.Size(453, 26);
             connectionSelector1.TabIndex = 2;
+            connectionSelector1.Value = null;
             // 
-            // SaveReplayBufferSelector
+            // SaveReplayBufferConfigView
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(10F, 23F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             BackColor = System.Drawing.Color.FromArgb(45, 45, 45);
             Controls.Add(tableLayoutPanel1);
             Margin = new System.Windows.Forms.Padding(3, 40, 3, 3);
-            Name = "SaveReplayBufferSelector";
+            Name = "SaveReplayBufferConfigView";
             Padding = new System.Windows.Forms.Padding(5);
             Size = new System.Drawing.Size(579, 344);
             tableLayoutPanel1.ResumeLayout(false);
@@ -87,7 +89,7 @@
         #endregion
 
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblConnection;
         private ConnectionSelector connectionSelector1;
     }
 }

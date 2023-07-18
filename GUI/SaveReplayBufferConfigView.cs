@@ -3,6 +3,7 @@ using SuchByte.MacroDeck.GUI;
 using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Plugins;
 using SuchByte.OBSWebSocketPlugin.Controllers;
+using SuchByte.OBSWebSocketPlugin.Language;
 using SuchByte.OBSWebSocketPlugin.Models;
 using SuchByte.OBSWebSocketPlugin.Models.Action;
 using System;
@@ -25,6 +26,8 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
         {
             this.pluginAction = pluginAction;
             InitializeComponent();
+
+            this.lblConnection.Text = PluginLanguageManager.PluginStrings.Connection;
 
             if (pluginAction.Configuration != null)
             {

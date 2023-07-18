@@ -58,4 +58,10 @@
 O buffer de repetição precisa ser iniciado para salvar o buffer de repetição!</ActionSaveReplayBufferDescription>
 	<ActionSetReplayBufferState>Definir o estado do buffer de repetição do OBS</ActionSetReplayBufferState>
 	<ActionSetReplayBufferStateDescription>Iniciar/parar/alternar o buffer de repetição</ActionSetReplayBufferStateDescription>
+    <AllConnections>Todas as conexões</AllConnections>
+    <Connection>Conexão</Connection>
+    <Connect>Conectar</Connect>
+    <Disconnect>desconectar</Disconnect>
+    <ClearVariables>Limpar Variáveis</ClearVariables>
+    <Value>Valor</Value>
 </PluginStrings>

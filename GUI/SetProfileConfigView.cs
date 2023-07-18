@@ -26,6 +26,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             this.pluginAction = pluginAction;
             InitializeComponent();
 
+            this.lblConnection.Text = PluginLanguageManager.PluginStrings.Connection;
             this.lblProfile.Text = PluginLanguageManager.PluginStrings.Profile;
 
             LoadConfig();
@@ -74,7 +75,8 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                 {
                     profilesBox.Invoke((MethodInvoker)delegate { profilesBox.Items.Add(profile); });
                 }
-                self.Invoke((MethodInvoker)delegate {
+                self.Invoke((MethodInvoker)delegate
+                {
                     profilesBox.Text = config?.Profile;
                 });
             });
