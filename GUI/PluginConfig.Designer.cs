@@ -181,6 +181,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             btnOk.Text = "Ok";
             btnOk.UseVisualStyleBackColor = false;
             btnOk.UseWindowsAccentColor = true;
+            btnOk.Click += BtnOk_Click;
             // 
             // btnClearVariables
             // 

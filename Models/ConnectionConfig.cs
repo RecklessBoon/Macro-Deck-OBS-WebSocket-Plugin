@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SuchByte.OBSWebSocketPlugin.Language;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Windows.Services.Maps;
@@ -24,14 +25,14 @@ namespace SuchByte.OBSWebSocketPlugin.Models
         public static ConnectionConfig FromCredentials(Dictionary<string, string> creds)
         {
             if (creds == null) return new ConnectionConfig();
-            if (!creds.ContainsKey("name") || !creds.ContainsKey("host") || !creds.ContainsKey("password"))
+            if (!creds.ContainsKey("host") || !creds.ContainsKey("password"))
             {
-                throw new ArgumentException("Credentials must have the keys: [name, host, password]");
+                throw new ArgumentException("Credentials must have the keys: [host, password]");
             }
 
             var config = new ConnectionConfig
             {
-                name = creds["name"],
+                name = creds.ContainsKey("name") ? creds["name"] : PluginLanguageManager.PluginStrings.Default.ToLower(),
                 host = creds["host"],
                 password = creds["password"]
             };

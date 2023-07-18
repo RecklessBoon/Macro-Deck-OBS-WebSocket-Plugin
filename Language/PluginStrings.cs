@@ -78,6 +78,7 @@ namespace SuchByte.OBSWebSocketPlugin.Language
         public string Connect = "Connect";
         public string Disconnect = "Disconnect";
         public string Value = "Value";
+        public string Default = "Default";
     }
 }
 // PluginLanguageManager.PluginStrings.

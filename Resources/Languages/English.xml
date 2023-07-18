@@ -64,4 +64,5 @@
     <Disconnect>Disconnect</Disconnect>
     <ClearVariables>Clear Variables</ClearVariables>
     <Value>Value</Value>
+    <Default>Default</Default>
 </PluginStrings>

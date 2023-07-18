@@ -64,4 +64,5 @@ O buffer de repetição precisa ser iniciado para salvar o buffer de repetição
     <Disconnect>desconectar</Disconnect>
     <ClearVariables>Limpar Variáveis</ClearVariables>
     <Value>Valor</Value>
+    <Default>Padrão</Default>
 </PluginStrings>

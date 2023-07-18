@@ -141,6 +141,7 @@ namespace SuchByte.OBSWebSocketPlugin
                     pair.Value.Dispose();
                 }
             }
+            Connections = new();
             
             var credSet = PluginCredentials.GetPluginCredentials(this);
             var tasks = new List<Task>();

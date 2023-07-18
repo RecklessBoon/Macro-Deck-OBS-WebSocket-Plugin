@@ -50,4 +50,5 @@
 		<Disconnect>Disconnetti</Disconnect>
     <ClearVariables>Cancella variabili</ClearVariables>
     <Value>Valore</Value>
+    <Default>Predefinito</Default>
 </PluginStrings>

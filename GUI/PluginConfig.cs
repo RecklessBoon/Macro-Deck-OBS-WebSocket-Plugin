@@ -36,7 +36,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                     {
                         var config = new ConnectionConfig
                         {
-                            name = page.ContainsKey("name") ? page["name"] : "",
+                            name = page.ContainsKey("name") ? page["name"] : PluginLanguageManager.PluginStrings.Default.ToLower(),
                             host = page.ContainsKey("host") ? page["host"] : "",
                             password = page.ContainsKey("password") ? page["password"] : ""
                         };

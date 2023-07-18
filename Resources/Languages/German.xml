@@ -59,4 +59,5 @@
     <Disconnect>Trennen</Disconnect>
     <ClearVariables>Variablen löschen</ClearVariables>
     <Value>Wert</Value>
+    <Default>Default</Default>
 </PluginStrings>
