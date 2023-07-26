@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace SuchByte.OBSWebSocketPlugin.Models.Action
 {
-    public partial class SetProfileConfig: ConfigBase
+    public interface IConfigurableAction
     {
-        public override int TargetVersion => 1;
-
-        public string Profile;
+        public ConfigBase GetConfig();
+        public T GetConfig<T>() where T : ConfigBase;
     }
 }

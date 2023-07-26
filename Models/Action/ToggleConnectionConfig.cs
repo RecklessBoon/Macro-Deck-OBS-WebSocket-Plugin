@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace SuchByte.OBSWebSocketPlugin.Models.Action
 {
-    public class ToggleConnectionConfig: ConfigBase
+    public partial class ToggleConnectionConfig: ConfigBase
     {
+        public override int TargetVersion => 1;
+
         public SelectionType SelectionType;
     }
 }

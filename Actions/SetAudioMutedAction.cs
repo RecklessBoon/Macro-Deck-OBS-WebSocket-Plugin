@@ -10,12 +10,13 @@ using SuchByte.OBSWebSocketPlugin.Language;
 using SuchByte.OBSWebSocketPlugin.Models.Action;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SuchByte.OBSWebSocketPlugin.Actions
 {
-    public class SetAudioMutedAction : PluginAction
+    public class SetAudioMutedAction : ActionBase
     {
         public override string Name => PluginLanguageManager.PluginStrings.ActionSetAudioMuted;
 
@@ -23,15 +24,17 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         public override bool CanConfigure => true;
 
+        public override ConfigBase GetConfig() => GetConfig<SetAudioMutedConfig>();
+
         public override void Trigger(string clientId, ActionButton actionButton)
         {
             if (!String.IsNullOrWhiteSpace(this.Configuration))
             {
                 try
                 {
-                    var config = JObject.Parse(this.Configuration).ToObject<SetAudioMutedConfig>();
+                    var config = GetConfig<SetAudioMutedConfig>();
                     string sourceName = config.SourceName;
-                    Connection conn = PluginInstance.Main.Connections.GetValueOrDefault(config?.ConnectionName ?? "");
+                    Connection conn = PluginInstance.Main.Connections.GetValueOrDefault(config?.ConnectionName ?? PluginInstance.Main.Connections.FirstOrDefault().Key);
                     switch (config.Method)
                     {
                         case AudioMethodType.Mute:

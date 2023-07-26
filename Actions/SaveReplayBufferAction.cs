@@ -10,11 +10,12 @@ using SuchByte.OBSWebSocketPlugin.Models;
 using SuchByte.OBSWebSocketPlugin.Models.Action;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace SuchByte.OBSWebSocketPlugin.Actions
 {
-    public class SaveReplayBufferAction : PluginAction
+    public class SaveReplayBufferAction : ActionBase
     {
         public override bool CanConfigure => true;
 
@@ -22,14 +23,13 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         public override string Description => PluginLanguageManager.PluginStrings.ActionSaveReplayBufferDescription;
 
+        public override ConfigBase GetConfig() => GetConfig<SaveReplayBufferConfig>();
+
         public override void Trigger(string clientId, ActionButton actionButton)
         {
-            var config = JObject.Parse(this.Configuration).ToObject<SaveReplayBufferConfig>();
-            Connection conn = PluginInstance.Main.Connections.GetValueOrDefault(config?.ConnectionName ?? "");
-            if (conn != null)
-            {
-                conn.OBS.OutputsRequests.SaveReplayBufferAsync();
-            }
+            var config = GetConfig<SaveReplayBufferConfig>();
+            Connection conn = PluginInstance.Main.Connections.GetValueOrDefault(config?.ConnectionName ?? PluginInstance.Main.Connections.FirstOrDefault().Key);
+            conn?.OBS.OutputsRequests.SaveReplayBufferAsync();
         }
 
         public override ActionConfigControl GetActionConfigControl(ActionConfigurator actionConfigurator)

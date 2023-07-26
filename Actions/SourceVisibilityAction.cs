@@ -8,17 +8,20 @@ using SuchByte.OBSWebSocketPlugin.Language;
 using SuchByte.OBSWebSocketPlugin.Models.Action;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SuchByte.OBSWebSocketPlugin.Actions
 {
-    public class SourceVisibilityAction : PluginAction
+    public class SourceVisibilityAction : ActionBase
     {
         public override string Name => PluginLanguageManager.PluginStrings.ActionSourceVisibility;
 
         public override string Description => PluginLanguageManager.PluginStrings.ActionSourceVisibilityDescription;
         public override bool CanConfigure => true;
+
+        public override ConfigBase GetConfig() => GetConfig<SourceVisibilityConfig>();
 
         public override void Trigger(string clientId, ActionButton actionButton)
         {
@@ -26,9 +29,9 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
             {
                 try
                 {
-                    var config = JObject.Parse(this.Configuration).ToObject<SourceVisibilityConfig>();
+                    var config = GetConfig<SourceVisibilityConfig>();
 
-                    var conn = PluginInstance.Main.Connections.GetValueOrDefault(config?.ConnectionName ?? "");
+                    var conn = PluginInstance.Main.Connections.GetValueOrDefault(config?.ConnectionName ?? PluginInstance.Main.Connections.FirstOrDefault().Key);
                     if (conn == null) return;
 
                     string sceneName = config.SceneName;

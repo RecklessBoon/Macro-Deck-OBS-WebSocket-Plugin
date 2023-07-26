@@ -92,7 +92,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             repeatingLayout.Padding = new System.Windows.Forms.Padding(3);
             repeatingLayout.RowCount = 1;
             repeatingLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            repeatingLayout.Size = new System.Drawing.Size(474, 180);
+            repeatingLayout.Size = new System.Drawing.Size(474, 179);
             repeatingLayout.TabIndex = 7;
             repeatingLayout.CellPaint += RepeatingLayout_CellPaint;
             // 
@@ -106,7 +106,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             connectionConfig_1.Margin = new System.Windows.Forms.Padding(13, 14, 13, 14);
             connectionConfig_1.Name = "connectionConfig_1";
             connectionConfig_1.Padding = new System.Windows.Forms.Padding(5);
-            connectionConfig_1.Size = new System.Drawing.Size(335, 146);
+            connectionConfig_1.Size = new System.Drawing.Size(335, 145);
             connectionConfig_1.TabIndex = 0;
             // 
             // btnExit
@@ -149,7 +149,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             btnAdd.Text = "+";
             btnAdd.UseVisualStyleBackColor = false;
             btnAdd.UseWindowsAccentColor = true;
-            btnAdd.Click += btnAdd_Click;
+            btnAdd.Click += BtnAdd_Click;
             // 
             // flowLayoutPanel1
             // 

@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace SuchByte.OBSWebSocketPlugin.Models.Action
 {
-    public class SetAudioMutedConfig: ConfigBase
+    public partial class SetAudioMutedConfig: ConfigBase
     {
+        public override int TargetVersion => 1;
+
         public string SourceName;
         public AudioMethodType Method;
     }

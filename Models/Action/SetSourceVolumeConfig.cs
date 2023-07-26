@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace SuchByte.OBSWebSocketPlugin.Models.Action
 {
-    public class SetSourceVolumeConfig: ConfigBase
+    public partial class SetSourceVolumeConfig: ConfigBase
     {
+        public override int TargetVersion => 1;
+
         public string SourceName;
         public IncrementalMethodType Method;
         public int Decibel;

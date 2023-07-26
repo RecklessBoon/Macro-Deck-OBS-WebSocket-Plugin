@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace SuchByte.OBSWebSocketPlugin.Models.Action
 {
-    public class SetTextValueConfig: ConfigBase
+    public partial class SetTextValueConfig: ConfigBase
     {
+        public override int TargetVersion => 1;
+
         public string SceneName;
         public string SourceName;
         public string Value;

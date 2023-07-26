@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace SuchByte.OBSWebSocketPlugin.Models.Action
 {
-    public class SaveReplayBufferConfig: ConfigBase
+    public partial class SaveReplayBufferConfig: ConfigBase
     {
+        public override int TargetVersion => 1;
     }
 }

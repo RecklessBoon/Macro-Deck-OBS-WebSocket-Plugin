@@ -2,6 +2,8 @@
 using SuchByte.MacroDeck.Language;
 using SuchByte.MacroDeck.Logging;
 using SuchByte.MacroDeck.Plugins;
+using SuchByte.MacroDeck.Profiles;
+using SuchByte.OBSWebSocketPlugin.Actions;
 using SuchByte.OBSWebSocketPlugin.GUI.Utilities;
 using SuchByte.OBSWebSocketPlugin.Language;
 using SuchByte.OBSWebSocketPlugin.Models;
@@ -89,7 +91,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
 
         private void AddRow(ConnectionConfig config = null)
         {
-            repeatingLayout.RowCount = repeatingLayout.RowCount + 1;
+            repeatingLayout.RowCount++;
             repeatingLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
 
             var elm = new ConnectionConfigurator();
@@ -118,7 +120,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             connectionConfig_1.password.Text = config?.password ?? "";
         }
 
-        private void btnAdd_Click(object sender, EventArgs e)
+        private void BtnAdd_Click(object sender, EventArgs e)
         {
             AddRow();
         }

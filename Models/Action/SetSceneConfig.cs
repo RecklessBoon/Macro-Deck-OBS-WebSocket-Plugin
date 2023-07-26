@@ -6,8 +6,15 @@ using System.Threading.Tasks;
 
 namespace SuchByte.OBSWebSocketPlugin.Models.Action
 {
-    public class SetSceneConfig: ConfigBase
+    public partial class SetSceneConfig: ConfigBase
     {
+        public override int TargetVersion => 1;
+
         public string SceneName;
+
+        public SetSceneConfig()
+        {
+            Version = TargetVersion;
+        }
     }
 }

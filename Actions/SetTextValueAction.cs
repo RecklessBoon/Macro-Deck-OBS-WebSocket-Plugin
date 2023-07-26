@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using SuchByte.MacroDeck.ActionButton;
+using SuchByte.MacroDeck.CottleIntegration;
 using SuchByte.MacroDeck.GUI;
 using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Plugins;
@@ -9,11 +10,12 @@ using SuchByte.OBSWebSocketPlugin.Language;
 using SuchByte.OBSWebSocketPlugin.Models.Action;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SuchByte.OBSWebSocketPlugin.Actions
 {
-    public class SetTextValueAction : PluginAction
+    public class SetTextValueAction : ActionBase
     {
         public override string Name => PluginLanguageManager.PluginStrings.ActionSetTextValue;
 
@@ -21,15 +23,17 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         public override bool CanConfigure => true;
 
+        public override ConfigBase GetConfig() => GetConfig<SetTextValueConfig>();
+
         public override void Trigger(string clientId, ActionButton actionButton)
         {
             if (!String.IsNullOrWhiteSpace(this.Configuration))
             {
                 try
                 {
-                    var config = JObject.Parse(this.Configuration).ToObject<SetTextValueConfig>();
+                    var config = GetConfig<SetTextValueConfig>();
 
-                    var conn = PluginInstance.Main.Connections.GetValueOrDefault(config?.ConnectionName ?? "");
+                    var conn = PluginInstance.Main.Connections.GetValueOrDefault(config?.ConnectionName ?? PluginInstance.Main.Connections.FirstOrDefault().Key);
                     if (conn == null) return;
 
                     string sourceName = config.SourceName;
@@ -39,7 +43,7 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
                     {
                         var response = await conn.OBS.InputsRequests.GetInputSettingsAsync(sourceName);
                         var inputSettings = JObject.FromObject(response.InputSettings);
-                        inputSettings["text"] = VariableManager.RenderTemplate(value);
+                        inputSettings["text"] = TemplateManager.RenderTemplate(value);
 
                         await conn.OBS.InputsRequests.SetInputSettingsAsync(sourceName, inputSettings);
                     });

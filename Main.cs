@@ -18,6 +18,11 @@ using System.Reflection.Metadata.Ecma335;
 using System.Drawing;
 using SuchByte.MacroDeck.GUI.CustomControls.Notifications;
 using SuchByte.OBSWebSocketPlugin.GUI.Controls;
+using SuchByte.MacroDeck.Profiles;
+using SuchByte.OBSWebSocketPlugin.Models.Action;
+using SuchByte.MacroDeck.Models;
+using SuchByte.MacroDeck.Variables;
+using SuchByte.MacroDeck.CottleIntegration;
 
 namespace SuchByte.OBSWebSocketPlugin
 {
@@ -29,6 +34,8 @@ namespace SuchByte.OBSWebSocketPlugin
 
     public class Main : MacroDeckPlugin
     {
+        public string Author = "Macro Deck";
+
         public string Name = "OBS-WebSocket Plugin";
 
         public const string VariablePrefix = "obs_";
@@ -74,6 +81,8 @@ namespace SuchByte.OBSWebSocketPlugin
             statusToolTip.SetToolTip(statusButton, $"{numConnected} Connection(s) Active");
             statusButton.Click += StatusButton_Click;
             mainWindow.contentButtonPanel.Controls.Add(statusButton);
+
+            UpgradeVersion();
         }
 
         private void StatusButton_Click(object sender, EventArgs e)
@@ -91,12 +100,14 @@ namespace SuchByte.OBSWebSocketPlugin
         private void ShowTogglerList()
         {
             togglerList?.Close();
-            togglerList = new ConnectionTogglerList(this.Connections.Values.ToList());
-            togglerList.StartPosition = FormStartPosition.Manual;
-            togglerList.Location = new Point(
-                mainWindow.Location.X + mainWindow.contentButtonPanel.Location.X + mainWindow.contentButtonPanel.Width + 4,
-                mainWindow.Location.Y + statusButton.Location.Y + statusButton.Height
-            );
+            togglerList = new ConnectionTogglerList(this.Connections.Values.ToList())
+            {
+                StartPosition = FormStartPosition.Manual,
+                Location = new Point(
+                    mainWindow.Location.X + mainWindow.contentButtonPanel.Location.X + mainWindow.contentButtonPanel.Width + 4,
+                    mainWindow.Location.Y + statusButton.Location.Y + statusButton.Height
+                )
+            };
             togglerList.Deactivate += (object sender, EventArgs args) =>
             {
                 RemoveTogglerList();
@@ -130,6 +141,54 @@ namespace SuchByte.OBSWebSocketPlugin
                 new ToggleConnectionAction(),
             };
             _ = SetupAndStartAsync();
+        }
+
+        private void UpgradeVersion()
+        {
+            UpgradeActions();
+        }
+
+        private void UpgradeActions()
+        {
+            List<ActionBase> upgradeableActions = new();
+            foreach (var profile in ProfileManager.Profiles)
+            {
+                foreach (var folder in profile.Folders)
+                {
+                    foreach (var button in folder.ActionButtons)
+                    {
+                        foreach (var action in button.Actions)
+                        {
+                            var actionBase = action as ActionBase;
+                            var actionConfig = actionBase?.GetConfig();
+                            if (actionBase != null && actionConfig.Version != actionConfig.TargetVersion)
+                            {
+                                upgradeableActions.Add(actionBase);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (upgradeableActions.Count > 0)
+            {
+                var message = new MacroDeck.GUI.CustomControls.MessageBox();
+                if (DialogResult.Yes ==
+                    message.ShowDialog(
+                        string.Format("{0}: Update Action Configs?", Name),
+                        "Action configurations from previous versions were detected. Proceed to automatically update existing action configurations to newest version? WARNING: You should perform a backup before attempting this! While it should work, there's a chance it could fail.",
+                        MessageBoxButtons.YesNo
+                    )
+                )
+                {
+                    foreach (var action in upgradeableActions)
+                    {
+                        var newConfig = action.GetConfig().UpgradeConfig();
+                        action.Configuration = JObject.FromObject(newConfig).ToString();
+                    }
+                }
+            }
+            GC.Collect();
         }
 
         public async Task SetupAndStartAsync()
@@ -268,7 +327,7 @@ namespace SuchByte.OBSWebSocketPlugin
             sceneSuggestions = scenesList.ToArray();
         }
 
-        private void ResetVariables(Connection connection)
+        private static void ResetVariables(Connection connection)
         {
             connection.SetVariable("connected", "False");
             connection.SetVariable("recording", "False");

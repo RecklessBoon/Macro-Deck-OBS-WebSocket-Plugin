@@ -4,17 +4,19 @@ using SuchByte.MacroDeck.GUI;
 using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Plugins;
 using SuchByte.OBSWebSocketPlugin.Controllers;
+using SuchByte.OBSWebSocketPlugin.Enum;
 using SuchByte.OBSWebSocketPlugin.GUI;
 using SuchByte.OBSWebSocketPlugin.Language;
 using SuchByte.OBSWebSocketPlugin.Models.Action;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SuchByte.OBSWebSocketPlugin.Actions
 {
-    public class SetFilterStateAction : PluginAction
+    public class SetFilterStateAction : ActionBase
     {
         public override string Name => PluginLanguageManager.PluginStrings.ActionFilterState;
 
@@ -22,15 +24,17 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         public override bool CanConfigure => true;
 
+        public override ConfigBase GetConfig() => GetConfig<SetFilterStateConfig>();
+
         public override void Trigger(string clientId, ActionButton actionButton)
         {
             if (!String.IsNullOrWhiteSpace(this.Configuration))
             {
                 try
                 {
-                    var config = JObject.Parse(this.Configuration).ToObject<SetFilterStateConfig>();
+                    var config = GetConfig<SetFilterStateConfig>();
 
-                    Connection conn = PluginInstance.Main.Connections.GetValueOrDefault(config?.ConnectionName ?? "");
+                    Connection conn = PluginInstance.Main.Connections.GetValueOrDefault(config?.ConnectionName ?? PluginInstance.Main.Connections.FirstOrDefault().Key);
                     if (conn == null) return;
 
                     string sceneName = config.SceneName;

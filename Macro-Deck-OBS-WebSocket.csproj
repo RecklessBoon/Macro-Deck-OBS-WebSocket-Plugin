@@ -30,15 +30,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="OBSWebSocket5" Version="0.0.3" />
-    <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
   </ItemGroup>
 
   <ItemGroup>
-      <Reference Include="Macro Deck 2">
-          <HintPath>C:\Program Files\Macro Deck\Macro Deck 2.dll</HintPath>
-      </Reference>
+    <ProjectReference Include="..\..\Macro-Deck\MacroDeck\MacroDeck.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -57,10 +53,10 @@
   </ItemGroup>
 
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-        <Exec Command="if not exist &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\$(PackageId)&quot; mkdir &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\$(PackageId)&quot;" />
-        <Exec Command="copy /Y &quot;$(ProjectDir)ExtensionManifest.json&quot; &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\$(PackageId)\ExtensionManifest.json&quot;" />
-        <Exec Command="copy /Y &quot;$(ProjectDir)ExtensionIcon.png&quot; &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\$(PackageId)\ExtensionIcon.png&quot;" />
-        <Exec Command="copy /Y &quot;$(TargetDir)*.dll&quot; &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\$(PackageId)\&quot;" />
+        <Exec Command="if not exist &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\SuchByte.OBS-WebSocketPlugin&quot; mkdir &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\SuchByte.OBS-WebSocketPlugin&quot;" />
+        <Exec Command="copy /Y &quot;$(ProjectDir)ExtensionManifest.json&quot; &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\SuchByte.OBS-WebSocketPlugin\ExtensionManifest.json&quot;" />
+        <Exec Command="copy /Y &quot;$(ProjectDir)ExtensionIcon.png&quot; &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\SuchByte.OBS-WebSocketPlugin\ExtensionIcon.png&quot;" />
+        <Exec Command="copy /Y &quot;$(TargetDir)*.dll&quot; &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\SuchByte.OBS-WebSocketPlugin\&quot;" />
     </Target>
 
 </Project>

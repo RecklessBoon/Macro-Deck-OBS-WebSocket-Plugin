@@ -8,11 +8,12 @@ using SuchByte.OBSWebSocketPlugin.Language;
 using SuchByte.OBSWebSocketPlugin.Models.Action;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace SuchByte.OBSWebSocketPlugin.Actions
 {
-    public class SetSceneAction : PluginAction
+    public class SetSceneAction : ActionBase
     {
         public override string Name => PluginLanguageManager.PluginStrings.ActionSetScene;
 
@@ -20,15 +21,17 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         public override bool CanConfigure => true;
 
+        public override ConfigBase GetConfig() => GetConfig<SetSceneConfig>();
+
         public override void Trigger(string clientId, ActionButton actionButton)
         {
             if (!String.IsNullOrWhiteSpace(this.Configuration))
             {
                 try
                 {
-                    var config = JObject.Parse(this.Configuration).ToObject<SetSceneConfig>();
+                    var config = GetConfig<SetSceneConfig>();
 
-                    var conn = PluginInstance.Main.Connections.GetValueOrDefault(config?.ConnectionName ?? "");
+                    var conn = PluginInstance.Main.Connections.GetValueOrDefault(config?.ConnectionName ?? PluginInstance.Main.Connections.FirstOrDefault().Key);
                     if (conn == null) return;
 
                     _ = conn.OBS.ScenesRequests.SetCurrentProgramSceneAsync(config.SceneName);

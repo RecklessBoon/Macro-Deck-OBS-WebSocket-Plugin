@@ -42,8 +42,6 @@ namespace SuchByte.OBSWebSocketPlugin.GUI.Controls
             }
         }
 
-        public event EventHandler OnConnectionButtonClicked;
-
         public ConnectionToggler(Connection connection)
         {
             InitializeComponent();
@@ -56,12 +54,12 @@ namespace SuchByte.OBSWebSocketPlugin.GUI.Controls
         public void OnConnected(object sender, EventArgs e)
         {
             buttonPrimary1.Text = PluginLanguageManager.PluginStrings.Disconnect;
-            EventHandler<EventArgs> handler = default;
-            handler = (object sender, EventArgs args) =>
+            void handler(object sender, EventArgs args)
             {
                 buttonPrimary1.Text = PluginLanguageManager.PluginStrings.Connect;
                 Connection.Disposed -= handler;
-            };
+            }
+
             Connection.Disposed += handler;
         }
 
