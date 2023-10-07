@@ -1,0 +1,19 @@
+name: Build Extension
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+  
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Build Extension
+      uses: RecklessBoon/Macro-Deck-Extension-Build-Action@v1.0.7
+      with:
+        upsert-release: true

@@ -140,7 +140,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                         foreach (JObject sceneItem in response.SceneItems)
                         {
                             var name = sceneItem["sourceName"]?.ToString();
-                            if (!String.IsNullOrEmpty(name))
+                            if (!string.IsNullOrEmpty(name))
                             {
                                 sourcesBox.Invoke((MethodInvoker)delegate { sourcesBox.Items.Add(name); });
                             }
