@@ -213,6 +213,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             this.btnReloadFilters.TabIndex = 20;
             this.btnReloadFilters.UseVisualStyleBackColor = true;
             this.btnReloadFilters.UseWindowsAccentColor = true;
+            this.btnReloadFilters.Click += new System.EventHandler(this.BtnReloadFilters_Click);
             // 
             // FilterSelector
             // 

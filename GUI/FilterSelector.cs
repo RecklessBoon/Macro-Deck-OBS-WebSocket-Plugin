@@ -239,6 +239,11 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
         {
             LoadSources();
         }
+        
+        private void BtnReloadFilters_Click(object sender, EventArgs e)
+        {
+            LoadFilters();
+        }
 
         private void ScenesBox_SelectedIndexChanged(object sender, EventArgs e)
         {
