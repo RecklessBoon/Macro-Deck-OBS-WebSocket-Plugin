@@ -1,5 +1,4 @@
-﻿using RestSharp;
-using SuchByte.OBSWebSocketPlugin.Enum;
+﻿using SuchByte.OBSWebSocketPlugin.Enum;
 using System;
 using System.Collections.Generic;
 using System.Linq;

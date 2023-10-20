@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json.Linq;
-using RestSharp;
 using SuchByte.OBSWebSocketPlugin.Enum;
 using System;
 using System.Collections.Generic;

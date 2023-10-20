@@ -32,7 +32,7 @@ namespace SuchByte.OBSWebSocketPlugin
         public static Main Main { get; set; }
     }
 
-    public class Main : MacroDeckPlugin
+    public partial class Main : MacroDeckPlugin
     {
         public string Author = "Macro Deck";
 
@@ -82,7 +82,8 @@ namespace SuchByte.OBSWebSocketPlugin
             statusButton.Click += StatusButton_Click;
             mainWindow.contentButtonPanel.Controls.Add(statusButton);
 
-            UpgradeVersion();
+            // Defined in Main.Migrator.cs
+            MigrateVersion();
         }
 
         private void StatusButton_Click(object sender, EventArgs e)
@@ -142,54 +143,7 @@ namespace SuchByte.OBSWebSocketPlugin
             };
             _ = SetupAndStartAsync();
         }
-
-        private void UpgradeVersion()
-        {
-            UpgradeActions();
-        }
-
-        private void UpgradeActions()
-        {
-            List<ActionBase> upgradeableActions = new();
-            foreach (var profile in ProfileManager.Profiles)
-            {
-                foreach (var folder in profile.Folders)
-                {
-                    foreach (var button in folder.ActionButtons)
-                    {
-                        foreach (var action in button.Actions)
-                        {
-                            var actionBase = action as ActionBase;
-                            var actionConfig = actionBase?.GetConfig();
-                            if (actionBase != null && actionConfig.Version != actionConfig.TargetVersion)
-                            {
-                                upgradeableActions.Add(actionBase);
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (upgradeableActions.Count > 0)
-            {
-                var message = new MacroDeck.GUI.CustomControls.MessageBox();
-                if (DialogResult.Yes ==
-                    message.ShowDialog(
-                        string.Format("{0}: Update Action Configs?", Name),
-                        "Action configurations from previous versions were detected. Proceed to automatically update existing action configurations to newest version? WARNING: You should perform a backup before attempting this! While it should work, there's a chance it could fail.",
-                        MessageBoxButtons.YesNo
-                    )
-                )
-                {
-                    foreach (var action in upgradeableActions)
-                    {
-                        var newConfig = action.GetConfig().UpgradeConfig();
-                        action.Configuration = JObject.FromObject(newConfig).ToString();
-                    }
-                }
-            }
-            GC.Collect();
-        }
+        
 
         public async Task SetupAndStartAsync()
         {
@@ -296,7 +250,7 @@ namespace SuchByte.OBSWebSocketPlugin
                             break;
                         }
                     }
-                    MacroDeck.Variables.VariableManager.SetValue(VariablePrefix + connection.VariableNS + "/" + args.SceneName + "/" + sceneItemName, args.SceneItemEnabled ? "True" : "False", MacroDeck.Variables.VariableType.Bool, self, Array.Empty<string>());
+                    connection.SetVariable(args.SceneName + "_" + sceneItemName, args.SceneItemEnabled ? "True" : "False");
                 }
             });
         }

@@ -1,20 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <RootNamespace>SuchByte.OBSWebSocketPlugin</RootNamespace>
-    <AssemblyName>OBS-WebSocket Plugin</AssemblyName>
-	<UseWindowsForms>true</UseWindowsForms>
-    <Authors>Macro Deck</Authors>
-    <Company>Macro Deck</Company>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>1.5.0</Version>
-	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-	<NeutralLanguage>en</NeutralLanguage>
-	<PackageProjectUrl>https://github.com/SuchByte/Macro-Deck-OBS-WebSocket-Plugin</PackageProjectUrl>
-	<RepositoryUrl>https://github.com/SuchByte/Macro-Deck-OBS-WebSocket-Plugin</RepositoryUrl>
-	<Copyright>SuchByte</Copyright>
-	<TargetFramework>net7.0-windows10.0.22000.0</TargetFramework>
-  </PropertyGroup>
+    <PropertyGroup>
+        <RootNamespace>SuchByte.OBSWebSocketPlugin</RootNamespace>
+        <AssemblyName>OBS-WebSocket Plugin</AssemblyName>
+	      <UseWindowsForms>true</UseWindowsForms>
+        <Authors>Macro Deck</Authors>
+        <Company>Macro Deck</Company>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <Version>1.5.0</Version>
+	      <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+	      <NeutralLanguage>en</NeutralLanguage>
+	      <PackageProjectUrl>https://github.com/SuchByte/Macro-Deck-OBS-WebSocket-Plugin</PackageProjectUrl>
+	      <RepositoryUrl>https://github.com/SuchByte/Macro-Deck-OBS-WebSocket-Plugin</RepositoryUrl>
+	      <Copyright>SuchByte</Copyright>
+	      <TargetFramework>net7.0-windows10.0.22000.0</TargetFramework>
+    </PropertyGroup>
 
   <ItemGroup>
     <None Remove="Resources\Languages\English.xml" />
@@ -23,34 +23,34 @@
     <None Remove="websocket-sharp.dll" />
   </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\Languages\English.xml" />
-    <EmbeddedResource Include="Resources\Languages\German.xml" />
-    <EmbeddedResource Include="Resources\Languages\Italian.xml" />
-  </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="Resources\Languages\English.xml" />
+        <EmbeddedResource Include="Resources\Languages\German.xml" />
+        <EmbeddedResource Include="Resources\Languages\Italian.xml" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="OBSWebSocket5" Version="0.0.3" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="OBSWebSocket5" Version="0.0.3" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\Macro-Deck\MacroDeck\MacroDeck.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\..\Macro-Deck\MacroDeck\MacroDeck.csproj" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
+    <ItemGroup>
+        <Compile Update="Properties\Resources.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Resources.resx</DependentUpon>
+        </Compile>
+    </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Update="Properties\Resources.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+    </ItemGroup>
 
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
         <Exec Command="if not exist &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\SuchByte.OBS-WebSocketPlugin&quot; mkdir &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\SuchByte.OBS-WebSocketPlugin&quot;" />
