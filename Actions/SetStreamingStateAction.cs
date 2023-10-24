@@ -5,13 +5,15 @@ using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Plugins;
 using SuchByte.OBSWebSocketPlugin.GUI;
 using SuchByte.OBSWebSocketPlugin.Language;
+using SuchByte.OBSWebSocketPlugin.Models.Action;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace SuchByte.OBSWebSocketPlugin.Actions
 {
-    public class SetStreamingStateAction : PluginAction
+    public class SetStreamingStateAction : ActionBase
     {
         public override string Name => PluginLanguageManager.PluginStrings.ActionSetStreamingState;
 
@@ -19,55 +21,29 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         public override bool CanConfigure => true;
 
+        public override ConfigBase GetConfig() => GetConfig<GenericStateConfig>();
+
         public override void Trigger(string clientId, ActionButton actionButton)
         {
-            if (PluginInstance.Main.OBS4 != null) TriggerOBS4(clientId, actionButton);
-            else if (PluginInstance.Main.OBS5 != null) TriggerOBS5(clientId, actionButton);
-        }
-
-        protected void TriggerOBS4(string clientId, ActionButton actionButton)
-        {
-            if (!PluginInstance.Main.OBS4.IsConnected) return;
             if (!String.IsNullOrWhiteSpace(this.Configuration))
             {
                 try
                 {
-                    JObject configurationObject = JObject.Parse(this.Configuration);
-                    switch (configurationObject["method"].ToString())
-                    {
-                        case "start":
-                            PluginInstance.Main.OBS4.StartStreaming();
-                            break;
-                        case "stop":
-                            PluginInstance.Main.OBS4.StopStreaming();
-                            break;
-                        case "toggle":
-                            PluginInstance.Main.OBS4.ToggleStreaming();
-                            break;
-                    }
-                }
-                catch { }
-            }
-        }
+                    var config = GetConfig<GenericStateConfig>();
 
-        protected void TriggerOBS5(string clientId, ActionButton actionButton)
-        {
-            if (!PluginInstance.Main.OBS5.IsConnected) return;
-            if (!String.IsNullOrWhiteSpace(this.Configuration))
-            {
-                try
-                {
-                    JObject configurationObject = JObject.Parse(this.Configuration);
-                    switch (configurationObject["method"].ToString())
+                    var conn = PluginInstance.Main.Connections.GetValueOrDefault(config?.ConnectionName ?? PluginInstance.Main.Connections.FirstOrDefault().Key);
+                    if (conn == null) return;
+
+                    switch (config.Method)
                     {
-                        case "start":
-                            _ = PluginInstance.Main.OBS5.StreamRequests.StartStreamAsync();
+                        case Enum.StateMethodType.Start:
+                            _ = conn.OBS.StreamRequests.StartStreamAsync();
                             break;
-                        case "stop":
-                            _ = PluginInstance.Main.OBS5.StreamRequests.StopStreamAsync();
+                        case Enum.StateMethodType.Stop:
+                            _ = conn.OBS.StreamRequests.StopStreamAsync();
                             break;
-                        case "toggle":
-                            _ = PluginInstance.Main.OBS5.StreamRequests.ToggleStreamAsync();
+                        case Enum.StateMethodType.Toggle:
+                            _ = conn.OBS.StreamRequests.ToggleStreamAsync();
                             break;
                     }
                 }
@@ -77,7 +53,7 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         public override ActionConfigControl GetActionConfigControl(ActionConfigurator actionConfigurator)
         {
-            return new StateSelector(this, actionConfigurator);
+            return new GenericStateConfigView(this, actionConfigurator);
         }
     }
 }

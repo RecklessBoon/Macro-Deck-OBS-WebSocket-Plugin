@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
 using OBSWebSocket5;
-using OBSWebsocketDotNet.Types;
 using SuchByte.MacroDeck.GUI;
 using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Plugins;
@@ -9,16 +8,21 @@ using SuchByte.OBSWebSocketPlugin.GUI;
 using SuchByte.OBSWebSocketPlugin.Language;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using OBSWebSocket4Client = OBSWebsocketDotNet.OBSWebsocket;
-using OBSWebSocket5Client = OBSWebSocket5.OBSWebSocket;
+using SuchByte.OBSWebSocketPlugin.Controllers;
 using ToolTip = System.Windows.Forms.ToolTip;
+using SuchByte.OBSWebSocketPlugin.Models;
+using System.Reflection.Metadata.Ecma335;
+using System.Drawing;
+using SuchByte.MacroDeck.GUI.CustomControls.Notifications;
+using SuchByte.OBSWebSocketPlugin.GUI.Controls;
+using SuchByte.MacroDeck.Profiles;
+using SuchByte.OBSWebSocketPlugin.Models.Action;
+using SuchByte.MacroDeck.Models;
+using SuchByte.MacroDeck.Variables;
+using SuchByte.MacroDeck.CottleIntegration;
 
 namespace SuchByte.OBSWebSocketPlugin
 {
@@ -28,35 +32,29 @@ namespace SuchByte.OBSWebSocketPlugin
         public static Main Main { get; set; }
     }
 
-    public enum OBSWebSocketVersionType
+    public partial class Main : MacroDeckPlugin
     {
-        OBS_WEBSOCKET_AUTO,
-        OBS_WEBSOCKET_V4,
-        OBS_WEBSOCKET_V5
-    }
+        public string Author = "Macro Deck";
 
-    public class Main : MacroDeckPlugin
-    {
-        private string variablePrefix = "obs_";
+        public string Name = "OBS-WebSocket Plugin";
+
+        public const string VariablePrefix = "obs_";
 
         private string[] sceneSuggestions = new string[] { "" };
 
-        public override string Description => "Control Open Broadcaster Software with Macro Deck.";
         public override bool CanConfigure => true;
 
-        public OBSWebSocket4Client OBS { get { return this.obs4; } }
-        public OBSWebSocket4Client OBS4 { get { return this.obs4; } }
+        public int NumConnected {
+            get {
+                return Connections.Where(c => c.Value.IsConnected).Select(p => p.Value).Count();
+            }
+        }
+        public Dictionary<string, Connection> Connections = new();
+        
+        private ObsSelectorButton statusButton = new();
+        private ConnectionTogglerList togglerList = new();
 
-        protected OBSWebSocket4Client obs4;
-
-        public OBSWebSocket5Client OBS5 { get { return this.obs5; } }
-        protected OBSWebSocket5Client obs5;
-
-        public bool IsConnected => (OBS4?.IsConnected ?? false) || (OBS5?.IsConnected ?? false);
-
-        private ContentSelectorButton statusButton = new ContentSelectorButton();
-
-        private ToolTip statusToolTip = new ToolTip();
+        private readonly ToolTip statusToolTip = new();
 
         private MainWindow mainWindow;
 
@@ -66,48 +64,63 @@ namespace SuchByte.OBSWebSocketPlugin
             MacroDeck.MacroDeck.OnMainWindowLoad += MacroDeck_OnMainWindowLoad;
         }
 
-        private void StatusButton_Click(object sender, EventArgs e)
-        {
-            if (PluginCredentials.GetPluginCredentials(this) == null || PluginCredentials.GetPluginCredentials(this).Count == 0)
-            {
-                OpenConfigurator();
-            }
-            else
-            {
-                _ = Task.Run(async () =>
-                {
-                    if (IsConnected)
-                    {
-                        Disconnect();
-                    }
-                    else
-                    {
-                        await SetupAndStartAsync();
-                        if (!IsConnected)
-                        {
-                            OpenConfigurator();
-                        }
-                    }
-                });
-            }
-        }
-
         private void MacroDeck_OnMainWindowLoad(object sender, EventArgs e)
         {
             mainWindow = sender as MainWindow;
 
-            this.statusButton = new ContentSelectorButton
-            {
-                BackgroundImage = IsConnected ? Properties.Resources.OBS_Online : Properties.Resources.OBS_Offline,
-                BackgroundImageLayout = ImageLayout.Stretch,
+            var numConnected = GetNumConnected();
+            var buttonWidth = mainWindow.contentButtonPanel.ClientRectangle.Width;
 
+            this.statusButton = new ObsSelectorButton
+            {
+                AlertText = numConnected.ToString(),
+                BackgroundImage = numConnected > 0 ? Properties.Resources.OBS_Online : Properties.Resources.OBS_Offline,
+                BackgroundImageLayout = ImageLayout.Zoom,
+                Width = buttonWidth,
             };
-            statusToolTip.SetToolTip(statusButton, "OBS " + (IsConnected ? " Connected" : "Disconnected"));
+            statusToolTip.SetToolTip(statusButton, $"{numConnected} Connection(s) Active");
             statusButton.Click += StatusButton_Click;
             mainWindow.contentButtonPanel.Controls.Add(statusButton);
+
+            // Defined in Main.Migrator.cs
+            MigrateVersion();
         }
 
-        public override Image Icon => Properties.Resources.OBS_WebSocket;
+        private void StatusButton_Click(object sender, EventArgs e)
+        {
+            if (togglerList?.Visible ?? false)
+            {
+                RemoveTogglerList();
+            }
+            else
+            {
+                ShowTogglerList();
+            }
+        }
+
+        private void ShowTogglerList()
+        {
+            togglerList?.Close();
+            togglerList = new ConnectionTogglerList(this.Connections.Values.ToList())
+            {
+                StartPosition = FormStartPosition.Manual,
+                Location = new Point(
+                    mainWindow.Location.X + mainWindow.contentButtonPanel.Location.X + mainWindow.contentButtonPanel.Width + 4,
+                    mainWindow.Location.Y + statusButton.Location.Y + statusButton.Height
+                )
+            };
+            togglerList.Deactivate += (object sender, EventArgs args) =>
+            {
+                RemoveTogglerList();
+            };
+            togglerList.Show(mainWindow);
+        }
+
+        private void RemoveTogglerList()
+        {
+            togglerList.Close();
+            togglerList = null;
+        }
 
         public override void Enable()
         {
@@ -128,202 +141,134 @@ namespace SuchByte.OBSWebSocketPlugin
                 new SetVirtualCamAction(),
                 new ToggleConnectionAction(),
             };
-            ResetVariables();
             _ = SetupAndStartAsync();
         }
+        
 
         public async Task SetupAndStartAsync()
         {
-            var versionType = OBSWebSocketVersionType.OBS_WEBSOCKET_AUTO;
-            Enum.TryParse<OBSWebSocketVersionType>(PluginConfiguration.GetValue(this, "versionType"), out versionType);
-
-            switch (versionType)
+            if (Connections != null)
             {
-                case OBSWebSocketVersionType.OBS_WEBSOCKET_V4:
-                    WireOBS4();
-                    break;
-                case OBSWebSocketVersionType.OBS_WEBSOCKET_V5:
-                    WireOBS5();
-                    break;
-                case OBSWebSocketVersionType.OBS_WEBSOCKET_AUTO:
-                default:
-                    await AutoWireAsync();
-                    break;
+                foreach (var pair in Connections)
+                {
+                    pair.Value.Dispose();
+                }
+            }
+            Connections = new();
+            
+            var credSet = PluginCredentials.GetPluginCredentials(this);
+            var tasks = new List<Task>();
+            foreach (var creds in credSet)
+            {
+                var config = ConnectionConfig.FromCredentials(creds);
+                var connection = new Connection(config);
+                Connections.Add(config.name, connection);
+                tasks.Add(StoreConnectConnectionAsync(connection));
+            }
+
+            await Task.WhenAll(tasks);
+        }
+
+        public Task StoreConnectConnectionAsync(Connection connection)
+        {
+            if (Connections.ContainsKey(connection.Name))
+            {
+                Connections[connection.Name] = connection;
+            }
+            else
+            {
+                Connections.Add(connection.Name, connection);
+            }
+            ResetVariables(connection);
+            WireObs(connection);
+            togglerList?.AddConnection(connection);
+            return Task.WhenAny(connection.ConnectAsync(), Task.Delay(10000));
+        }
+
+        public int GetNumConnected()
+        {
+            return Connections?.Where(c => c.Value.IsConnected).Select(c => c.Value).Count() ?? 0;
+        }
+
+        public void WireObs(Connection conn)
+        {
+            var obs = conn.OBS;
+            
+            obs.Connected += (sender, args) => OnConnect(conn);
+            obs.Disposed += (sender, args) => OnDisconnect(conn);
+
+            obs.ScenesEvents.CurrentProgramSceneChanged += (sender, args) => OnSceneChange(args, conn);
+            obs.ConfigEvents.CurrentProfileChanged += (sender, args) => OnProfileChange(args, conn);
+            obs.TransitionsEvents.CurrentSceneTransitionChanged += (sender, args) => OnTransitionChange(args, conn);
+
+            obs.OutputsEvents.StreamStateChanged += (sender, args) => OnStreamingStateChange(args, conn);
+            obs.OutputsEvents.RecordStateChanged += (sender, args) => OnRecordingStateChange(args, conn);
+
+            obs.OutputsEvents.VirtualcamStateChanged += (sender, args) => OnVirtualCameraStateChange(args, conn);
+
+            obs.ScenesEvents.SceneListChanged += (sender, args) => OnSceneListChanged(args);
+
+            obs.InputsEvents.InputVolumeChanged += (sender, args) => OnSourceVolumeChanged(args, conn);
+
+            obs.Connected += (sender, args) => {
+                _ = Task.Run(async () =>
+                {
+                    while (obs.IsConnected && !obs.IsDisposed)
+                    {
+                        var stream = await obs.StreamRequests.GetStreamStatusAsync();
+                        OnStreamData(stream, conn);
+                        
+                        var stats = await obs.GeneralRequests.GetStatsAsync();
+                        OnStatsData(stats, conn);
+
+                        await Task.Delay(1000);
+                    }
+                });
             };
 
-            await ConnectAsync();
+            obs.InputsEvents.InputMuteStateChanged += (sender, args) => OnSourceMuteStateChanged(args, conn);
 
-            if (!IsConnected)
-            {
-                obs4 = null;
-                obs5 = null;
-            }
+            obs.SceneItemsEvents.SceneItemEnableStateChanged += (sender, args) => OnSceneItemVisibilityChanged(sender, args, conn);
+
+            obs.OutputsEvents.ReplayBufferStateChanged += (sender, args) => OnReplayBufferStateChanged(args, conn);
         }
 
-        protected async Task AutoWireAsync()
-        {
-            var host = GetHost();
-            var address = host != null ? new Uri(host) : null;
-
-            var ct = new CancellationToken();
-            var timeoutFound = int.TryParse(PluginConfiguration.GetValue(this, "timeout"), out int timeout);
-            timeout = timeoutFound ? timeout : PluginConfig.DEFAULT_TIMEOUT;
-            var obs5Running = address != null && await OBSWebSocket5Client.IsInstalledAndOpenAsync(address, ct, timeout*1000);
-            if (obs5Running)
-            {
-                WireOBS5();
-            } else { 
-                WireOBS4();
-            }
-        }
-
-        internal string GetHost(int version = 5)
-        {
-            var creds = PluginCredentials.GetPluginCredentials(this).FirstOrDefault();
-            return creds?["host"]?.ToString() ?? "ws://127.0.0.1:4455";
-        }
-
-        protected void WireOBS4()
-        {
-            obs4 = new OBSWebSocket4Client();
-            obs4.Connected += OnConnect;
-            obs4.Disconnected += OnDisconnect;
-
-            obs4.SceneChanged += OnSceneChange;
-            obs4.ProfileChanged += OnProfileChange;
-            // this.obs.TransitionChanged += OnTransitionChange; // TODO
-
-            obs4.StreamingStateChanged += OnStreamingStateChange;
-            obs4.RecordingStateChanged += OnRecordingStateChange;
-
-            obs4.VirtualCameraStarted += OnVirtualCameraStarted;
-            obs4.VirtualCameraStopped += OnVirtualCameraStopped;
-
-            obs4.SceneListChanged += Obs_SceneListChanged;
-
-            obs4.SourceVolumeChanged += Obs_SourceVolumeChanged;
-
-            obs4.StreamStatus += OnStreamData;
-
-            obs4.SourceMuteStateChanged += Obs_SourceMuteStateChanged;
-
-            obs4.SceneItemVisibilityChanged += Obs_SceneItemVisibilityChanged;
-
-            obs4.ReplayBufferStateChanged += Obs_ReplayBufferStateChanged;
-        }
-
-        protected void ClipOBS4()
-        {
-            obs4.Disconnect();
-            obs4 = null;
-        }
-
-        protected void WireOBS5()
-        {
-            obs5 = new OBSWebSocket5Client();
-
-            obs5.Connected += OnConnect;
-            obs5.Disposed += OnDisconnect;
-
-            obs5.ScenesEvents.CurrentProgramSceneChanged += OnSceneChange5;
-            obs5.ConfigEvents.CurrentProfileChanged += OnProfileChange5;
-            obs5.TransitionsEvents.CurrentSceneTransitionChanged += OnTransitionChange5;
-
-            obs5.OutputsEvents.StreamStateChanged += OnStreamingStateChange5;
-            obs5.OutputsEvents.RecordStateChanged += OnRecordingStateChange5;
-
-            obs5.OutputsEvents.VirtualcamStateChanged += OnVirtualCameraStateChange5;
-
-            obs5.ScenesEvents.SceneListChanged += Obs_SceneListChanged5;
-
-            obs5.InputsEvents.InputVolumeChanged += Obs_SourceVolumeChanged5;
-
-            while (obs5 != null && obs5.IsConnected && !obs5.IsDisposed)
-            {
-                _ = Task.Run(async () =>
-                {
-                    var results = await obs5.StreamRequests.GetStreamStatusAsync();
-                    OnStreamData5(results);
-                });
-                _ = Task.Run(async () =>
-                {
-                    var results = await obs5.GeneralRequests.GetStatsAsync();
-                    OnStatsData5(results);
-                });
-            }
-
-            obs5.InputsEvents.InputMuteStateChanged += Obs_SourceMuteStateChanged5;
-
-            obs5.SceneItemsEvents.SceneItemEnableStateChanged += Obs_SceneItemVisibilityChanged5;
-
-            obs5.OutputsEvents.ReplayBufferStateChanged += Obs_ReplayBufferStateChanged5;
-        }
-
-        protected void ClipOBS5()
-        {
-            obs5?.Dispose();
-            obs5 = null;
-        }
-
-        private void Obs_SceneItemVisibilityChanged(OBSWebSocket4Client sender, string sceneName, string itemName, bool isVisible)
-        {
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + sceneName + "/" + itemName, isVisible ? "True" : "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
-        }
-
-        private void Obs_SceneItemVisibilityChanged5(object sender, OBSWebSocket5.Events.SceneItemsEvents.SceneItemEnableStateChangedEventArgs args)
+        private void OnSceneItemVisibilityChanged(object sender, OBSWebSocket5.Events.SceneItemsEvents.SceneItemEnableStateChangedEventArgs args, Connection connection)
         {
             var self = this;
             _ = Task.Run(async () =>
             {
-                var sceneItems = await obs5.SceneItemsRequests.GetSceneItemListAsync(args.SceneName);
-                string sceneItemName = args.SceneItemId.ToString();
-                foreach(JObject item in sceneItems.SceneItems)
+                if (sender is OBSWebSocket obs)
                 {
-                    if (item["sceneItemId"].ToString().Equals(args.SceneItemId.ToString()) && item["sourceName"] != null)
+                    var sceneItems = await obs.SceneItemsRequests.GetSceneItemListAsync(args.SceneName);
+                    var sceneItemName = args.SceneItemId.ToString();
+                    foreach (var item in sceneItems.SceneItems)
                     {
-                        sceneItemName = item["sourceName"].ToString();
-                        break;
+                        if (item["sceneItemId"]!.ToString().Equals(args.SceneItemId.ToString()) && item["sourceName"] != null)
+                        {
+                            sceneItemName = item["sourceName"].ToString();
+                            break;
+                        }
                     }
+                    connection.SetVariable(args.SceneName + "_" + sceneItemName, args.SceneItemEnabled ? "True" : "False");
                 }
-                MacroDeck.Variables.VariableManager.SetValue(variablePrefix + args.SceneName + "/" + sceneItemName, args.SceneItemEnabled ? "True" : "False", MacroDeck.Variables.VariableType.Bool, self, new string[0]);
             });
         }
 
-        private void Obs_SourceVolumeChanged(OBSWebSocket4Client sender, string sourceName, float volume)
+        private static void OnSourceVolumeChanged(OBSWebSocket5.Events.InputsEvents.InputVolumeChangedEventArgs args, Connection connection)
         {
-            volume = PluginInstance.Main.OBS4.GetVolume(sourceName, true).Volume; // get volume in dB
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + sourceName + " volume_db", (int)volume, MacroDeck.Variables.VariableType.Integer, this, new string[0]);
+            connection.SetVariable(args.InputName + " volume_db", args.InputVolumeDb);
         }
 
-        private void Obs_SourceVolumeChanged5(object sender, OBSWebSocket5.Events.InputsEvents.InputVolumeChangedEventArgs args)
+        private static void OnSourceMuteStateChanged(OBSWebSocket5.Events.InputsEvents.InputMuteStateChangedEventArgs args, Connection connection)
         {
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + args.InputName + " volume_db", args.InputVolumeDb, MacroDeck.Variables.VariableType.Integer, this, new string[0]);
+            connection.SetVariable(args.InputName, args.InputMuted ? "False" : "True");
         }
 
-        private void Obs_SourceMuteStateChanged(OBSWebSocket4Client sender, string sourceName, bool muted)
+        private void OnSceneListChanged(OBSWebSocket5.Events.ScenesEvents.SceneListChangedEventArgs args)
         {
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + sourceName, muted ? "False" : "True", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
-        }
-
-        private void Obs_SourceMuteStateChanged5(object sender, OBSWebSocket5.Events.InputsEvents.InputMuteStateChangedEventArgs args)
-        {
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + args.InputName, args.InputMuted ? "False" : "True", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
-        }
-
-        private void Obs_SceneListChanged(object sender, EventArgs e)
-        {
-            List<string> scenesList = new List<string>();
-            foreach (OBSScene scene in obs4.ListScenes())
-            {
-                scenesList.Add(scene.Name);
-            }
-            sceneSuggestions = scenesList.ToArray();
-        }
-
-        private void Obs_SceneListChanged5(object sender, OBSWebSocket5.Events.ScenesEvents.SceneListChangedEventArgs args)
-        {
-            List<string> scenesList = new List<string>();
-            foreach (object scene in args.Scenes)
+            List<string> scenesList = new();
+            foreach (JObject scene in args.Scenes)
             {
                 try
                 {
@@ -336,300 +281,195 @@ namespace SuchByte.OBSWebSocketPlugin
             sceneSuggestions = scenesList.ToArray();
         }
 
-        private void ResetVariables()
+        private static void ResetVariables(Connection connection)
         {
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "connected", "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "recording", "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
-            ResetStreamVariables();
+            connection.SetVariable("connected", "False");
+            connection.SetVariable("recording", "False");
+            ResetStreamVariables(connection);
         }
 
-        private void ResetStreamVariables()
+        private static void ResetStreamVariables(Connection connection)
         {
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "replay_buffer", "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "virtual_camera", "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "streaming", "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "stream_time", "0h:0m:0s", MacroDeck.Variables.VariableType.String, this, new string[0]);
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "kbits", 0, MacroDeck.Variables.VariableType.String, this, new string[0]);
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "framerate", 0, MacroDeck.Variables.VariableType.Integer, this, new string[0]);
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "dropped_frames", 0, MacroDeck.Variables.VariableType.Integer, this, new string[0]);
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "total_frames", 0, MacroDeck.Variables.VariableType.Integer, this, new string[0]);
+            connection.SetVariable("replay_buffer", "False");
+            connection.SetVariable("virtual_camera", "False");
+            connection.SetVariable("streaming", "False");
+            connection.SetVariable("stream_time", "0h:0m:0s");
+            connection.SetVariable("kbits", 0);
+            connection.SetVariable("framerate", 0);
+            connection.SetVariable("dropped_frames", 0);
+            connection.SetVariable("total_frames", 0);
         }
 
         private void UpdateAllSourceItems()
         {
-            if (obs4 != null) UpdateAllSourceItemsOBS4();
-            else if (obs5 != null) UpdateAllSourceItemsOBS5();
-        }
-
-        private void UpdateAllSourceItemsOBS4()
-        {
-            foreach (var sceneItem in this.obs4.GetCurrentScene().Items)
-            {
-                Obs_SceneItemVisibilityChanged(this.obs4, this.obs4.GetCurrentScene().Name, sceneItem.SourceName, sceneItem.Render); // Update source state; Render = visisble
-            }
-        }
-
-        private void UpdateAllSourceItemsOBS5()
-        {
             _ = Task.Run(async () =>
             {
-                var currentSceneResponse = await obs5.ScenesRequests.GetCurrentProgramSceneAsync();
-                var sceneItemsResponse = await obs5.SceneItemsRequests.GetSceneItemListAsync(currentSceneResponse.CurrentProgramSceneName);
-
-                foreach (JObject sceneItem in sceneItemsResponse.SceneItems)
+                foreach (var pair in Connections)
                 {
-                    Obs_SceneItemVisibilityChanged5(obs5, new OBSWebSocket5.Events.SceneItemsEvents.SceneItemEnableStateChangedEventArgs { SceneName = currentSceneResponse.CurrentProgramSceneName, SceneItemId = sceneItem["sceneItemId"].ToObject<int>(), SceneItemEnabled = sceneItem["sceneItemEnabled"].ToObject<bool>() }); // Update source state; Render = visisble
+                    var connection = pair.Value;
+                    var currentSceneResponse = await connection.OBS.ScenesRequests.GetCurrentProgramSceneAsync();
+                    var sceneItemsResponse =
+                        await connection.OBS.SceneItemsRequests.GetSceneItemListAsync(currentSceneResponse
+                            .CurrentProgramSceneName);
+
+                    foreach (JObject sceneItem in sceneItemsResponse.SceneItems)
+                    {
+                        OnSceneItemVisibilityChanged(connection.OBS,
+                            new OBSWebSocket5.Events.SceneItemsEvents.SceneItemEnableStateChangedEventArgs
+                            {
+                                SceneName = currentSceneResponse.CurrentProgramSceneName,
+                                SceneItemId = sceneItem["sceneItemId"].ToObject<int>(),
+                                SceneItemEnabled = sceneItem["sceneItemEnabled"].ToObject<bool>()
+                            },
+                            connection); // Update source state; Render = visisble
+                    }
                 }
             });
         }
 
-        private void UpdateAllVariables()
+        private void UpdateAllVariables(Connection connection)
         {
-            UpdateAllSourceItems();
-            if (obs4 != null) UpdateAllVariablesOBS4();
-            else if (obs5 != null) UpdateAllVariablesOBS5();
-        }
-
-        private void UpdateAllVariablesOBS4()
-        {
-            foreach (var audioSource in obs4.GetSpecialSources().Values)
-            {
-                Obs_SourceMuteStateChanged(obs4, audioSource, obs4.GetMute(audioSource)); // Update mute state
-            }
-            Obs_SceneListChanged(this, EventArgs.Empty); // Update the scene suggestions
-            //MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "current transition", this.obs.GetCurrentTransition().Name, MacroDeck.Variables.VariableType.String, this, false); // TODO
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "current_profile", obs4.GetCurrentProfile(), MacroDeck.Variables.VariableType.String, this, new string[0]);
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "current_scene", obs4.GetCurrentScene().Name, MacroDeck.Variables.VariableType.String, this, this.sceneSuggestions);
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "connected", obs4.IsConnected ? "True" : "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "replay_buffer", obs4.GetReplayBufferStatus() ? "True" : "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "virtual_camera", obs4.GetVirtualCamStatus().IsActive ? "True" : "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "recording", obs4.GetRecordingStatus().IsRecording ? "True" : "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "streaming", obs4.GetStreamingStatus().IsStreaming ? "True" : "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
-        }
-
-        private void UpdateAllVariablesOBS5()
-        {
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "connected", obs5.IsConnected ? "True" : "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
+           connection.SetVariable("connected", connection.OBS.IsConnected ? "True" : "False");
 
             _ = Task.Run(async () =>
             {
-                var inputs = await obs5.InputsRequests.GetInputListAsync();
-                
+                var inputs = await connection.OBS.InputsRequests.GetInputListAsync();
+
                 foreach (JObject input in inputs.Inputs)
                 {
                     var inputName = input["inputName"]?.ToString();
-                    var muted = await obs5.InputsRequests.GetInputMuteAsync(inputName);
+                    var muted = await connection.OBS.InputsRequests.GetInputMuteAsync(inputName);
                     if (muted != null)
                     {
-                        Obs_SourceMuteStateChanged5(obs5, new OBSWebSocket5.Events.InputsEvents.InputMuteStateChangedEventArgs { InputName = inputName, InputMuted = muted.InputMuted }); // Update mute state
+                        OnSourceMuteStateChanged(new OBSWebSocket5.Events.InputsEvents.InputMuteStateChangedEventArgs
+                            { 
+                                InputName = inputName, 
+                                InputMuted = muted.InputMuted 
+                            }, 
+                            connection
+                        ); // Update mute state
                     }
                 }
-                var scenes = await obs5.ScenesRequests.GetSceneListAsync();
-                Obs_SceneListChanged5(this, new OBSWebSocket5.Events.ScenesEvents.SceneListChangedEventArgs { Scenes = scenes.Scenes }); // Update the scene suggestions
+
+                var scenes = await connection.OBS.ScenesRequests.GetSceneListAsync();
+                OnSceneListChanged(new OBSWebSocket5.Events.ScenesEvents.SceneListChangedEventArgs { Scenes = scenes.Scenes }); // Update the scene suggestions
             });
             //MacroDeck.Variables.VariableManager.SetValue(this.variablePrefix + "current transition", this.obs.GetCurrentTransition().Name, MacroDeck.Variables.VariableType.String, this, false); // TODO
             _ = Task.Run(async () =>
             {
-                var profiles = await obs5.ConfigRequests.GetProfileListAsync();
-                MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "current_profile", profiles.CurrentProfileName, MacroDeck.Variables.VariableType.String, this, new string[0]);
+                var profiles = await connection.OBS.ConfigRequests.GetProfileListAsync();
+                connection.SetVariable("current_profile", profiles.CurrentProfileName);
             });
 
             _ = Task.Run(async () =>
             {
-                var scene = await obs5.ScenesRequests.GetCurrentProgramSceneAsync();
-                MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "current_scene", scene.CurrentProgramSceneName, MacroDeck.Variables.VariableType.String, this, this.sceneSuggestions);
+                var scene = await connection.OBS.ScenesRequests.GetCurrentProgramSceneAsync();
+                connection.SetVariable("current_scene", scene.CurrentProgramSceneName, this.sceneSuggestions);
             });
 
             _ = Task.Run(async () =>
             {
-                var status = await obs5.OutputsRequests.GetReplayBufferStatusAsync();
+                var status = await connection.OBS.OutputsRequests.GetReplayBufferStatusAsync();
                 if (status != null)
                 {
-                    MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "replay_buffer", status.OutputActive ? "True" : "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
+                    connection.SetVariable("replay_buffer", status.OutputActive ? "True" : "False");
                 }
             });
 
             _ = Task.Run(async () =>
             {
-                var status = await obs5.OutputsRequests.GetVirtualCamStatusAsync();
-                MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "virtual_camera", status.OutputActive ? "True" : "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
+                var status = await connection.OBS.OutputsRequests.GetVirtualCamStatusAsync();
+                connection.SetVariable("virtual_camera", status.OutputActive ? "True" : "False");
             });
 
             _ = Task.Run(async () =>
             {
-                var status = await obs5.RecordRequests.GetRecordStatusAsync();
-                MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "recording", status.OutputActive ? "True" : "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
+                var status = await connection.OBS.RecordRequests.GetRecordStatusAsync();
+                connection.SetVariable("recording", status.OutputActive ? "True" : "False");
             });
 
             _ = Task.Run(async () =>
             {
-                var status = await obs5.StreamRequests.GetStreamStatusAsync();
-                MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "streaming", status.OutputActive ? "True" : "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
+                var status = await connection.OBS.StreamRequests.GetStreamStatusAsync();
+                connection.SetVariable("streaming", status.OutputActive ? "True" : "False");
             });
         }
 
-        private void OnVirtualCameraStopped(object sender, EventArgs e)
+        private static void OnVirtualCameraStateChange(OBSWebSocket5.Events.OutputsEvents.VirtualcamStateChangedEventArgs args, Connection connection)
         {
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "virtual_camera", "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
+            connection.SetVariable("virtual_camera", args.OutputActive ? "True" : "False");
         }
 
-        private void OnVirtualCameraStarted(object sender, EventArgs e)
+        private static void OnReplayBufferStateChanged(OBSWebSocket5.Events.OutputsEvents.ReplayBufferStateChangedEventArgs args, Connection connection)
         {
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "virtual_camera", "True", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
+            connection.SetVariable("replay_buffer", args.OutputActive ? "True" : "False");
+        }
+        
+        private static void OnRecordingStateChange(OBSWebSocket5.Events.OutputsEvents.RecordStateChangedEventArgs args, Connection connection)
+        {
+            connection.SetVariable("recording", args.OutputActive ? "True" : "False");
         }
 
-        private void OnVirtualCameraStateChange5(object sender, OBSWebSocket5.Events.OutputsEvents.VirtualcamStateChangedEventArgs args)
+        private static void OnStreamingStateChange(OBSWebSocket5.Events.OutputsEvents.StreamStateChangedEventArgs args, Connection connection)
         {
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "virtual_camera", args.OutputActive ? "True" : "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
+            connection.SetVariable("streaming", args.OutputActive ? "True" : "False");
         }
 
-        private void Obs_ReplayBufferStateChanged(OBSWebSocket4Client sender, OutputState newState)
+        private static void OnStreamData(OBSWebSocket5.Request.StreamRequests.GetStreamStatusResponse status, Connection connection)
         {
-            switch (newState)
-            {
-                case OutputState.Started:
-                    MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "replay_buffer", "True", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
-                    break;
-                case OutputState.Stopped:
-                    MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "replay_buffer", "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
-                    break;
-                default:
-                    MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "replay_buffer", "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
-                    break;
-            }
+            TimeSpan streamTime = TimeSpan.FromMilliseconds(status.OutputDuration);
+            connection.SetVariable("stream_time", string.Format("{0:D2}h:{1:D2}m:{2:D2}s",
+                streamTime.Hours,
+                streamTime.Minutes,
+                streamTime.Seconds)
+            );
+            connection.SetVariable("output_mb", (status.OutputBytes / (1024.0f * 1024.0f)).ToString());
+            connection.SetVariable("dropped_frames", status.OutputSkippedFrames);
+            connection.SetVariable("total_frames", status.OutputTotalFrames);
         }
 
-        private void Obs_ReplayBufferStateChanged5(object sender, OBSWebSocket5.Events.OutputsEvents.ReplayBufferStateChangedEventArgs args)
+        private static void OnStatsData(OBSWebSocket5.Request.GeneralRequests.GetStatsResponse stats, Connection connection)
         {
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "replay_buffer", args.OutputActive ? "True" : "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
+            connection.SetVariable("framerate", (int)stats.ActiveFps);
+            connection.SetVariable("cpu_usage", stats.CpuUsage);
         }
 
-
-        private void OnRecordingStateChange(OBSWebSocket4Client sender, OutputState newState)
+        private static void OnTransitionChange(OBSWebSocket5.Events.TransitionsEvents.CurrentSceneTransitionChangedEventArgs args, Connection connection)
         {
-            switch (newState)
-            {
-                case OutputState.Started:
-                    MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "recording", "True", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
-                    break;
-                case OutputState.Stopped:
-                    MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "recording", "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
-                    break;
-                default:
-                    MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "recording", "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
-                    break;
-            }
+            connection.SetVariable("current_transition", args.TransitionName);
         }
 
-        private void OnRecordingStateChange5(object sender, OBSWebSocket5.Events.OutputsEvents.RecordStateChangedEventArgs args)
+        private static void OnProfileChange(OBSWebSocket5.Events.ConfigEvents.ProfileChangeEventArgs args, Connection connection)
         {
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "recording", args.OutputActive ? "True" : "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
+            connection.SetVariable("current_profile", args.ProfileName);
         }
 
-        private void OnStreamingStateChange(OBSWebSocket4Client sender, OutputState newState)
+        private void OnSceneChange(OBSWebSocket5.Events.ScenesEvents.CurrentProgramSceneChangedEventArgs args, Connection connection)
         {
-            switch (newState)
-            {
-                case OutputState.Started:
-                    MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "streaming", "True", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
-                    break;
-                case OutputState.Stopped:
-                    ResetStreamVariables();
-                    MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "streaming", "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
-                    break;
-                default:
-                    MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "streaming", "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
-                    break;
-            }
-        }
-
-        private void OnStreamingStateChange5(object sender, OBSWebSocket5.Events.OutputsEvents.StreamStateChangedEventArgs args)
-        {
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "streaming", args.OutputActive ? "True" : "False", MacroDeck.Variables.VariableType.Bool, this, new string[0]);
-        }
-
-
-        private void OnStreamData(OBSWebSocket4Client sender, StreamStatus status)
-        {
-            TimeSpan streamTime = TimeSpan.FromSeconds(status.TotalStreamTime);
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "stream_time", string.Format("{0:D2}h:{1:D2}m:{2:D2}s",
-                                                                                         streamTime.Hours,
-                                                                                         streamTime.Minutes,
-                                                                                         streamTime.Seconds),
-                                                                                         MacroDeck.Variables.VariableType.String, this, new string[0]);
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "kbits", status.KbitsPerSec.ToString(), MacroDeck.Variables.VariableType.Integer, this, new string[0]);
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "framerate", (int)status.FPS, MacroDeck.Variables.VariableType.Integer, this, new string[0]);
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "dropped_frames", status.DroppedFrames, MacroDeck.Variables.VariableType.Integer, this, new string[0]);
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "total_frames", status.TotalFrames, MacroDeck.Variables.VariableType.Integer, this, new string[0]);
-        }
-
-        private void OnStreamData5(OBSWebSocket5.Request.StreamRequests.GetStreamStatusResponse status)
-        {
-            TimeSpan streamTime = TimeSpan.FromSeconds(status.OutputDuration);
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "stream_time", string.Format("{0:D2}h:{1:D2}m:{2:D2}s",
-                                                                                         streamTime.Hours,
-                                                                                         streamTime.Minutes,
-                                                                                         streamTime.Seconds),
-                                                                                         MacroDeck.Variables.VariableType.String, this, new string[0]);
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "kbits", (status.OutputBytes * 1024).ToString(), MacroDeck.Variables.VariableType.Integer, this, new string[0]);
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "dropped_frames", status.OutputSkippedFrames, MacroDeck.Variables.VariableType.Integer, this, new string[0]);
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "total_frames", status.OutputTotalFrames, MacroDeck.Variables.VariableType.Integer, this, new string[0]);
-        }
-
-        private void OnStatsData5(OBSWebSocket5.Request.GeneralRequests.GetStatsResponse stats)
-        {
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "framerate", (int)stats.ActiveFps, MacroDeck.Variables.VariableType.Integer, this, new string[0]);
-        }
-
-        private void OnTransitionChange(OBSWebSocket4Client sender, string newTransitionName)
-        {
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "current_transition", newTransitionName, MacroDeck.Variables.VariableType.String, this, new string[0]);
-        }
-
-        private void OnTransitionChange5(object sender, OBSWebSocket5.Events.TransitionsEvents.CurrentSceneTransitionChangedEventArgs args)
-        {
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "current_transition", args.TransitionName, MacroDeck.Variables.VariableType.String, this, new string[0]);
-        }
-
-        private void OnProfileChange(object sender, EventArgs e)
-        {
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "current_profile", this.obs4.GetCurrentProfile(), MacroDeck.Variables.VariableType.String, this, new string[0]);
-        }
-
-        private void OnProfileChange5(object sender, OBSWebSocket5.Events.ConfigEvents.ProfileChangeEventArgs e)
-        {
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "current_profile", e.ProfileName, MacroDeck.Variables.VariableType.String, this, new string[0]);
-        }
-
-        private void OnSceneChange(OBSWebSocket4Client sender, string newSceneName)
-        {
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "current_scene", newSceneName, MacroDeck.Variables.VariableType.String, this, this.sceneSuggestions);
+            connection.SetVariable("current_scene", args.SceneName, this.sceneSuggestions);
             UpdateAllSourceItems();
         }
 
-        private void OnSceneChange5(object sender, OBSWebSocket5.Events.ScenesEvents.CurrentProgramSceneChangedEventArgs args)
+        private void OnDisconnect(Connection connection)
         {
-            MacroDeck.Variables.VariableManager.SetValue(variablePrefix + "current_scene", args.SceneName, MacroDeck.Variables.VariableType.String, this, this.sceneSuggestions);
-            UpdateAllSourceItems();
-        }
+            ResetVariables(connection);
 
-        private void OnDisconnect(object sender, EventArgs e)
-        {
-            ResetVariables();
-
+            var numConnected = GetNumConnected();
             if (mainWindow != null && !mainWindow.IsDisposed && statusButton != null)
             {
                 mainWindow.BeginInvoke(new Action(() =>
                 {
-                    statusButton.BackgroundImage = Properties.Resources.OBS_Offline;
+                    statusButton.BackgroundImage = numConnected > 0 ? Properties.Resources.OBS_Online : Properties.Resources.OBS_Offline;
                     statusToolTip.SetToolTip(statusButton, PluginLanguageManager.PluginStrings.OBSDisconnected);
                 }));
             }
+            this.statusButton.AlertText = numConnected.ToString();
         }
 
-        private void OnConnect(object sender, EventArgs e)
+        private void OnConnect(Connection connection)
         {
-            UpdateAllVariables();
+            UpdateAllVariables(connection);
+            var numConnected = GetNumConnected();
             if (mainWindow != null && !mainWindow.IsDisposed && statusButton != null)
             {
                 mainWindow.BeginInvoke(new Action(() =>
@@ -638,120 +478,13 @@ namespace SuchByte.OBSWebSocketPlugin
                     statusToolTip.SetToolTip(statusButton, PluginLanguageManager.PluginStrings.OBSConnected);
                 }));
             }
+            this.statusButton.AlertText = numConnected.ToString();
         }
 
         public override void OpenConfigurator()
         {
-            using (var pluginConfig = new PluginConfig())
-            {
-                pluginConfig.ShowDialog();
-            }
-        }
-
-        internal Task ConnectAsync(bool ignoreConnectionError = true)
-        {
-            if (obs4 != null)
-            {
-                ConnectOBS4(ignoreConnectionError);
-                return Task.CompletedTask;
-            }
-            else if (obs5 != null)
-            {
-                return ConnectOBS5Async(ignoreConnectionError);
-            }
-
-            return Task.CompletedTask;
-        }
-
-        internal void ConnectOBS4(bool ignoreConnectionError = true)
-        {
-            if (!obs4.IsConnected)
-            {
-                try
-                {
-                    List<Dictionary<string, string>> credentialsList = PluginCredentials.GetPluginCredentials(this);
-                    Dictionary<string, string> credentials = null;
-                    if (credentialsList != null && credentialsList.Count > 0)
-                    {
-                        credentials = credentialsList[0];
-                    }
-                    if (credentials != null)
-                    {
-                        obs4.Connect(credentials["host"], credentials["password"]);
-                    }
-                }
-                catch (OBSWebsocketDotNet.AuthFailureException)
-                {
-                    using (var msgBox = new MacroDeck.GUI.CustomControls.MessageBox())
-                    {
-                        msgBox.ShowDialog(PluginLanguageManager.PluginStrings.AuthenticationFailed, PluginLanguageManager.PluginStrings.InfoWrongPassword, System.Windows.Forms.MessageBoxButtons.OK);
-                    }
-                }
-                catch (OBSWebsocketDotNet.ErrorResponseException)
-                {
-                    if (!ignoreConnectionError)
-                    {
-                        using (var msgBox = new MacroDeck.GUI.CustomControls.MessageBox())
-                        {
-                            msgBox.ShowDialog(PluginLanguageManager.PluginStrings.ConnectionFailed, PluginLanguageManager.PluginStrings.InfoWrongHost, MessageBoxButtons.OK);
-                        }
-                    }
-                }
-            }
-        }
-
-        internal Task ConnectOBS5Async(bool ignoreConnectionError = true)
-        {
-            if (obs5 == null) WireOBS5();
-
-            if (!obs5.IsConnected)
-            {
-                try
-                {
-                    var host = GetHost();
-                    var address = host != null ? new Uri(host) : null;
-                    if (address == null) return Task.CompletedTask;
-
-                    var creds = PluginCredentials.GetPluginCredentials(this).FirstOrDefault();
-                    var password = creds?["password"]?.ToString();
-
-                    if (String.IsNullOrEmpty(password))
-                    {
-                        return obs5.ConnectAsync(address);
-                    } else
-                    {
-                        return obs5.ConnectAsync(address, new OBSWebSocketAuthPassword(password));
-                    }
-                }
-                catch (Exception) { ClipOBS5(); }
-            }
-
-            return Task.CompletedTask;
-        }
-
-        internal void Disconnect()
-        {
-            DisconnectOBS4();
-            DisconnectOBS5();
-            OnDisconnect(null, EventArgs.Empty);
-        }
-
-        internal void DisconnectOBS4()
-        {
-            if (obs4?.IsConnected ?? false)
-            {
-                obs4?.Disconnect();
-            }
-            obs4 = null;
-        }
-
-        internal void DisconnectOBS5()
-        {
-            if (!obs5?.IsDisposed ?? false)
-            {
-                obs5?.Dispose();
-            }
-            obs5 = null;
+            using var pluginConfig = new PluginConfig();
+            pluginConfig.ShowDialog();
         }
     }
 }

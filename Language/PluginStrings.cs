@@ -43,6 +43,7 @@ namespace SuchByte.OBSWebSocketPlugin.Language
         public string Decrease = "Decrease";
         public string Set = "Set";
         public string ErrorNotConnected = "Macro Deck is not connected to OBS. Please make sure, OBS and the OBS-WebSocket plugin are working properly and you configured the plugin";
+        public string Name = "Name";
         public string Host = "Host";
         public string Password = "Password";
         public string AuthenticationFailed = "OBS Authentication failed";
@@ -71,6 +72,13 @@ namespace SuchByte.OBSWebSocketPlugin.Language
         public string Auto = "Auto";
         public string WebSocket5 = "WebSocket 5";
         public string WebSocket4 = "WebSocket 4";
+        public string ClearVariables = "Clear Variables";
+        public string AllConnections = "All Connections";
+        public string Connection = "Connection";
+        public string Connect = "Connect";
+        public string Disconnect = "Disconnect";
+        public string Value = "Value";
+        public string Default = "Default";
     }
 }
 // PluginLanguageManager.PluginStrings.

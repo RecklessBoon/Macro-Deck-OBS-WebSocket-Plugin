@@ -22,7 +22,7 @@
 	<ActionSetSceneDescription>Imposta una scena configurata come scena attiva</ActionSetSceneDescription>
 	<ActionToggleConnection>Attiva/disattiva la connessione a OBS</ActionToggleConnection>
 	<ActionToggleConnectionDescription>Attiva o disattiva la connessione tra OBS e Macro Deck</ActionToggleConnectionDescription>
-	<Source>Sorgente</Sorgente>
+	<Source>Sorgente</Source>
 	<Mute>Muto</Mute>
 	<Unmute>Disattiva muto</Unmute>
 	<Toggle>Commuta</Toggle>
@@ -44,4 +44,11 @@
 	<Stop>Ferma</Stop>
 	<Hide>Nascondi</Hide>
 	<Show>Mostra</Show>
+    <AllConnections>Tutti i collegamenti</AllConnections>
+    <Connection>Connessione</Connection>
+		<Connect>Collegare</Connect>
+		<Disconnect>Disconnetti</Disconnect>
+    <ClearVariables>Cancella variabili</ClearVariables>
+    <Value>Valore</Value>
+    <Default>Predefinito</Default>
 </PluginStrings>

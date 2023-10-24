@@ -53,5 +53,11 @@
 	</ActionSaveReplayBufferDescription>
 	<ActionSetReplayBufferState>OBS Wiederholungspuffer</ActionSetReplayBufferState>
 	<ActionSetReplayBufferStateDescription>Wiederholungspuffer starten, stoppen oder umschalten</ActionSetReplayBufferStateDescription>
-
+    <AllConnections>Alle Verbindungen</AllConnections>
+    <Connection>Verbindung</Connection>
+    <Connect>Verbinden</Connect>
+    <Disconnect>Trennen</Disconnect>
+    <ClearVariables>Variablen löschen</ClearVariables>
+    <Value>Wert</Value>
+    <Default>Default</Default>
 </PluginStrings>

@@ -3,16 +3,20 @@ using SuchByte.MacroDeck.ActionButton;
 using SuchByte.MacroDeck.GUI;
 using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Plugins;
+using SuchByte.OBSWebSocketPlugin.Controllers;
+using SuchByte.OBSWebSocketPlugin.Enum;
 using SuchByte.OBSWebSocketPlugin.GUI;
 using SuchByte.OBSWebSocketPlugin.Language;
+using SuchByte.OBSWebSocketPlugin.Models.Action;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SuchByte.OBSWebSocketPlugin.Actions
 {
-    public class SetFilterStateAction : PluginAction
+    public class SetFilterStateAction : ActionBase
     {
         public override string Name => PluginLanguageManager.PluginStrings.ActionFilterState;
 
@@ -20,70 +24,37 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         public override bool CanConfigure => true;
 
+        public override ConfigBase GetConfig() => GetConfig<SetFilterStateConfig>();
+
         public override void Trigger(string clientId, ActionButton actionButton)
         {
-            if (PluginInstance.Main.OBS4 != null) TriggerOBS4(clientId, actionButton);
-            else if (PluginInstance.Main.OBS5 != null) TriggerOBS5(clientId, actionButton);
-        }
-
-        protected void TriggerOBS4(string clientId, ActionButton actionButton)
-        {
-            if (!PluginInstance.Main.OBS4.IsConnected) return;
             if (!String.IsNullOrWhiteSpace(this.Configuration))
             {
                 try
                 {
-                    JObject configurationObject = JObject.Parse(this.Configuration);
-                    string sceneName = configurationObject["sceneName"].ToString();
-                    string sourceName = configurationObject["sourceName"].ToString();
-                    string filterName = configurationObject["filterName"].ToString();
+                    var config = GetConfig<SetFilterStateConfig>();
 
+                    Connection conn = PluginInstance.Main.Connections.GetValueOrDefault(config?.ConnectionName ?? PluginInstance.Main.Connections.FirstOrDefault().Key);
+                    if (conn == null) return;
+
+                    string sceneName = config.SceneName;
+                    string sourceName = config.SourceName;
+                    string filterName = config.FilterName;
                     string targetName = String.IsNullOrWhiteSpace(sourceName) ? sceneName : sourceName;
 
-                    switch (configurationObject["method"].ToString())
+                    switch (config.Method)
                     {
-                        case "hide":
-                            PluginInstance.Main.OBS4.SetSourceFilterVisibility(targetName, filterName, false);
+                        case Enum.VisibilityMethodType.Hide:
+                            _ = conn.OBS.FiltersRequests.SetSourceFilterEnabledAsync(targetName, filterName, false);
                             break;
-                        case "show":
-                            PluginInstance.Main.OBS4.SetSourceFilterVisibility(targetName, filterName, true);
+                        case Enum.VisibilityMethodType.Show:
+                            _ = conn.OBS.FiltersRequests.SetSourceFilterEnabledAsync(targetName, filterName, true);
                             break;
-                        case "toggle":
-                            PluginInstance.Main.OBS4.SetSourceFilterVisibility(targetName, filterName, !PluginInstance.Main.OBS4.GetSourceFilterInfo(targetName, filterName).IsEnabled);
-                            break;
-                    }
-                }
-                catch { }
-            }
-        }
-
-        protected void TriggerOBS5(string clientId, ActionButton actionButton)
-        {
-            if (!PluginInstance.Main.OBS5.IsConnected) return;
-            if (!String.IsNullOrWhiteSpace(this.Configuration))
-            {
-                try
-                {
-                    JObject configurationObject = JObject.Parse(this.Configuration);
-                    string sceneName = configurationObject["sceneName"].ToString();
-                    string sourceName = configurationObject["sourceName"].ToString();
-                    string filterName = configurationObject["filterName"].ToString();
-
-                    string targetName = String.IsNullOrWhiteSpace(sourceName) ? sceneName : sourceName;
-
-                    switch (configurationObject["method"].ToString())
-                    {
-                        case "hide":
-                            _ = PluginInstance.Main.OBS5.FiltersRequests.SetSourceFilterEnabledAsync(targetName, filterName, false);
-                            break;
-                        case "show":
-                            _ = PluginInstance.Main.OBS5.FiltersRequests.SetSourceFilterEnabledAsync(targetName, filterName, true);
-                            break;
-                        case "toggle":
+                        case Enum.VisibilityMethodType.Toggle:
                             _ = Task.Run(async () =>
                             {
-                                var filter = await PluginInstance.Main.OBS5.FiltersRequests.GetSourceFilterAsync(sourceName, filterName);
-                                await PluginInstance.Main.OBS5.FiltersRequests.SetSourceFilterEnabledAsync(sourceName, filterName, !filter.FilterEnabled);
+                                var filter = await conn.OBS.FiltersRequests.GetSourceFilterAsync(sourceName, filterName);
+                                await conn.OBS.FiltersRequests.SetSourceFilterEnabledAsync(sourceName, filterName, !filter.FilterEnabled);
                             });
                             break;
                     }
@@ -94,7 +65,7 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
         public override ActionConfigControl GetActionConfigControl(ActionConfigurator actionConfigurator)
         {
-            return new FilterSelector(this, actionConfigurator);
+            return new SetFilterStateConfigView(this, actionConfigurator);
         }
     }
 }

@@ -1,124 +1,87 @@
-﻿using OBSWebsocketDotNet;
-using SuchByte.MacroDeck.GUI.CustomControls;
+﻿using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Language;
 using SuchByte.MacroDeck.Logging;
 using SuchByte.MacroDeck.Plugins;
+using SuchByte.MacroDeck.Profiles;
+using SuchByte.OBSWebSocketPlugin.Actions;
+using SuchByte.OBSWebSocketPlugin.GUI.Utilities;
 using SuchByte.OBSWebSocketPlugin.Language;
+using SuchByte.OBSWebSocketPlugin.Models;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Windows.Media.Capture.Core;
 
 namespace SuchByte.OBSWebSocketPlugin.GUI
 {
     public partial class PluginConfig : DialogForm
     {
-        public const int DEFAULT_TIMEOUT = 5;
-
         public PluginConfig()
         {
             InitializeComponent();
 
-            numTimeout.Value = DEFAULT_TIMEOUT;
-
-            toolTip1.ToolTipTitle = PluginLanguageManager.PluginStrings.VersionTypeToolTipTitle;
-            toolTip1.SetToolTip(hlpVersion, PluginLanguageManager.PluginStrings.VersionTypeToolTipBody);
-
-            lblHost.Text = PluginLanguageManager.PluginStrings.Host;
-            lblPassword.Text = PluginLanguageManager.PluginStrings.Password;
-            lblVersion.Text = PluginLanguageManager.PluginStrings.Version;
-            lblTimeout.Text = PluginLanguageManager.PluginStrings.Timeout;
+            btnClearVariables.Text = PluginLanguageManager.PluginStrings.ClearVariables;
             btnOk.Text = LanguageManager.Strings.Ok;
-            versionType_Auto.Text = PluginLanguageManager.PluginStrings.Auto;
-            versionType_WS5.Text = PluginLanguageManager.PluginStrings.WebSocket5;
-            versionType_WS4.Text = PluginLanguageManager.PluginStrings.WebSocket4;
 
-            List<Dictionary<string, string>> credentialsList = PluginCredentials.GetPluginCredentials(PluginInstance.Main);
-            Dictionary<string, string> credentials = null;
-            if (credentialsList != null && credentialsList.Count > 0)
+            List<Dictionary<string, string>> credentials = PluginCredentials.GetPluginCredentials(PluginInstance.Main);
+            if (credentials != null && credentials.Count > 0)
             {
-                credentials = credentialsList[0];
-            }
-            if (credentials != null && credentials.ContainsKey("host") && credentials.ContainsKey("password"))
-            {
-                this.host.Text = credentials["host"];
-                this.password.Text = credentials["password"];
+                var first = true;
+                foreach (Dictionary<string, string> page in credentials)
+                {
+                    if (page.ContainsKey("host") && page.ContainsKey("password"))
+                    {
+                        var config = new ConnectionConfig
+                        {
+                            name = page.ContainsKey("name") ? page["name"] : PluginLanguageManager.PluginStrings.Default.ToLower(),
+                            host = page.ContainsKey("host") ? page["host"] : "",
+                            password = page.ContainsKey("password") ? page["password"] : ""
+                        };
+                        if (!first)
+                        {
+                            AddRow(config);
+                        }
+                        else
+                        {
+                            UpdateFirstRow(config);
+                        }
+                    }
+                    first = false;
+                }
             }
             else
             {
-                this.host.Text = "ws://127.0.0.1:4455";
-            }
-
-            var versionTypeFound = Enum.TryParse(PluginConfiguration.GetValue(PluginInstance.Main, "versionType"), out OBSWebSocketVersionType versionType);
-            SetVersionTypeSelected(versionTypeFound ? versionType : OBSWebSocketVersionType.OBS_WEBSOCKET_AUTO);
-
-            var timeoutFound = int.TryParse(PluginConfiguration.GetValue(PluginInstance.Main, "timeout"), out int timeout);
-            numTimeout.Value = timeoutFound ? timeout : DEFAULT_TIMEOUT;
-        }
-
-        private OBSWebSocketVersionType GetVersionTypeSelected()
-        {
-            return versionType_Auto.Checked ? OBSWebSocketVersionType.OBS_WEBSOCKET_AUTO : versionType_WS5.Checked ? OBSWebSocketVersionType.OBS_WEBSOCKET_V5 : OBSWebSocketVersionType.OBS_WEBSOCKET_V4;
-        }
-
-        private void SetVersionTypeSelected(OBSWebSocketVersionType type)
-        {
-            switch (type)
-            {
-                case OBSWebSocketVersionType.OBS_WEBSOCKET_V4:
-                    versionType_WS4.Checked = true;
-                    break;
-                case OBSWebSocketVersionType.OBS_WEBSOCKET_V5:
-                    versionType_WS5.Checked = true;
-                    break;
-                case OBSWebSocketVersionType.OBS_WEBSOCKET_AUTO:
-                default:
-                    versionType_Auto.Checked = true;
-                    break;
+                UpdateFirstRow();
             }
         }
 
         private void BtnOk_Click(object sender, EventArgs e)
         {
-            PluginConfiguration.SetValue(PluginInstance.Main, "versionType", GetVersionTypeSelected().ToString());
-            PluginConfiguration.SetValue(PluginInstance.Main, "timeout", numTimeout.Value.ToString());
-
-            Dictionary<string, string> credentials = new Dictionary<string, string>
+            PluginCredentials.DeletePluginCredentials(PluginInstance.Main);
+            foreach (Control control in repeatingLayout.Controls)
             {
-                ["host"] = this.host.Text,
-                ["password"] = this.password.Text
-            };
-            PluginCredentials.SetCredentials(PluginInstance.Main, credentials);
+                if (control is ConnectionConfigurator config)
+                {
+                    PluginCredentials.AddCredentials(PluginInstance.Main, config.Value.ToCredentials());
+                }
+            }
 
             try
             {
-                PluginInstance.Main.Disconnect();
                 var self = this;
                 _ = Task.Run(async () =>
                 {
                     await PluginInstance.Main.SetupAndStartAsync();
-                    if (PluginInstance.Main.IsConnected)
+                    if (PluginInstance.Main.GetNumConnected() > 0)
                     {
                         self.Invoke((MethodInvoker)delegate { self.Close(); });
                     }
                 });
-            }
-            catch (AuthFailureException)
-            {
-                using (var msgBox = new MacroDeck.GUI.CustomControls.MessageBox())
-                {
-                    msgBox.ShowDialog(PluginLanguageManager.PluginStrings.AuthenticationFailed, PluginLanguageManager.PluginStrings.InfoWrongPassword, MessageBoxButtons.OK);
-                }
-                return;
-            }
-            catch (ErrorResponseException)
-            {
-                using (var msgBox = new MacroDeck.GUI.CustomControls.MessageBox())
-                {
-                    msgBox.ShowDialog(PluginLanguageManager.PluginStrings.AuthenticationFailed, PluginLanguageManager.PluginStrings.InfoWrongPassword, MessageBoxButtons.OK);
-                }
-                return;
             }
             catch (Exception ex)
             {
@@ -126,11 +89,67 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             }
         }
 
-        private void OnVersionType_AutoCheckedChanged(object sender, EventArgs e)
+        private void AddRow(ConnectionConfig config = null)
         {
-            ButtonRadioButton rb = (ButtonRadioButton)sender;
-            numTimeout.Enabled = rb.Checked;
-            numTimeout.BackColor = rb.Checked ? Color.FromArgb(65, 65, 65) : Color.Gray;
+            repeatingLayout.RowCount++;
+            repeatingLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+
+            var elm = new ConnectionConfigurator();
+            elm.name.Text = config?.name;
+            elm.host.Text = config?.host;
+            elm.password.Text = config?.password;
+            elm.Dock = DockStyle.Fill;
+            elm.Margin = new Padding(13);
+            repeatingLayout.Controls.Add(elm, 0, repeatingLayout.RowCount - 1);
+
+            var btnRemove = new Button
+            {
+                Text = "-",
+                Dock = DockStyle.Top,
+                BackColor = Color.Maroon,
+                Margin = new Padding(13),
+            };
+            btnRemove.Click += BtnRemove_Click;
+            repeatingLayout.Controls.Add(btnRemove, 1, repeatingLayout.RowCount - 1);
+        }
+
+        private void UpdateFirstRow(ConnectionConfig config = null)
+        {
+            connectionConfig_1.name.Text = config?.name ?? "";
+            connectionConfig_1.host.Text = config?.host ?? "ws://127.0.0.1:4455";
+            connectionConfig_1.password.Text = config?.password ?? "";
+        }
+
+        private void BtnAdd_Click(object sender, EventArgs e)
+        {
+            AddRow();
+        }
+
+        private void BtnRemove_Click(object sender, EventArgs e)
+        {
+            var row = repeatingLayout.GetRow(sender as Control);
+            TableLayoutHelper.RemoveArbitraryRow(repeatingLayout, row);
+        }
+
+        private void ButtonPrimary1_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void RepeatingLayout_CellPaint(object sender, TableLayoutCellPaintEventArgs e)
+        {
+            var bottomLeft = new Point(e.CellBounds.Left, e.CellBounds.Bottom);
+            var bottomRight = new Point(e.CellBounds.Right, e.CellBounds.Bottom);
+            e.Graphics.DrawLine(Pens.White, bottomLeft, bottomRight);
+        }
+
+        private void BtnClearVariables_Click(object sender, EventArgs e)
+        {
+            var current = MacroDeck.Variables.VariableManager.GetVariables(PluginInstance.Main);
+            foreach (var variable in current)
+            {
+                MacroDeck.Variables.VariableManager.DeleteVariable(variable.Name);
+            }
         }
     }
 }

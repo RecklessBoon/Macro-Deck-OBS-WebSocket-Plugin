@@ -1,77 +1,62 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0-windows10.0.22000.0</TargetFramework>
-    <RootNamespace>SuchByte.OBSWebSocketPlugin</RootNamespace>
-    <AssemblyName>OBS-WebSocket Plugin</AssemblyName>
-	<UseWindowsForms>true</UseWindowsForms>
-    <Authors>Macro Deck</Authors>
-    <Company>Macro Deck</Company>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>1.4.2</Version>
-	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-	<NeutralLanguage>en</NeutralLanguage>
-	<PackageProjectUrl>https://github.com/SuchByte/Macro-Deck-OBS-WebSocket-Plugin</PackageProjectUrl>
-	<RepositoryUrl>https://github.com/SuchByte/Macro-Deck-OBS-WebSocket-Plugin</RepositoryUrl>
-	<Copyright>SuchByte</Copyright>
-  </PropertyGroup>
+    <PropertyGroup>
+        <RootNamespace>SuchByte.OBSWebSocketPlugin</RootNamespace>
+        <AssemblyName>OBS-WebSocket Plugin</AssemblyName>
+	      <UseWindowsForms>true</UseWindowsForms>
+        <Authors>Macro Deck</Authors>
+        <Company>Macro Deck</Company>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <Version>2.0.0</Version>
+	      <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+	      <NeutralLanguage>en</NeutralLanguage>
+	      <PackageProjectUrl>https://github.com/SuchByte/Macro-Deck-OBS-WebSocket-Plugin</PackageProjectUrl>
+	      <RepositoryUrl>https://github.com/SuchByte/Macro-Deck-OBS-WebSocket-Plugin</RepositoryUrl>
+	      <Copyright>SuchByte</Copyright>
+	      <TargetFramework>net7.0-windows10.0.22000.0</TargetFramework>
+    </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="obs-websocket-dotnet.dll" />
     <None Remove="Resources\Languages\English.xml" />
     <None Remove="Resources\Languages\German.xml" />
     <None Remove="Resources\Languages\Italian.xml" />
     <None Remove="websocket-sharp.dll" />
   </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\Languages\English.xml" />
-    <EmbeddedResource Include="Resources\Languages\German.xml" />
-    <EmbeddedResource Include="Resources\Languages\Italian.xml" />
-  </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="Resources\Languages\English.xml" />
+        <EmbeddedResource Include="Resources\Languages\German.xml" />
+        <EmbeddedResource Include="Resources\Languages\Italian.xml" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="OBSWebSocket5" Version="0.0.2" />
-    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="OBSWebSocket5" Version="0.0.3" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\Macro-Deck\MacroDeck\MacroDeck.csproj" />
-    <Reference Include="obs-websocket-dotnet">
-      <HintPath>obs-websocket-dotnet.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\..\Macro-Deck\MacroDeck\MacroDeck.csproj" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <Resource Include="obs-websocket-dotnet.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="websocket-sharp.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
+    <ItemGroup>
+        <Compile Update="Properties\Resources.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Resources.resx</DependentUpon>
+        </Compile>
+    </ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Update="Properties\Resources.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+    </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if not exist &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\$(PackageId)&quot; mkdir &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\$(PackageId)&quot;" />
-    <Exec Command="copy /Y &quot;$(ProjectDir)ExtensionManifest.json&quot; &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\$(PackageId)\ExtensionManifest.json&quot;" />
-    <Exec Command="copy /Y &quot;$(ProjectDir)ExtensionIcon.png&quot; &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\$(PackageId)\ExtensionIcon.png&quot;" />
-    <Exec Command="copy /Y &quot;$(TargetDir)*.dll&quot; &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\$(PackageId)\&quot;" />
-  </Target>
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+        <Exec Command="if not exist &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\SuchByte.OBS-WebSocketPlugin&quot; mkdir &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\SuchByte.OBS-WebSocketPlugin&quot;" />
+        <Exec Command="copy /Y &quot;$(ProjectDir)ExtensionManifest.json&quot; &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\SuchByte.OBS-WebSocketPlugin\ExtensionManifest.json&quot;" />
+        <Exec Command="copy /Y &quot;$(ProjectDir)ExtensionIcon.png&quot; &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\SuchByte.OBS-WebSocketPlugin\ExtensionIcon.png&quot;" />
+        <Exec Command="copy /Y &quot;$(TargetDir)*.dll&quot; &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\SuchByte.OBS-WebSocketPlugin\&quot;" />
+    </Target>
 
 </Project>
