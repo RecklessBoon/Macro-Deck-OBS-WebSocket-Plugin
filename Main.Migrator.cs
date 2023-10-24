@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using SuchByte.MacroDeck.ActionButton;
+using SuchByte.MacroDeck.DataTypes.Core;
 using SuchByte.MacroDeck.Plugins;
 using SuchByte.MacroDeck.Profiles;
 using SuchByte.MacroDeck.Variables;
@@ -17,36 +18,100 @@ namespace SuchByte.OBSWebSocketPlugin
     {
         private void MigrateVersion()
         {
-            var version = GetConfigVersion();
+            var configVersion = GetConfigVersion();
+            var currentVersion = GetCurrentVersion();
 
-            if (version.ToString() == "0.0.0") V1_5_0();
-
-            MigrateActions();
-            SetCurrentVersion();
+            if (configVersion != currentVersion)
+            {
+                var choice = PromptAutoUpdate();
+                if (choice == DialogResult.Yes)
+                {
+                    MigrateConfigs();
+                    MigrateActions();
+                    SetCurrentVersion();
+                } else if (choice == DialogResult.No)
+                {
+                    var skip = PromptSkipUpdate();
+                    if (skip == DialogResult.Yes)
+                    {
+                        SetCurrentVersion();
+                    }
+                }
+            }
         }
 
-        private Version GetConfigVersion()
+        private DialogResult PromptAutoUpdate()
+        {
+            var message = new MacroDeck.GUI.CustomControls.MessageBox();
+            message.Width = 500;
+            message.Height = 300;
+            return message.ShowDialog(
+                string.Format("{0}: Auto-Update Buttons?", Name),
+                "Actions and/or Condition configurations can be updated from the previous version for you automatically.\n\n>> WARNING <<\nYou should perform a backup before attempting this! While it should work, there's a chance it could fail.\n\nProceed to automatically update existing configurations to newest version?",
+                MessageBoxButtons.YesNo
+            );
+        }
+
+        private DialogResult PromptSkipUpdate()
+        {
+            var message = new MacroDeck.GUI.CustomControls.MessageBox();
+            return message.ShowDialog(
+                string.Format("{0}: Skip Auto-Update Buttons?", Name),
+                "Select \"Yes\" to never see the Auto-Update Buttons dialog for this version again. Select \"No\" to show it next time Macro Deck is started.",
+                MessageBoxButtons.YesNo
+            );
+        }
+
+        private System.Version GetConfigVersion()
         {
             var versionString = PluginConfiguration.GetValue(this, "Version");
             versionString = versionString == "" ? "0.0.0" : versionString;
-            return new Version(versionString);
+            return new System.Version(versionString);
+        }
+
+        private System.Version GetCurrentVersion()
+        {
+            return System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
         }
 
         private void SetCurrentVersion()
         {
-            var current_version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
+            var current_version = GetCurrentVersion();
             PluginConfiguration.SetValue(this, "Version", current_version.ToString());
+        }
+
+        private void MigrateConfigs()
+        {
+            var version = GetConfigVersion();
+
+            if (version.ToString() == "0.0.0")
+            {
+                V1_5_0();
+            }
         }
 
         private void V1_5_0()
         {
             var variables = VariableManager.GetVariables(this);
+            foreach (var variable in variables)
+            {
+                if (!variable.Name.StartsWith("obs_default_"))
+                {
+                    VariableManager.SetValue(String.Format("obs_default_{0}", variable.Name.Replace("obs_", "")), variable.Value, variable.VariableType, PluginInstance.Main, null);
+                }
+            }
+
             foreach (var profile in ProfileManager.Profiles)
             {
                 foreach (var folder in profile.Folders)
                 {
                     foreach (var button in folder.ActionButtons)
                     {
+                        if (button.StateBindingVariable.StartsWith("obs_"))
+                        {
+                            button.StateBindingVariable = String.Format("obs_default_{0}", button.StateBindingVariable.Replace("obs_", ""));
+                        }
+
                         foreach (var action in button.Actions)
                         {
                             if (action.GetType() == typeof(ConditionAction))
@@ -114,9 +179,12 @@ namespace SuchByte.OBSWebSocketPlugin
             }
             foreach (var variable in variables)
             {
-                VariableManager.DeleteVariable(variable.Name);
+                if (!variable.Name.StartsWith("obs_default_"))
+                {
+                    VariableManager.DeleteVariable(variable.Name);
+                }
             }
-            PluginConfiguration.SetValue(this, "Version", "1.5.0");
+            GC.Collect();
         }
 
         private List<PluginAction> FindNestedActions(List<PluginAction> actions)
@@ -140,7 +208,6 @@ namespace SuchByte.OBSWebSocketPlugin
 
         private void MigrateActions()
         {
-            List<ActionBase> upgradeableActions = new();
             foreach (var profile in ProfileManager.Profiles)
             {
                 foreach (var folder in profile.Folders)
@@ -153,7 +220,8 @@ namespace SuchByte.OBSWebSocketPlugin
                             var actionConfig = actionBase?.GetConfig();
                             if (actionBase != null && actionConfig.Version != actionConfig.TargetVersion)
                             {
-                                upgradeableActions.Add(actionBase);
+                                var newConfig = actionBase.GetConfig().UpgradeConfig();
+                                action.Configuration = JObject.FromObject(newConfig).ToString();
                             }
                         }
                         foreach (var action in FindNestedActions(button.ActionsRelease))
@@ -162,7 +230,8 @@ namespace SuchByte.OBSWebSocketPlugin
                             var actionConfig = actionBase?.GetConfig();
                             if (actionBase != null && actionConfig.Version != actionConfig.TargetVersion)
                             {
-                                upgradeableActions.Add(actionBase);
+                                var newConfig = actionBase.GetConfig().UpgradeConfig();
+                                action.Configuration = JObject.FromObject(newConfig).ToString();
                             }
                         }
                         foreach (var action in FindNestedActions(button.ActionsLongPress))
@@ -171,7 +240,8 @@ namespace SuchByte.OBSWebSocketPlugin
                             var actionConfig = actionBase?.GetConfig();
                             if (actionBase != null && actionConfig.Version != actionConfig.TargetVersion)
                             {
-                                upgradeableActions.Add(actionBase);
+                                var newConfig = actionBase.GetConfig().UpgradeConfig();
+                                action.Configuration = JObject.FromObject(newConfig).ToString();
                             }
                         }
                         foreach (var action in FindNestedActions(button.ActionsLongPressRelease))
@@ -180,7 +250,8 @@ namespace SuchByte.OBSWebSocketPlugin
                             var actionConfig = actionBase?.GetConfig();
                             if (actionBase != null && actionConfig.Version != actionConfig.TargetVersion)
                             {
-                                upgradeableActions.Add(actionBase);
+                                var newConfig = actionBase.GetConfig().UpgradeConfig();
+                                action.Configuration = JObject.FromObject(newConfig).ToString();
                             }
                         }
                         foreach (var listener in button.EventListeners)
@@ -191,29 +262,11 @@ namespace SuchByte.OBSWebSocketPlugin
                                 var actionConfig = actionBase?.GetConfig();
                                 if (actionBase != null && actionConfig.Version != actionConfig.TargetVersion)
                                 {
-                                    upgradeableActions.Add(actionBase);
+                                    var newConfig = actionBase.GetConfig().UpgradeConfig();
+                                    action.Configuration = JObject.FromObject(newConfig).ToString();
                                 }
                             }
                         }
-                    }
-                }
-            }
-
-            if (upgradeableActions.Count > 0)
-            {
-                var message = new MacroDeck.GUI.CustomControls.MessageBox();
-                if (DialogResult.Yes ==
-                    message.ShowDialog(
-                        string.Format("{0}: Update Action Configs?", Name),
-                        "Action configurations from previous versions were detected. Proceed to automatically update existing action configurations to newest version? WARNING: You should perform a backup before attempting this! While it should work, there's a chance it could fail.",
-                        MessageBoxButtons.YesNo
-                    )
-                )
-                {
-                    foreach (var action in upgradeableActions)
-                    {
-                        var newConfig = action.GetConfig().UpgradeConfig();
-                        action.Configuration = JObject.FromObject(newConfig).ToString();
                     }
                 }
             }
