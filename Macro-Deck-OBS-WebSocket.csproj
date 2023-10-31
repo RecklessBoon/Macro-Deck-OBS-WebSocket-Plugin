@@ -34,8 +34,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Reference Include="SuchByte.MacroDeck">
+        <Reference Include="Macro Deck 2">
             <HintPath>$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Macro Deck 2.dll</HintPath>
+	    <Private>false</Private>
         </Reference>
     </ItemGroup>
 
