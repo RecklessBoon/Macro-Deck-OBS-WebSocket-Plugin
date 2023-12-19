@@ -39,6 +39,9 @@ Update the value of a text source
 #### Set Source Visibility
 Hide/Unhide sources
 
+#### Interact with Input
+Show the "Interact" dialog on a source that supports that kind of action
+
 ----
 
 > NOTE: This is a plugin for [Macro Deck 2](https://github.com/SuchByte/Macro-Deck), it does NOT function as a standalone app

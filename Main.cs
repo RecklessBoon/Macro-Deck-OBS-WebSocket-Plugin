@@ -139,6 +139,7 @@ namespace SuchByte.OBSWebSocketPlugin
                 new SetSceneAction(),
                 new SetStreamingStateAction(),
                 new SetVirtualCamAction(),
+                new InteractAction(),
                 new ToggleConnectionAction(),
             };
             _ = SetupAndStartAsync();
