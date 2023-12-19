@@ -1,58 +1,58 @@
 ﻿<?xml version="1.0"?>
 <PluginStrings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-	<__Language__>German</__Language__>
-	<__LanguageCode__>de</__LanguageCode__>
-	<__Author__>Macro Deck</__Author__>
+	  <__Language__>German</__Language__>
+	  <__LanguageCode__>de</__LanguageCode__>
+	  <__Author__>Macro Deck</__Author__>
 
-	<ActionSourceVisibility>OBS Quelle Sichtbarkeit</ActionSourceVisibility>
-	<ActionSourceVisibilityDescription>Sichtbarkeit einer Szenenquelle zeigen, verstecken und umschalten</ActionSourceVisibilityDescription>
-	<ActionSetAudioMuted>OBS Audioquelle Stummschaltung</ActionSetAudioMuted>
-	<ActionSetAudioMutedDescription>Audioquelle stummschalten, Stummschaltung aufheben und Stummschaltung umschalten</ActionSetAudioMutedDescription>
-	<ActionSetSourceVolume>OBS Quelle Lautstärke ändern</ActionSetSourceVolume>
-	<ActionSetSourceVolumeDescription>Lautstärke der eingestellten Quelle ändern</ActionSetSourceVolumeDescription>
-	<ActionSetProfile>OBS Profil ändern</ActionSetProfile>
-	<ActionSetProfileDescription>Ändert das aktuelle Profil in OBS</ActionSetProfileDescription>
-	<ActionSetRecordingState>OBS Aufnahme</ActionSetRecordingState>
-	<ActionSetRecordingStateDescription>Aufnahme starten, stoppen oder umschalten</ActionSetRecordingStateDescription>
-	<ActionSetStreamingState>OBS Stream</ActionSetStreamingState>
-	<ActionSetStreamingStateDescription>Stream starten, stoppen oder umschalten</ActionSetStreamingStateDescription>
-	<ActionSetVirtualCamState>OBS virtuelle Kamera</ActionSetVirtualCamState>
-	<ActionSetVirtualCamStateDescription>Virtuelle Kamera starten, stoppen oder umschalten</ActionSetVirtualCamStateDescription>
-	<ActionSetScene>OBS Szene ändern</ActionSetScene>
-	<ActionSetSceneDescription>Ändert die aktuelle Szene</ActionSetSceneDescription>
-	<ActionToggleConnection>OBS Verbindung umschalten</ActionToggleConnection>
-	<ActionToggleConnectionDescription>Schaltet den Verbindungsstatus zwischen Macro Deck und OBS um</ActionToggleConnectionDescription>
-	<Source>Quelle</Source>
-	<Mute>Stummschalten</Mute>
-	<Unmute>Stummschaltung aufheben</Unmute>
-	<Toggle>Umschalten</Toggle>
-	<GeneralBy>um</GeneralBy>
-	<GeneralTo>zu</GeneralTo>
-	<Increase>Erhöhen</Increase>
-	<Decrease>Verringern</Decrease>
-	<Set>Setzen</Set>
-	<ErrorNotConnected>Macro Deck ist nicht mit OBS verbunden. Bitte sicherstellen dass OBS und das OBS-WebSocket plugin richtig konfiguriert sind und funktionieren</ErrorNotConnected>
-	<Host>Host</Host>
-	<Password>Passwort</Password>
-	<AuthenticationFailed>OBS Autentifizierung fehlgeschlagen</AuthenticationFailed>
-	<InfoWrongPassword>Bitte sicherstellen, dass das richtige Passwort in der Konfiguration eingegeben wurde</InfoWrongPassword>
-	<ConnectionFailed>OBS Verbindung fehlgeschlagen</ConnectionFailed>
-	<InfoWrongHost>Bitte sicherstellen dass OBS und das OBS-WebSocket plugin richtig konfiguriert sind und funktionieren</InfoWrongHost>
-	<Profile>Profil</Profile>
-	<Scene>Szene</Scene>
-	<Start>Starten</Start>
-	<Stop>Stoppen</Stop>
-	<Hide>Verstecken</Hide>
-	<Show>Zeigen</Show>
-	<OBSConnected>OBS verbunden</OBSConnected>
-	<OBSDisconnected>OBS getrennt</OBSDisconnected>
-	<ActionSaveReplayBuffer>OBS Wiederholungspuffer speichern</ActionSaveReplayBuffer>
-	<ActionSaveReplayBufferDescription>
-		Speichert den Wiederholungspuffer
-		Der Wiederholungspuffer muss aktiviert und gestartet sein um diese Aktion auszuführen!
-	</ActionSaveReplayBufferDescription>
-	<ActionSetReplayBufferState>OBS Wiederholungspuffer</ActionSetReplayBufferState>
-	<ActionSetReplayBufferStateDescription>Wiederholungspuffer starten, stoppen oder umschalten</ActionSetReplayBufferStateDescription>
+	  <ActionSourceVisibility>OBS Quelle Sichtbarkeit</ActionSourceVisibility>
+	  <ActionSourceVisibilityDescription>Sichtbarkeit einer Szenenquelle zeigen, verstecken und umschalten</ActionSourceVisibilityDescription>
+	  <ActionSetAudioMuted>OBS Audioquelle Stummschaltung</ActionSetAudioMuted>
+	  <ActionSetAudioMutedDescription>Audioquelle stummschalten, Stummschaltung aufheben und Stummschaltung umschalten</ActionSetAudioMutedDescription>
+	  <ActionSetSourceVolume>OBS Quelle Lautstärke ändern</ActionSetSourceVolume>
+	  <ActionSetSourceVolumeDescription>Lautstärke der eingestellten Quelle ändern</ActionSetSourceVolumeDescription>
+	  <ActionSetProfile>OBS Profil ändern</ActionSetProfile>
+	  <ActionSetProfileDescription>Ändert das aktuelle Profil in OBS</ActionSetProfileDescription>
+	  <ActionSetRecordingState>OBS Aufnahme</ActionSetRecordingState>
+	  <ActionSetRecordingStateDescription>Aufnahme starten, stoppen oder umschalten</ActionSetRecordingStateDescription>
+	  <ActionSetStreamingState>OBS Stream</ActionSetStreamingState>
+	  <ActionSetStreamingStateDescription>Stream starten, stoppen oder umschalten</ActionSetStreamingStateDescription>
+	  <ActionSetVirtualCamState>OBS virtuelle Kamera</ActionSetVirtualCamState>
+	  <ActionSetVirtualCamStateDescription>Virtuelle Kamera starten, stoppen oder umschalten</ActionSetVirtualCamStateDescription>
+	  <ActionSetScene>OBS Szene ändern</ActionSetScene>
+	  <ActionSetSceneDescription>Ändert die aktuelle Szene</ActionSetSceneDescription>
+	  <ActionToggleConnection>OBS Verbindung umschalten</ActionToggleConnection>
+	  <ActionToggleConnectionDescription>Schaltet den Verbindungsstatus zwischen Macro Deck und OBS um</ActionToggleConnectionDescription>
+	  <Source>Quelle</Source>
+	  <Mute>Stummschalten</Mute>
+	  <Unmute>Stummschaltung aufheben</Unmute>
+	  <Toggle>Umschalten</Toggle>
+	  <GeneralBy>um</GeneralBy>
+	  <GeneralTo>zu</GeneralTo>
+	  <Increase>Erhöhen</Increase>
+	  <Decrease>Verringern</Decrease>
+	  <Set>Setzen</Set>
+	  <ErrorNotConnected>Macro Deck ist nicht mit OBS verbunden. Bitte sicherstellen dass OBS und das OBS-WebSocket plugin richtig konfiguriert sind und funktionieren</ErrorNotConnected>
+	  <Host>Host</Host>
+	  <Password>Passwort</Password>
+	  <AuthenticationFailed>OBS Autentifizierung fehlgeschlagen</AuthenticationFailed>
+	  <InfoWrongPassword>Bitte sicherstellen, dass das richtige Passwort in der Konfiguration eingegeben wurde</InfoWrongPassword>
+	  <ConnectionFailed>OBS Verbindung fehlgeschlagen</ConnectionFailed>
+	  <InfoWrongHost>Bitte sicherstellen dass OBS und das OBS-WebSocket plugin richtig konfiguriert sind und funktionieren</InfoWrongHost>
+	  <Profile>Profil</Profile>
+	  <Scene>Szene</Scene>
+	  <Start>Starten</Start>
+	  <Stop>Stoppen</Stop>
+	  <Hide>Verstecken</Hide>
+	  <Show>Zeigen</Show>
+	  <OBSConnected>OBS verbunden</OBSConnected>
+	  <OBSDisconnected>OBS getrennt</OBSDisconnected>
+	  <ActionSaveReplayBuffer>OBS Wiederholungspuffer speichern</ActionSaveReplayBuffer>
+	  <ActionSaveReplayBufferDescription>
+	  	Speichert den Wiederholungspuffer
+	  	Der Wiederholungspuffer muss aktiviert und gestartet sein um diese Aktion auszuführen!
+	  </ActionSaveReplayBufferDescription>
+	  <ActionSetReplayBufferState>OBS Wiederholungspuffer</ActionSetReplayBufferState>
+	  <ActionSetReplayBufferStateDescription>Wiederholungspuffer starten, stoppen oder umschalten</ActionSetReplayBufferStateDescription>
     <AllConnections>Alle Verbindungen</AllConnections>
     <Connection>Verbindung</Connection>
     <Connect>Verbinden</Connect>
@@ -60,4 +60,6 @@
     <ClearVariables>Variablen löschen</ClearVariables>
     <Value>Wert</Value>
     <Default>Default</Default>
+	  <ActionInteract>Interagieren Sie mit Eingaben</ActionInteract>
+	  <ActionInteractDescription>Öffnen Sie das OBS-Dialogfeld, um mit einer bestimmten Eingabequelle zu interagieren</ActionInteractDescription>
 </PluginStrings>

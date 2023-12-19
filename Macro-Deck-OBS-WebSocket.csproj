@@ -4,14 +4,14 @@
         <RootNamespace>SuchByte.OBSWebSocketPlugin</RootNamespace>
         <AssemblyName>OBS-WebSocket Plugin</AssemblyName>
 	      <UseWindowsForms>true</UseWindowsForms>
-        <Authors>Macro Deck</Authors>
+        <Authors>Macro Deck, RecklessBoon</Authors>
         <Company>Macro Deck</Company>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <Version>2.0.0</Version>
+        <Version>2.1.0</Version>
 	      <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	      <NeutralLanguage>en</NeutralLanguage>
-	      <PackageProjectUrl>https://github.com/SuchByte/Macro-Deck-OBS-WebSocket-Plugin</PackageProjectUrl>
-	      <RepositoryUrl>https://github.com/SuchByte/Macro-Deck-OBS-WebSocket-Plugin</RepositoryUrl>
+	      <PackageProjectUrl>https://github.com/RecklessBoon/Macro-Deck-OBS-WebSocket-Plugin</PackageProjectUrl>
+	      <RepositoryUrl>https://github.com/RecklessBoon/Macro-Deck-OBS-WebSocket-Plugin</RepositoryUrl>
 	      <Copyright>SuchByte</Copyright>
 	      <TargetFramework>net7.0-windows10.0.22000.0</TargetFramework>
     </PropertyGroup>
@@ -20,7 +20,6 @@
     <None Remove="Resources\Languages\English.xml" />
     <None Remove="Resources\Languages\German.xml" />
     <None Remove="Resources\Languages\Italian.xml" />
-    <None Remove="websocket-sharp.dll" />
   </ItemGroup>
 
     <ItemGroup>

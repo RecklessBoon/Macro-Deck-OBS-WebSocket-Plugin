@@ -79,6 +79,8 @@ namespace SuchByte.OBSWebSocketPlugin.Language
         public string Disconnect = "Disconnect";
         public string Value = "Value";
         public string Default = "Default";
+        public string ActionInteract = "Interact with Input";
+        public string ActionInteractDescription = "Open the OBS dialog box to interact with a specific input source";
     }
 }
 // PluginLanguageManager.PluginStrings.

@@ -1,49 +1,49 @@
 <?xml version="1.0"?>
 <PluginStrings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-	<__Language__>Italian</__Language__>
-	<__LanguageCode__>it</__LanguageCode__>
-	<__Author__>PhoenixWyllow</__Author__>
+	  <__Language__>Italian</__Language__>
+	  <__LanguageCode__>it</__LanguageCode__>
+	  <__Author__>PhoenixWyllow</__Author__>
 
-	<ActionSourceVisibility>Imposta la visibilità della sorgente OBS</ActionSourceVisibility>
-	<ActionSourceVisibilityDescription>Nascondi/mostra/alterna la visibilità della sorgente di scena</ActionSourceVisibilityDescription>
-	<ActionSetAudioMuted>Silenzia della sorgente audio OBS</ActionSetAudioMuted>
-	<ActionSetAudioMutedDescription>Muovi/rimuovi/alterna la sorgente audio</ActionSetAudioMutedDescription>
-	<ActionSetSourceVolume>Imposta il volume della sorgente OBS</ActionSetSourceVolume>
-	<ActionSetSourceVolumeDescription>Imposta il volume di una sorgente audio</ActionSetSourceVolumeDescription>
-	<ActionSetProfile>Imposta il profilo OBS</ActionSetProfile>
-	<ActionSetProfileDescription>Imposta il profilo di OBS</ActionSetProfileDescription>
-	<ActionSetRecordingState>Imposta lo stato di registrazione di OBS</ActionSetRecordingState>
-	<ActionSetRecordingStateDescription>Avvia/ferma/alterna la registrazione</ActionSetRecordingStateDescription>
-	<ActionSetStreamingState>Imposta lo stato dello streaming OBS</ActionSetStreamingState>
-	<ActionSetStreamingStateDescription>Avvia/ferma/alterna lo streaming</ActionSetStreamingStateDescription>
-	<ActionSetVirtualCamState>Imposta lo stato della OBS Virtual Cam</ActionSetVirtualCamState>
-	<ActionSetVirtualCamStateDescription>Avvia/ferma/alterna Virtual Cam</ActionSetVirtualCamStateDescription>
-	<ActionSetScene>Imposta la scena OBS</ActionSetScene>
-	<ActionSetSceneDescription>Imposta una scena configurata come scena attiva</ActionSetSceneDescription>
-	<ActionToggleConnection>Attiva/disattiva la connessione a OBS</ActionToggleConnection>
-	<ActionToggleConnectionDescription>Attiva o disattiva la connessione tra OBS e Macro Deck</ActionToggleConnectionDescription>
-	<Source>Sorgente</Source>
-	<Mute>Muto</Mute>
-	<Unmute>Disattiva muto</Unmute>
-	<Toggle>Commuta</Toggle>
-	<GeneralBy>di</GeneralBy>
-	<GeneralTo>a</GeneralTo>
-	<Increase>Aumenta</Increase>
-	<Decrease>Riduci</Decrease>
-	<Set>Imposta</Set>
-	<ErrorNotConnected>Macro Deck non è connesso a OBS. Assicurati che OBS e il plugin OBS-WebSocket funzionino correttamente e che tu abbia configurato il plugin</ErrorNotConnected>
-	<Host>Host</Host>
-	<Password>Password</Password>
-	<AuthenticationFailed>Autenticazione OBS fallita</AuthenticationFailed>
-	<InfoWrongPassword>Assicurati di aver impostato la password corretta</InfoWrongPassword>
-	<ConnectionFailed>Connessione OBS fallita</ConnectionFailed>
-	<InfoWrongHost>Assicurati di aver impostato l'host corretto e che OBS sia in esecuzione con il plugin OBS-WebSocket installato</InfoWrongHost>
-	<Profile>Profilo</Profile>
-	<Scene>Scena</Scene>
-	<Start>Avvia</Start>
-	<Stop>Ferma</Stop>
-	<Hide>Nascondi</Hide>
-	<Show>Mostra</Show>
+	  <ActionSourceVisibility>Imposta la visibilità della sorgente OBS</ActionSourceVisibility>
+	  <ActionSourceVisibilityDescription>Nascondi/mostra/alterna la visibilità della sorgente di scena</ActionSourceVisibilityDescription>
+	  <ActionSetAudioMuted>Silenzia della sorgente audio OBS</ActionSetAudioMuted>
+	  <ActionSetAudioMutedDescription>Muovi/rimuovi/alterna la sorgente audio</ActionSetAudioMutedDescription>
+	  <ActionSetSourceVolume>Imposta il volume della sorgente OBS</ActionSetSourceVolume>
+	  <ActionSetSourceVolumeDescription>Imposta il volume di una sorgente audio</ActionSetSourceVolumeDescription>
+	  <ActionSetProfile>Imposta il profilo OBS</ActionSetProfile>
+	  <ActionSetProfileDescription>Imposta il profilo di OBS</ActionSetProfileDescription>
+	  <ActionSetRecordingState>Imposta lo stato di registrazione di OBS</ActionSetRecordingState>
+	  <ActionSetRecordingStateDescription>Avvia/ferma/alterna la registrazione</ActionSetRecordingStateDescription>
+	  <ActionSetStreamingState>Imposta lo stato dello streaming OBS</ActionSetStreamingState>
+	  <ActionSetStreamingStateDescription>Avvia/ferma/alterna lo streaming</ActionSetStreamingStateDescription>
+	  <ActionSetVirtualCamState>Imposta lo stato della OBS Virtual Cam</ActionSetVirtualCamState>
+	  <ActionSetVirtualCamStateDescription>Avvia/ferma/alterna Virtual Cam</ActionSetVirtualCamStateDescription>
+	  <ActionSetScene>Imposta la scena OBS</ActionSetScene>
+	  <ActionSetSceneDescription>Imposta una scena configurata come scena attiva</ActionSetSceneDescription>
+	  <ActionToggleConnection>Attiva/disattiva la connessione a OBS</ActionToggleConnection>
+	  <ActionToggleConnectionDescription>Attiva o disattiva la connessione tra OBS e Macro Deck</ActionToggleConnectionDescription>
+	  <Source>Sorgente</Source>
+	  <Mute>Muto</Mute>
+	  <Unmute>Disattiva muto</Unmute>
+	  <Toggle>Commuta</Toggle>
+	  <GeneralBy>di</GeneralBy>
+	  <GeneralTo>a</GeneralTo>
+	  <Increase>Aumenta</Increase>
+	  <Decrease>Riduci</Decrease>
+	  <Set>Imposta</Set>
+	  <ErrorNotConnected>Macro Deck non è connesso a OBS. Assicurati che OBS e il plugin OBS-WebSocket funzionino correttamente e che tu abbia configurato il plugin</ErrorNotConnected>
+	  <Host>Host</Host>
+	  <Password>Password</Password>
+	  <AuthenticationFailed>Autenticazione OBS fallita</AuthenticationFailed>
+	  <InfoWrongPassword>Assicurati di aver impostato la password corretta</InfoWrongPassword>
+	  <ConnectionFailed>Connessione OBS fallita</ConnectionFailed>
+	  <InfoWrongHost>Assicurati di aver impostato l'host corretto e che OBS sia in esecuzione con il plugin OBS-WebSocket installato</InfoWrongHost>
+	  <Profile>Profilo</Profile>
+	  <Scene>Scena</Scene>
+	  <Start>Avvia</Start>
+	  <Stop>Ferma</Stop>
+	  <Hide>Nascondi</Hide>
+	  <Show>Mostra</Show>
     <AllConnections>Tutti i collegamenti</AllConnections>
     <Connection>Connessione</Connection>
 		<Connect>Collegare</Connect>
@@ -51,4 +51,6 @@
     <ClearVariables>Cancella variabili</ClearVariables>
     <Value>Valore</Value>
     <Default>Predefinito</Default>
+    <ActionInteract>Interagisci con l'input</ActionInteract>
+    <ActionInteractDescription>Apri la finestra di dialogo OBS per interagire con una sorgente di input specifica</ActionInteractDescription>
 </PluginStrings>
