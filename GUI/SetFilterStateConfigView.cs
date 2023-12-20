@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static OBSWebSocket5.Request.SceneItemsRequests;
 
 namespace SuchByte.OBSWebSocketPlugin.GUI
 {
@@ -133,14 +134,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                 var response = await conn.OBS.SceneItemsRequests.GetSceneItemListAsync(sceneName);
                 if (response != null)
                 {
-                    foreach (JObject item in response.SceneItems)
-                    {
-                        var name = item["sourceName"]?.ToString();
-                        if (!String.IsNullOrEmpty(name))
-                        {
-                            sourcesBox.Invoke((MethodInvoker)delegate { sourcesBox.Items.Add(name); });
-                        }
-                    }
+                    await RecurseSourceResponse(conn, response.SceneItems);
                 }
                 self.Invoke((MethodInvoker)delegate
                 {
@@ -148,6 +142,25 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                     LoadFilters();
                 });
             });
+        }
+
+        private async Task RecurseSourceResponse(Connection conn, JObject[] sceneItems)
+        {
+            foreach (JObject item in sceneItems) { 
+                if (item["isGroup"].Value<bool?>() == true)
+                {
+                    var sub = await conn.OBS.SceneItemsRequests.GetGroupSceneItemListAsync(item["sourceName"]?.ToString());
+                    await RecurseSourceResponse(conn, sub.SceneItems);
+                }
+                else
+                {
+                    var name = item["sourceName"]?.ToString();
+                    if (!String.IsNullOrEmpty(name))
+                    {
+                        sourcesBox.Invoke((MethodInvoker)delegate { sourcesBox.Items.Add(name); });
+                    }
+                }
+            }
         }
 
         private void LoadFilters()
