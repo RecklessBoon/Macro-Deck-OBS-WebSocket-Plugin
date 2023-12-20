@@ -125,6 +125,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             }
 
             this.sourcesBox.Items.Clear();
+            this.sourcesBox.Items.Add(String.Empty);
             this.sourcesBox.Text = String.Empty;
 
             var self = this;
@@ -184,9 +185,23 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             }
 
             var self = this;
+            var sceneName = scenesBox.Text;
             var sourceName = sourcesBox.Text;
             _ = Task.Run(async () =>
             {
+                var sceneResponse = await conn.OBS.FiltersRequests.GetSourceFilterListAsync(sceneName);
+                if (sceneResponse != null)
+                {
+                    foreach (JObject filter in sceneResponse.Filters)
+                    {
+                        var name = filter["filterName"]?.ToString();
+                        if (!String.IsNullOrWhiteSpace(name))
+                        {
+                            filtersBox.Invoke((MethodInvoker)delegate { filtersBox.Items.Add(name); });
+                        }
+                    }
+                }
+
                 var response = await conn.OBS.FiltersRequests.GetSourceFilterListAsync(sourceName);
                 if (response != null)
                 {
