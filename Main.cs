@@ -84,6 +84,8 @@ namespace SuchByte.OBSWebSocketPlugin
 
             // Defined in Main.Migrator.cs
             MigrateVersion();
+
+            _ = SetupAndStartAsync();
         }
 
         private void StatusButton_Click(object sender, EventArgs e)
@@ -142,7 +144,6 @@ namespace SuchByte.OBSWebSocketPlugin
                 new InteractAction(),
                 new ToggleConnectionAction(),
             };
-            _ = SetupAndStartAsync();
         }
         
 

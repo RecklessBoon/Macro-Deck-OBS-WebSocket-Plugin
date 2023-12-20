@@ -39,6 +39,7 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
                     string sceneName = config.SceneName;
                     string sourceName = config.SourceName;
+                    if (sourceName == String.Empty) sourceName = sceneName;
                     string filterName = config.FilterName;
                     string targetName = String.IsNullOrWhiteSpace(sourceName) ? sceneName : sourceName;
 
