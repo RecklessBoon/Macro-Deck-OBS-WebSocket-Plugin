@@ -7,13 +7,13 @@
         <Authors>Macro Deck, RecklessBoon</Authors>
         <Company>Macro Deck</Company>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <Version>2.1.0</Version>
+        <Version>2.1.1</Version>
 	      <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	      <NeutralLanguage>en</NeutralLanguage>
 	      <PackageProjectUrl>https://github.com/RecklessBoon/Macro-Deck-OBS-WebSocket-Plugin</PackageProjectUrl>
 	      <RepositoryUrl>https://github.com/RecklessBoon/Macro-Deck-OBS-WebSocket-Plugin</RepositoryUrl>
 	      <Copyright>SuchByte</Copyright>
-	      <TargetFramework>net7.0-windows10.0.22000.0</TargetFramework>
+        <TargetFramework>net8.0-windows10.0.22000.0</TargetFramework>
     </PropertyGroup>
 
   <ItemGroup>
