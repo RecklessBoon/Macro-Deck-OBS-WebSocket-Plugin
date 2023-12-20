@@ -121,15 +121,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                 var response = await conn.OBS.SceneItemsRequests.GetSceneItemListAsync(sceneName);
                 if (response != null)
                 {
-                    foreach (JObject sceneItem in response.SceneItems)
-                    {
-                        var name = sceneItem["sourceName"]?.ToString();
-                        var type = sceneItem["inputKind"]?.ToString();
-                        if (!String.IsNullOrEmpty(name) && ("text_gdiplus_v2").Equals(type))
-                        {
-                            sourcesBox.Invoke((MethodInvoker)delegate { sourcesBox.Items.Add(name); });
-                        }
-                    }
+                    await RecurseSourceResponse(conn, response.SceneItems);
                 }
                 self.Invoke((MethodInvoker)delegate
                 {
@@ -137,6 +129,26 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                 });
             });
 
+        }
+
+        private async Task RecurseSourceResponse(Connection conn, JObject[] sceneItems)
+        {
+            foreach (JObject item in sceneItems)
+            {
+                if (item["isGroup"].Value<bool?>() == true)
+                {
+                    var sub = await conn.OBS.SceneItemsRequests.GetGroupSceneItemListAsync(item["sourceName"]?.ToString());
+                    await RecurseSourceResponse(conn, sub.SceneItems);
+                }
+                else
+                {
+                    var name = item["sourceName"]?.ToString();
+                    if (!String.IsNullOrEmpty(name))
+                    {
+                        sourcesBox.Invoke((MethodInvoker)delegate { sourcesBox.Items.Add(name); });
+                    }
+                }
+            }
         }
 
         private void LoadConfig()
