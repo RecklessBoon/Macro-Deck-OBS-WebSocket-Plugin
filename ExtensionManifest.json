@@ -6,6 +6,6 @@
   "packageId": "SuchByte.OBS-WebSocketPlugin",
   "version": "2.1.1",
   "target-plugin-api-version": 40,
-  "target-macro-deck-version": "2.13.0-b10",
+  "target-macro-deck-version": "2.13.0-b12",
   "dll": "OBS-WebSocket Plugin.dll"
 }
