@@ -58,7 +58,7 @@ namespace SuchByte.OBSWebSocketPlugin.Controllers
 
                 var host = new Uri(Config.host);
 
-                if (Config.password == null)
+                if (Config.password == null || Config.password == "")
                 {
                     return OBS.ConnectAsync(host);
                 }
