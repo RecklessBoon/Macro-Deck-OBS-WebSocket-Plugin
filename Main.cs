@@ -242,14 +242,23 @@ namespace SuchByte.OBSWebSocketPlugin
             {
                 if (sender is OBSWebSocket obs)
                 {
-                    var sceneItems = await obs.SceneItemsRequests.GetSceneItemListAsync(args.SceneName);
                     var sceneItemName = args.SceneItemId.ToString();
-                    foreach (var item in sceneItems.SceneItems)
+                    var sceneItemsResponse = await obs.SceneItemsRequests.GetSceneItemListAsync(args.SceneName);
+                    var sceneItems = sceneItemsResponse?.SceneItems;
+                    if (sceneItemsResponse == null)
                     {
-                        if (item["sceneItemId"]!.ToString().Equals(args.SceneItemId.ToString()) && item["sourceName"] != null)
+                        var groupSceneItemsResponse = await obs.SceneItemsRequests.GetGroupSceneItemListAsync(args.SceneName);
+                        sceneItems = groupSceneItemsResponse?.SceneItems;
+                    }
+
+                    if ((sceneItems?.Length ?? 0) > 0) {
+                        foreach (var item in sceneItems)
                         {
-                            sceneItemName = item["sourceName"].ToString();
-                            break;
+                            if (item["sceneItemId"]!.ToString().Equals(args.SceneItemId.ToString()) && item["sourceName"] != null)
+                            {
+                                sceneItemName = item["sourceName"].ToString();
+                                break;
+                            }
                         }
                     }
                     connection.SetVariable(args.SceneName + "_" + sceneItemName, args.SceneItemEnabled ? "True" : "False");

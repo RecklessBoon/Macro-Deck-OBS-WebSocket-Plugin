@@ -7,7 +7,7 @@
         <Authors>Macro Deck, RecklessBoon</Authors>
         <Company>Macro Deck</Company>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <Version>2.1.2</Version>
+        <Version>2.1.3</Version>
 	      <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	      <NeutralLanguage>en</NeutralLanguage>
 	      <PackageProjectUrl>https://github.com/RecklessBoon/Macro-Deck-OBS-WebSocket-Plugin</PackageProjectUrl>
