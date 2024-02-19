@@ -9,8 +9,11 @@ using SuchByte.OBSWebSocketPlugin.Language;
 using SuchByte.OBSWebSocketPlugin.Models.Action;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Windows.Media.Audio;
+using Windows.UI.Composition.Scenes;
 
 namespace SuchByte.OBSWebSocketPlugin.GUI
 {
@@ -73,8 +76,20 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             return true;
         }
 
+        private CancellationTokenSource LoadingScenesTokenSource;
+        private TaskCompletionSource LoadingScenes;
         private void LoadScenes()
         {
+            if ((LoadingScenes?.Task.IsCompleted ?? true) != true)
+            {
+                LoadingScenesTokenSource.Cancel();
+                try
+                {
+                    LoadingScenes.Task.Wait(LoadingScenesTokenSource.Token);
+                }
+                catch (OperationCanceledException) { /* do nothing */ }
+            }
+
             var conn = (this as IConnDepConfigs).Conn;
             if (conn == null) return;
 
@@ -89,15 +104,29 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             this.scenesBox.Text = String.Empty;
 
             var self = this;
-            _ = Task.Run(async () =>
+            LoadingScenesTokenSource = new CancellationTokenSource();
+            var task = Task.Run(async () =>
             {
                 var sceneListResponse = await conn.OBS.ScenesRequests.GetSceneListAsync();
+
+                if (LoadingScenesTokenSource.Token.IsCancellationRequested) return;
+
                 foreach (JObject scene in sceneListResponse.Scenes)
                 {
                     var name = scene["sceneName"]?.ToString();
                     if (!name.Equals(String.Empty))
                     {
                         scenesBox.Invoke((MethodInvoker)delegate { scenesBox.Items.Add(name); });
+                    }
+
+                    var response = await conn.OBS.SceneItemsRequests.GetSceneItemListAsync(name);
+                    foreach (JObject item in response.SceneItems)
+                    {
+                        if (item["isGroup"].Value<bool?>() == true)
+                        {
+                            var groupName = item["sourceName"]?.ToString();
+                            scenesBox.Invoke((MethodInvoker)delegate { scenesBox.Items.Add(groupName); });
+                        }
                     }
                 }
 
@@ -106,11 +135,23 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                     scenesBox.Text = config?.SceneName;
                     LoadSources();
                 });
-            });
+            }, LoadingScenesTokenSource.Token);
+            LoadingScenes = new TaskCompletionSource(task);
         }
 
+        private CancellationTokenSource LoadingSourcesTokenSource;
+        private TaskCompletionSource LoadingSources;
         private void LoadSources()
         {
+            if ((LoadingSources?.Task.IsCompleted ?? true) != true)
+            {
+                LoadingSourcesTokenSource.Cancel();
+                try
+                {
+                    LoadingSources.Task.Wait(LoadingSourcesTokenSource.Token);
+                } catch (OperationCanceledException) { /* do nothing */ }
+            }
+
             var conn = (this as IConnDepConfigs).Conn;
             if (conn == null) return;
 
@@ -126,38 +167,40 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
 
             var self = this;
             var sceneName = scenesBox.Text;
-            _ = Task.Run(async () =>
+
+            LoadingSourcesTokenSource = new CancellationTokenSource();
+            var task = Task.Run(async () =>
             {
                 var response = await conn.OBS.SceneItemsRequests.GetSceneItemListAsync(sceneName);
-                if (response != null)
+
+                if (LoadingSourcesTokenSource.Token.IsCancellationRequested) return;
+
+                var sceneItems = response?.SceneItems;
+                if (response == null)
                 {
-                    await RecurseSourceResponse(conn, response.SceneItems);
+                    var group_response = await conn.OBS.SceneItemsRequests.GetGroupSceneItemListAsync(sceneName);
+                    sceneItems = group_response?.SceneItems;
+                }
+
+                if (LoadingSourcesTokenSource.Token.IsCancellationRequested) return;
+
+                if ((sceneItems?.Length ?? 0) > 0)
+                {
+                    foreach (JObject item in sceneItems)
+                    {
+                        var name = item["sourceName"]?.ToString();
+                        if (!String.IsNullOrEmpty(name))
+                        {
+                            sourcesBox.Invoke((MethodInvoker)delegate { sourcesBox.Items.Add(name); });
+                        }
+                    }
                 }
                 self.Invoke((MethodInvoker)delegate
                 {
                     sourcesBox.Text = config?.SourceName;
                 });
-            });
-        }
-
-        private async Task RecurseSourceResponse(Connection conn, JObject[] sceneItems)
-        {
-            foreach (JObject item in sceneItems)
-            {
-                if (item["isGroup"].Value<bool?>() == true)
-                {
-                    var sub = await conn.OBS.SceneItemsRequests.GetGroupSceneItemListAsync(item["sourceName"]?.ToString());
-                    await RecurseSourceResponse(conn, sub.SceneItems);
-                }
-                else
-                {
-                    var name = item["sourceName"]?.ToString();
-                    if (!String.IsNullOrEmpty(name))
-                    {
-                        sourcesBox.Invoke((MethodInvoker)delegate { sourcesBox.Items.Add(name); });
-                    }
-                }
-            }
+            }, LoadingSourcesTokenSource.Token);
+            LoadingSources = new TaskCompletionSource(task);
         }
 
         private void LoadConfig()
